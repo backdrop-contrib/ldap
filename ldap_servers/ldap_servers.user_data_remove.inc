@@ -46,12 +46,14 @@ function ldap_servers_empty_user_data($start, $step, $consumer_type, &$context) 
         if ($consumer_type == NULL && isset($account->data['ldap_authorizations'])) {
           $names[] = $account->name;
           unset($account->data['ldap_authorizations']);
-          $updated_account = user_save($account);
+          $account->save();
+          $updated_account = $account->uid();
         }
         // Remove only a particular consumers authorization data.
         elseif ($consumer_type != NULL && isset($account->data['ldap_authorizations'][$consumer_type])) {
           unset($account->data['ldap_authorizations'][$consumer_type]);
-          $updated_account = user_save($account);
+          $account->save();
+          $updated_account = $account->uid();
         }
       }
     }
@@ -73,7 +75,8 @@ function ldap_authorization_generate_users() {
     $account->name = "user" . $i;
     $account->data = ['ldap_authorizations' => ['og_group' => 7, 'drupal_role' => 8]];
 
-    $user_response = user_save($account);
+    $account->save();
+    $user_response = $account->uid();
     $response .= $user_response->name . "<br/>";
   }
   return $response;
