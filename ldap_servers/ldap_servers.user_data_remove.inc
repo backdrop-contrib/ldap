@@ -46,12 +46,12 @@ function ldap_servers_empty_user_data($start, $step, $consumer_type, &$context) 
         if ($consumer_type == NULL && isset($account->data['ldap_authorizations'])) {
           $names[] = $account->name;
           unset($account->data['ldap_authorizations']);
-          $updated_account = user_save($account, ['data' => $account->data]);
+          $updated_account = user_save($account);
         }
         // Remove only a particular consumers authorization data.
         elseif ($consumer_type != NULL && isset($account->data['ldap_authorizations'][$consumer_type])) {
           unset($account->data['ldap_authorizations'][$consumer_type]);
-          $updated_account = user_save($account, ['data' => $account->data]);
+          $updated_account = user_save($account);
         }
       }
     }
@@ -68,14 +68,12 @@ function ldap_authorization_generate_users() {
     if ($account = user_load_by_name($name)) {
       user_delete($account->uid);
     }
-    $account = new stdClass();
+    $account = entity_create('user', array());
     $account->is_new = TRUE;
     $account->name = "user" . $i;
-    $user_edit = [
-      'data' => ['ldap_authorizations' => ['og_group' => 7, 'drupal_role' => 8]],
-    ];
+    $account->data = ['ldap_authorizations' => ['og_group' => 7, 'drupal_role' => 8]];
 
-    $user_response = user_save($account, $user_edit);
+    $user_response = user_save($account);
     $response .= $user_response->name . "<br/>";
   }
   return $response;
