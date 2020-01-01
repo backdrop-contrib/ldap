@@ -15,6 +15,7 @@ function ldap_servers_settings() {
     drupal_set_message(t('PHP LDAP Extension is not loaded.'), "warning");
   }
 
+  $form['#config'] = 'ldap_servers.settings';
   $form['#title'] = "Configure LDAP Preferences";
 
   $options = ldap_servers_encrypt_types();
