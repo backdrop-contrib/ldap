@@ -32,7 +32,7 @@ class LdapServersTestCase extends LdapTestCase {
    */
   public function setUp() {
     parent::setUp(['ldap_test']);
-    variable_set('ldap_simpletest', 2);
+    config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
   }
 
   /**
@@ -368,7 +368,7 @@ class LdapServersTestCase extends LdapTestCase {
       $this->assertTrue(count(array_keys($ldap_servers)) == 0, 'Delete form for ldap server deleted server.', $this->ldapTestId . '.Delete Server');
 
       // Return to fake server mode.
-      variable_set('ldap_simpletest', $ldap_simpletest_initial);
+      config_set('ldap_servers.settings', 'ldap_servers_simpletest', $ldap_simpletest_initial);
     }
   }
 
