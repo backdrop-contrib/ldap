@@ -1123,3 +1123,14 @@ function ldap_servers_no_enabled_servers_msg($action) {
     return $message;
   }
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function ldap_servers_autoload_info() {
+  return array(
+    'LdapServer' => 'LdapServer.class.php',
+    'LdapServersRebindHandler' => 'LdapServer.class.php',
+    'LdapServerAdmin' => 'LdapServerAdmin.class.php',
+  );
+}
