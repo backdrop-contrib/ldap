@@ -535,7 +535,7 @@ function ldap_servers_module_load_include($type, $module, $name = NULL) {
  *   - single server conf object (if flatten == TRUE)
  */
 function ldap_servers_get_servers($sid = NULL, $type = NULL, $flatten = FALSE, $reset = FALSE) {
-  if (variable_get('ldap_simpletest', FALSE)) {
+  if (config_get('ldap_servers.settings', 'ldap_servers_simpletest')) {
     return _ldap_servers_get_simpletest_servers($sid, $type, $flatten, $reset);
   }
   else {
@@ -590,7 +590,7 @@ function _ldap_servers_get_simpletest_servers($sid, $type = NULL, $flatten, $res
   $servers = [];
 
   // Two flavors of mock servers exist.  ultimately v2 will be used in all simpletests.
-  if (variable_get('ldap_simpletest', 0) == 2) {
+  if (config_get('ldap_servers.settings', 'ldap_servers_simpletest') == 2) {
     ldap_servers_module_load_include('php', 'ldap_test', 'LdapServerTest.class');
     $servers['all'] = LdapServerTest::getLdapServerObjects(NULL, 'all', FALSE);
     foreach ($servers['all'] as $_sid => $ldap_server) {
@@ -616,7 +616,7 @@ function _ldap_servers_get_simpletest_servers($sid, $type = NULL, $flatten, $res
  *
  */
 function ldap_servers_debug($variable) {
-  if (variable_get('ldap_simpletest', FALSE) && function_exists('dpm')) {
+  if (config_get('ldap_servers.settings', 'ldap_servers_simpletest') && function_exists('dpm')) {
     dpm($variable);
   }
   else {

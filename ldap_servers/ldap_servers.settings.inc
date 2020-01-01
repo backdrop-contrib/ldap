@@ -22,14 +22,14 @@ function ldap_servers_settings() {
   /**  when this is changed, need to decrypt and possibly encrypt pwd in newly selected format
     *   ... thus default needs to be "No Encryption" to avoid confusion.
     */
-
-  $form['previous_encryption'] = ['#type' => 'hidden', '#default_value' => variable_get('ldap_servers_encryption', LDAP_SERVERS_ENC_TYPE_CLEARTEXT)];
+  $config = config('ldap_servers.settings');
+  $form['previous_encryption'] = ['#type' => 'hidden', '#default_value' => $config->get('ldap_servers_encryption')];
   $form['encryption'] = ['#type' => 'fieldset', '#title' => t('Encryption')];
   $form['encryption']['ldap_servers_encryption'] = [
     '#type' => 'select',
     '#options' => $options,
     '#title' => t('Obfuscate LDAP Passwords?'),
-    '#default_value' => variable_get('ldap_servers_encryption', LDAP_SERVERS_ENC_TYPE_CLEARTEXT),
+    '#default_value' => $config->get('ldap_servers_encryption'),
     '#description' => t('With obfuscation enabled, passwords will be stored in encrypted form and decrypted with the site hash.'),
   ];
 

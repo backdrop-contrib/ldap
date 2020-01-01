@@ -227,10 +227,11 @@ class LdapServer {
    * @param $sid
    */
   public function __construct($sid) {
+    $config = config('ldap_help.settings');
     if (!is_scalar($sid)) {
       return;
     }
-    $this->detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+    $this->detailed_watchdog_log = $config->get('ldap_help_watchdog_detail');
     $server_record = FALSE;
     if (module_exists('ctools')) {
       ctools_include('export');
@@ -261,7 +262,7 @@ class LdapServer {
     else {
       $this->inDatabase = TRUE;
       $this->sid = $sid;
-      $this->detailedWatchdogLog = variable_get('ldap_help_watchdog_detail', 0);
+      $this->detailedWatchdogLog = $config->get('ldap_help_watchdog_detail');
       foreach ($this->field_to_properties_map() as $db_field_name => $property_name) {
         if (isset($server_record->$db_field_name)) {
           $this->{$property_name} = $server_record->$db_field_name;
@@ -310,7 +311,7 @@ class LdapServer {
       $this->bindpw = ($bindpw == '') ? '' : ldap_servers_decrypt($bindpw);
     }
 
-    $bind_overrides = variable_get('ldap_servers_overrides', []);
+    $bind_overrides = config_get('ldap_servers.settings', 'ldap_servers_overrides');
     if (isset($bind_overrides[$this->sid])) {
       if (isset($bind_overrides[$this->sid]['binddn'])) {
         $this->binddn = $bind_overrides[$this->sid]['binddn'];
@@ -1254,19 +1255,22 @@ class LdapServer {
    */
   private function savePictureData($image_data, $md5thumb) {
     // Create tmp file to get image format.
+    $config = config('system.core');
     $filename = uniqid();
     $fileuri = file_directory_temp() . '/' . $filename;
     $size = file_put_contents($fileuri, $image_data);
     $info = image_get_info($fileuri);
     unlink($fileuri);
     // Create file object.
-    $file = file_save_data($image_data, file_default_scheme() . '://' . variable_get('user_picture_path') . '/' . $filename . '.' . $info['extension']);
+    $file = file_save_data($image_data, file_default_scheme() . '://' . $config->get('user_picture_path') . '/' . $filename . '.' . $info['extension']);
     $file->md5Sum = $md5thumb;
+    $picture_dimensions = empty($config->get('user_picture_dimensions')) ? '85x85' : $config->get('user_picture_dimensions');
+    $picture_file_size = empty($config->get('user_picture_file_size')) ? 30 : $config->get('user_picture_file_size');
     // Standard Drupal validators for user pictures.
     $validators = [
       'file_validate_is_image' => [],
-      'file_validate_image_resolution' => [variable_get('user_picture_dimensions', '85x85')],
-      'file_validate_size' => [variable_get('user_picture_file_size', '30') * 1024],
+      'file_validate_image_resolution' => [$picture_dimensions],
+      'file_validate_size' => [$picture_file_size * 1024],
     ];
     $errors = file_validate($file, $validators);
     if (empty($errors)) {

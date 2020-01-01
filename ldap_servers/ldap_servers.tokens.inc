@@ -222,7 +222,7 @@ function ldap_servers_token_extract_parts($token) {
  */
 function ldap_servers_token_tokenize_entry($ldap_entry, $token_keys = 'all', $pre = LDAP_SERVERS_TOKEN_PRE, $post = LDAP_SERVERS_TOKEN_POST) {
 
-  $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   $tokens = [];
   $watchdog_tokens = [];
   if (function_exists('debug_backtrace') && $backtrace = debug_backtrace()) {
@@ -399,7 +399,7 @@ function ldap_servers_token_tokenize_entry($ldap_entry, $token_keys = 'all', $pr
  */
 function ldap_servers_token_tokenize_user_account($user_account, $token_keys = 'all', $pre = LDAP_SERVERS_TOKEN_PRE, $post = LDAP_SERVERS_TOKEN_POST) {
 
-  $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   $tokens = [];
 
   $user_entered_password_available = (boolean) ldap_user_ldap_provision_pwd('get');

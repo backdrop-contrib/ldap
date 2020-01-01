@@ -57,7 +57,10 @@ class LdapServersTestCase extends LdapTestCase {
       $this->prepTestData('hogwarts', [$sid]);
 
       $group = "ldap_servers: functions: $ldap_type";
-      $test_data = variable_get('ldap_test_server__' . $sid, []);
+      $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $sid);
+      if (empty($test_data)) {
+        $test_data = [];
+      }
       ldap_servers_module_load_include('php', 'ldap_test', 'LdapServerTest.class');
       $ldap_server = LdapServerTest::getLdapServerObjects($sid, NULL, TRUE);
 
@@ -142,6 +145,7 @@ class LdapServersTestCase extends LdapTestCase {
   public function testInstall() {
     // TODO: Fix failing tests, excluding to make branch pass.
     return;
+    $config = config('ldap_servers.settings');
     $group = 'ldap_servers: install and uninstall';
     $install_tables = ['ldap_servers'];
     // disable, uninstall, and enable/install module.
@@ -155,7 +159,11 @@ class LdapServersTestCase extends LdapTestCase {
       $this->assertTrue(db_table_exists($table), $table . ' table creates', $group);
     }
     $var_created = $this->assertTrue(TRUE, 'ldap_servers_encryption variable initialized', $group);
-    $var_created = $this->assertTrue(variable_get('ldap_servers_encrypt_key', drupal_get_hash_salt()), 'ldap_servers_encrypt_key variable initialized', $group);
+    $key = $config->get('ldap_servers_encrypt_key');
+    if (empty($key)) {
+      $key = drupal_get_hash_salt();
+    }
+    $var_created = $this->assertTrue($key, 'ldap_servers_encrypt_key variable initialized', $group);
 
     // Disable dependent modules.
     module_disable($modules, TRUE);
@@ -164,8 +172,8 @@ class LdapServersTestCase extends LdapTestCase {
     foreach ($install_tables as $table) {
       $this->assertFalse(db_table_exists($table), $table . ' table removed', $group);
     }
-    $var_created = $this->assertFalse(variable_get('ldap_servers_encryption', FALSE), 'ldap_servers_encryption variable removed', $group);
-    $var_created = $this->assertFalse(variable_get('ldap_servers_encrypt_key', FALSE), 'ldap_servers_encrypt_key variable removed', $group);
+    $var_created = $this->assertFalse($config->get('ldap_servers_encryption'), 'ldap_servers_encryption variable removed', $group);
+    $var_created = $this->assertFalse($config->get('ldap_servers_encrypt_key'), 'ldap_servers_encrypt_key variable removed', $group);
 
     // Test tokens, see http://drupal.org/node/1245736
     $ldap_entry = [
@@ -231,13 +239,14 @@ class LdapServersTestCase extends LdapTestCase {
    */
   public function testUIForms() {
 
+    $config = config('ldap_servers.settings');
     foreach ([1] as $ctools_enabled) {
       $this->ldapTestId = "testUIForms.ctools.$ctools_enabled";
       if ($ctools_enabled) {
         module_enable(['ctools']);
       }
 
-      $ldap_simpletest_initial = variable_get('ldap_simpletest', 2);
+      $ldap_simpletest_initial = $config->get('ldap_simpletest');
       // Need to be out of fake server mode to test ui.
       variable_del('ldap_simpletest');
       $this->privileged_user = $this->drupalCreateUser([
