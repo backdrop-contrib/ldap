@@ -1134,3 +1134,14 @@ function ldap_servers_autoload_info() {
     'LdapServerAdmin' => 'LdapServerAdmin.class.php',
   );
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function ldap_servers_config_info() {
+  $prefixes['ldap_servers.settings'] = array(
+    'label' => t('LDAP Servers settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
