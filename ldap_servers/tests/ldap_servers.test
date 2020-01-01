@@ -40,8 +40,8 @@ class LdapServersTestCase extends LdapTestCase {
    */
   public function tearDown() {
     parent::tearDown();
-    variable_del('ldap_help_watchdog_detail');
-    variable_del('ldap_simpletest');
+    config_clear('ldap_help.settings', 'ldap_help_watchdog_detail');
+    config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
   }
 
   /**
@@ -246,9 +246,9 @@ class LdapServersTestCase extends LdapTestCase {
         module_enable(['ctools']);
       }
 
-      $ldap_simpletest_initial = $config->get('ldap_simpletest');
+      $ldap_simpletest_initial = $config->get('ldap_servers_simpletest');
       // Need to be out of fake server mode to test ui.
-      variable_del('ldap_simpletest');
+      config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
       $this->privileged_user = $this->drupalCreateUser([
         'administer site configuration',
       ]);
