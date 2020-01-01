@@ -1229,11 +1229,13 @@ class LdapServer {
           else {
             // Image is different, remove file object.
             if (is_object($account->picture)) {
-              file_delete($account->picture, TRUE);
+              $fid = $account->picture->fid;
+              file_delete($fid);
             }
             elseif (is_string($account->picture)) {
               $file = file_load(intval($account->picture));
-              file_delete($file, TRUE);
+              $fid = $file->fid;
+              file_delete($fid);
             }
           }
         }
