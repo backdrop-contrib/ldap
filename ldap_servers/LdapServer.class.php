@@ -1266,8 +1266,10 @@ class LdapServer {
     // Create file object.
     $file = file_save_data($image_data, file_default_scheme() . '://' . $config->get('user_picture_path') . '/' . $filename . '.' . $info['extension']);
     $file->md5Sum = $md5thumb;
-    $picture_dimensions = empty($config->get('user_picture_dimensions')) ? '85x85' : $config->get('user_picture_dimensions');
-    $picture_file_size = empty($config->get('user_picture_file_size')) ? 30 : $config->get('user_picture_file_size');
+    $picture_dimensions = $config->get('user_picture_dimensions');
+    $picture_dimensions = empty($picture_dimensions) ? '85x85' : $picture_dimensions;
+    $picture_file_size = $config->get('user_picture_file_size');
+    $picture_file_size = empty($picture_file_size) ? 30 : $picture_file_size;
     // Standard Drupal validators for user pictures.
     $validators = [
       'file_validate_is_image' => [],

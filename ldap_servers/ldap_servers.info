@@ -1,7 +1,6 @@
 name = LDAP Servers
 description = Implements LDAP Server Configuration
 package = LDAP
-dependencies[] = ctools
 backdrop = 1.x
 type = module
 php = 5.4
