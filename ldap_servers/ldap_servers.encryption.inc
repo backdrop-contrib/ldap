@@ -67,7 +67,7 @@ function _ldap_servers_encrypt($input, $encryption_enabled = NULL) {
   }
 
   $key = $config->get('ldap_servers_encrypt_key');
-  if (empty($key)) {
+  if ($key === NULL) {
     $key = drupal_get_hash_salt();
   }
   $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length(LDAP_SERVERS_CYPHER_MODE));
@@ -99,7 +99,7 @@ function _ldap_servers_decrypt($input, $encryption_enabled = NULL) {
   }
 
   $key = $config->get('ldap_servers_encrypt_key');
-  if (empty($key)) {
+  if ($key === NULL) {
     $key = drupal_get_hash_salt();
   }
   list($encrypted_data, $iv) = explode('::', base64_decode($input), 2);

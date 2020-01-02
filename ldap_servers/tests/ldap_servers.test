@@ -58,7 +58,7 @@ class LdapServersTestCase extends LdapTestCase {
 
       $group = "ldap_servers: functions: $ldap_type";
       $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $sid);
-      if (empty($test_data)) {
+      if ($test_data === NULL) {
         $test_data = [];
       }
       ldap_servers_module_load_include('php', 'ldap_test', 'LdapServerTest.class');
@@ -160,7 +160,7 @@ class LdapServersTestCase extends LdapTestCase {
     }
     $var_created = $this->assertTrue(TRUE, 'ldap_servers_encryption variable initialized', $group);
     $key = $config->get('ldap_servers_encrypt_key');
-    if (empty($key)) {
+    if ($key === NULL) {
       $key = drupal_get_hash_salt();
     }
     $var_created = $this->assertTrue($key, 'ldap_servers_encrypt_key variable initialized', $group);
