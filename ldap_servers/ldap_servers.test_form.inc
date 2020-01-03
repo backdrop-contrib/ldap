@@ -92,6 +92,12 @@ function ldap_servers_test_form($form, &$form_state, $op = NULL, $sid = NULL) {
     '#description' => t('This is optional and used for testing this server\'s group configuration.'),
   ];
 
+  $form['grp_test_grp_required_member'] = [
+    '#type' => 'checkbox',
+    '#title' => t("LDAP Group Entry Attribute Holding User's DN, CN is a required attribute of the group."),
+    '#description' => t('LDAP group must have at least one member. Empty group is not allowed.'),
+  ];
+
   if ($ldap_server->bind_method == LDAP_SERVERS_BIND_METHOD_ANON_USER) {
     $form['testing_drupal_userpw'] = [
       '#type' => 'password',
@@ -220,6 +226,17 @@ function ldap_servers_test_form_submit($form, &$form_state) {
       'objectClass' => [$ldap_server->groupObjectClass, 'top'],
     ];
 
+    $min_members = 0;
+    if ($values['grp_test_grp_required_member']) {
+      // Create a new member.
+      $required_member = explode('=', $user_test_dn);
+      $required_member[1] = 'rm'. $required_member[1];
+      $required_member = implode('=', $required_member);
+      // Add member to group, because group must have at least one member.
+      $group_create_test_attr[$ldap_server->groupMembershipsAttr] = $required_member;
+      $min_members = 1;
+    }
+
     // 1. delete test group if it exists.
     if ($ldap_server->dnExists($group_create_test_dn, 'ldap_entry', ['cn', 'member'])) {
       $result = $ldap_server->groupRemoveGroup($group_create_test_dn, FALSE);
@@ -227,45 +244,47 @@ function ldap_servers_test_form_submit($form, &$form_state) {
 
     $group_exists = $ldap_server->dnExists($group_create_test_dn, 'ldap_entry', ['cn', 'member']);
     $result = ($group_exists === FALSE) ? "PASS" : "FAIL";
-    $results_tables['group1'][] = ["Starting test without group: $group_create_test_dn ", $result];
+    $results_tables['group1'][] = ["1. Starting test without group: $group_create_test_dn doesn't exist", $result];
 
     // 2. make sure call to members in empty group returns false.
     $result = $ldap_server->groupAllMembers($group_create_test_dn);
     $result = ($result === FALSE) ? "PASS" : 'FAIL';
-    $results_tables['group1'][] = ["LdapServer::groupAllMembers($group_create_test_dn) call on nonexistent group returns FALSE", $result];
+    $results_tables['group1'][] = ["2. LdapServer::groupAllMembers($group_create_test_dn) call on nonexistent group returns FALSE", $result];
 
     // 3. add group.
     $result = $ldap_server->groupAddGroup($group_create_test_dn, $group_create_test_attr);
     $result = ($result) ? "PASS" : 'FAIL';
     $attr = serialize($group_create_test_attr);
-    $results_tables['group1'][] = ["LdapServer::groupAddGroup($group_create_test_dn, $attr)", $result];
+    $results_tables['group1'][] = ["3. LdapServer::groupAddGroup($group_create_test_dn, $attr)", $result];
 
     // 4. call to all members in an empty group returns emtpy array, not FALSE.
     $result = $ldap_server->groupAllMembers($group_create_test_dn);
-    $result = (is_array($result) && count($result) == 0) ? 'PASS' : 'FAIL';
-    $results_tables['group1'][] = ["LdapServer::groupAllMembers($group_create_test_dn) returns empty array for empty group ", $result];
+    $result = (is_array($result) && count($result) == $min_members) ? 'PASS' : 'FAIL';
+    $results_tables['group1'][] = ["4. LdapServer::groupAllMembers($group_create_test_dn) returns empty array for empty group ", $result];
 
     // 5. add member to group.
-    $result = $ldap_server->groupAddMember($group_create_test_dn, $user_test_dn);
-    $result = is_array($ldap_server->groupAllMembers($group_create_test_dn)) ? 'PASS' : 'FAIL';
-    $results_tables['group1'][] = ["LdapServer::groupAddMember($group_create_test_dn, $user_test_dn)", $result];
+    $ldap_server->groupAddMember($group_create_test_dn, $user_test_dn);
+    $result = $ldap_server->groupAllMembers($group_create_test_dn);
+    $result = (is_array($result) && count($result) == $min_members + 1) ? 'PASS' : 'FAIL';
+    $results_tables['group1'][] = ["5. LdapServer::groupAddMember($group_create_test_dn, $user_test_dn)", $result];
 
     // 6. try to remove group with member in it.
     $only_if_group_empty = TRUE;
     $result = $ldap_server->groupRemoveGroup($group_create_test_dn, $only_if_group_empty);
     $result = ($result) ? 'FAIL' : 'PASS';
-    $results_tables['group1'][] = ["LdapServer::groupRemoveGroup($group_create_test_dn, $only_if_group_empty)", $result];
+    $results_tables['group1'][] = ["6. LdapServer::groupRemoveGroup($group_create_test_dn, $only_if_group_empty)", $result];
 
     // 7. remove group member.
     $result = $ldap_server->groupRemoveMember($group_create_test_dn, $user_test_dn);
     $result = $ldap_server->groupAllMembers($group_create_test_dn);
-    $result = (is_array($result) && count($result) == 0) ? 'PASS' : 'FAIL';
-    $results_tables['group1'][] = ["LdapServer::groupRemoveMember($group_create_test_dn, $user_test_dn)", $result];
+    $result = (is_array($result) && count($result) == $min_members) ? 'PASS' : 'FAIL';
+    $results_tables['group1'][] = ["7. LdapServer::groupRemoveMember($group_create_test_dn, $user_test_dn)", $result];
 
-    $only_if_group_empty = TRUE;
+    // 8. remove group.
+    $only_if_group_empty = FALSE;
     $result = $ldap_server->groupRemoveGroup($group_create_test_dn, $only_if_group_empty);
     $result = ($ldap_server->dnExists($group_create_test_dn, 'ldap_entry', ['cn', 'member'])) ? "FAIL" : 'PASS';
-    $results_tables['group1'][] = ["LdapServer::groupRemoveGroup($group_create_test_dn, $only_if_group_empty)", $result];
+    $results_tables['group1'][] = ["8. LdapServer::groupRemoveGroup($group_create_test_dn, $only_if_group_empty)", $result];
   }
 
   // Connect to ldap.
@@ -402,10 +421,10 @@ function ldap_servers_test_binding_credentials(&$ldap_server, $bindpw, &$results
   if (!$errors) {
     $bind_result = $ldap_server->bind($ldap_server->binddn, $bindpw, FALSE);
     if ($bind_result == LDAP_SUCCESS) {
-      $results_tables['basic'][] = [t('Successfully bound to server')];
+      $results_tables['basic'][] = [t('Successfully bound to server'), 'PASS'];
     }
     else {
-      $results_tables['basic'][] = [t('Failed to bind to server. ldap error #') . $bind_result . ' ' . $ldap_server->errorMsg('ldap')];
+      $results_tables['basic'][] = [t('Failed to bind to server. ldap error #') . $bind_result . ' ' . $ldap_server->errorMsg('ldap'), 'FAIL'];
       $errors = TRUE;
     }
   }
