@@ -10,3 +10,14 @@ define('LDAP_TEST_USER_ORPHAN_CLONE_COUNT', 7);
 // Number of cloned drupal users to delete in orphan check.
 define('LDAP_TEST_USER_ORPHAN_CLONE_REMOVE_COUNT', 2);
 define('LDAP_TEST_LDAP_NAME', 'hogwarts');
+
+/**
+ * Implements hook_autoload_info().
+ */
+function ldap_test_autoload_info() {
+  return array(
+    'LdapServerTest' => 'LdapServerTest.class.php',
+    'LdapTestFunctions' => 'LdapTestFunctions.class.php',
+    'LdapTestCase' => 'LdapTestCase.class.php',
+  );
+}

@@ -1,20 +1,7 @@
 name = LDAP Test Module
-description = Module for LDAP module for testing.  Only for development and debugging purposes.
-package = Lightweight Directory Access Protocol
-
-dependencies[] = ldap_servers
-dependencies[] = entity
-
-core = 7.x
+description = Module for LDAP module for testing. Only for development and debugging purposes.
+package = LDAP
+backdrop = 1.x
+type = module
 php = 5.4
-
-files[] = ldap_servers.conf.inc
-files[] = ldap_user.conf.inc
-files[] = ldap_authentication.conf.inc
-files[] = ldap_authorization.conf.inc
-
-files[] = ldap_test.module
-
-files[] = LdapServerTest.class.php
-files[] = LdapTestFunctions.class.php
-files[] = LdapUserTestCase.class.php
+tags[] = Account Management
