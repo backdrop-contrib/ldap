@@ -32,3 +32,10 @@ function ldap_test_config_info() {
   );
   return $prefixes;
 }
+
+ /**
+ * Implements hook_uninstall().
+ */
+function ldap_test_uninstall() {
+
+}
