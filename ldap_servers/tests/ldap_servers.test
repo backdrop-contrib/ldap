@@ -33,6 +33,7 @@ class LdapServersTestCase extends LdapTestCase {
   public function setUp() {
     parent::setUp(['ldap_test']);
     config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
+    config_set('ldap_servers.settings', 'ldap_servers_encryption', LDAP_SERVERS_ENC_TYPE_CLEARTEXT);
   }
 
   /**
@@ -242,17 +243,20 @@ class LdapServersTestCase extends LdapTestCase {
     $config = config('ldap_servers.settings');
     foreach ([1] as $ctools_enabled) {
       $this->ldapTestId = "testUIForms.ctools.$ctools_enabled";
-      if ($ctools_enabled) {
-        module_enable(['ctools']);
-      }
 
       $ldap_simpletest_initial = $config->get('ldap_servers_simpletest');
       // Need to be out of fake server mode to test ui.
       config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
       $this->privileged_user = $this->drupalCreateUser([
         'administer site configuration',
+        'access administration pages',
+        'administer modules',
+        'flush caches',
       ]);
       $this->drupalLogin($this->privileged_user);
+      module_enable(['ldap_servers'], TRUE);
+      // Clear cache, otherwise the config pages is not present.
+      $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
 
       $sid = 'server1';
       $server_data = [];
