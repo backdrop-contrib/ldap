@@ -52,7 +52,10 @@ class LdapTestFunctions {
    *
    */
   public function setFakeServerProperty($sid, $prop, $value) {
-    $test_data = variable_get('ldap_test_server__' . $sid, []);
+    $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $sid);
+      if ($test_data === NULL) {
+        $test_data = [];
+      }
     $test_data['properties'][$prop] = $value;
     variable_set('ldap_test_server__' . $sid, $test_data);
   }
@@ -62,7 +65,10 @@ class LdapTestFunctions {
    */
   public function setFakeServerUserAttribute($sid, $dn, $attr_name, $attr_value, $i = 0) {
     $attr_name = drupal_strtolower($attr_name);
-    $test_data = variable_get('ldap_test_server__' . $sid, []);
+    $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $sid);
+      if ($test_data === NULL) {
+        $test_data = [];
+      }
 
     $test_data['entries'][$dn][$attr_name][$i] = $attr_value;
     $count_set = (int) isset($test_data['entries'][$dn][$attr_name]['count']);
@@ -310,7 +316,7 @@ class LdapTestFunctions {
     $this->data['ldap_servers'][$sid]['ldap'] = $this->ldapData['ldap_servers'][$sid];
     $this->data['ldap_servers'][$sid]['csv'] = $this->csvTables;
     variable_set('ldap_test_server__' . $sid, $this->data['ldap_servers'][$sid]);
-    $current_sids = variable_get('ldap_test_servers', []);
+    $current_sids = config_get('ldap_test.settings', 'ldap_test_servers');
     $current_sids[] = $sid;
     variable_set('ldap_test_servers', array_unique($current_sids));
   }

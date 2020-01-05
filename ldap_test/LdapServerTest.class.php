@@ -44,7 +44,10 @@ class LdapServerTest extends LdapServer {
       $sid = $test_data['sid'];
     }
     else {
-      $test_data = variable_get('ldap_test_server__' . $sid, []);
+      $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $sid);
+      if ($test_data === NULL) {
+        $test_data = [];
+      }
     }
 
     $bindpw = (isset($test_data['bindpw'])) ? $test_data['bindpw'] : 'goodpwd';
@@ -57,11 +60,14 @@ class LdapServerTest extends LdapServer {
    *
    */
   public function refreshFakeData() {
-    $test_data = variable_get('ldap_test_server__' . $this->sid, []);
+    $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $this->sid);
+      if ($test_data === NULL) {
+        $test_data = [];
+      }
     $this->methodResponses = (is_array($test_data) && isset($test_data['methodResponses'])) ? $test_data['methodResponses'] : [];
     $this->entries = (is_array($test_data) && isset($test_data['ldap'])) ? $test_data['ldap'] : [];
     $this->searchResults = (isset($test_data['search_results'])) ? $test_data['search_results'] : [];
-    $this->detailedWatchdogLog = variable_get('ldap_help_watchdog_detail', 0);
+    $this->detailedWatchdogLog = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
     foreach ($test_data['properties'] as $property_name => $property_value) {
       $this->{$property_name} = $property_value;
     }
@@ -345,7 +351,10 @@ class LdapServerTest extends LdapServer {
    */
   public function dnExists($find_dn, $return = 'boolean', $attributes = ['objectclass']) {
     $this->refreshFakeData();
-    $test_data = variable_get('ldap_test_server__' . $this->sid, []);
+    $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $this->sid);
+      if ($test_data === NULL) {
+        $test_data = [];
+      }
     foreach ($this->entries as $entry_dn => $entry) {
       $match = (strcasecmp($entry_dn, $find_dn) == 0);
 
@@ -374,7 +383,7 @@ class LdapServerTest extends LdapServer {
       $servers[$sid] = new LdapServerTest($sid);
     }
     else {
-      $server_ids = variable_get('ldap_test_servers', []);
+      $server_ids = config_get('ldap_test.settings', 'ldap_test_servers');
       foreach ($server_ids as $sid => $_sid) {
         $servers[$sid] = new LdapServerTest($sid);
       }
@@ -402,7 +411,10 @@ class LdapServerTest extends LdapServer {
    */
   public function createLdapEntry($ldap_entry, $dn = NULL) {
     $result = FALSE;
-    $test_data = variable_get('ldap_test_server__' . $this->sid, []);
+    $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $this->sid);
+      if ($test_data === NULL) {
+        $test_data = [];
+      }
 
     if (isset($ldap_entry['dn'])) {
       $dn = $ldap_entry['dn'];
@@ -426,7 +438,10 @@ class LdapServerTest extends LdapServer {
     if (!$attributes) {
       $attributes = [];
     }
-    $test_data = variable_get('ldap_test_server__' . $this->sid, []);
+    $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $this->sid);
+      if ($test_data === NULL) {
+        $test_data = [];
+      }
     if (!isset($test_data['entries'][$dn])) {
       return FALSE;
     }
@@ -476,7 +491,10 @@ class LdapServerTest extends LdapServer {
    */
   public function delete($dn) {
 
-    $test_data = variable_get('ldap_test_server__' . $this->sid, []);
+    $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $this->sid);
+      if ($test_data === NULL) {
+        $test_data = [];
+      }
     $deleted = FALSE;
     foreach (['entries', 'users', 'groups', 'ldap'] as $test_data_sub_array) {
       if (isset($test_data[$test_data_sub_array][$dn])) {

@@ -21,3 +21,14 @@ function ldap_test_autoload_info() {
     'LdapTestCase' => 'LdapTestCase.class.php',
   );
 }
+
+ /**
+ * Implements hook_config_info().
+ */
+function ldap_test_config_info() {
+  $prefixes['ldap_test.settings'] = array(
+    'label' => t('LDAP Test Module settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
