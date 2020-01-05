@@ -153,7 +153,11 @@ class LdapTestFunctions {
    */
   public function drupalLdapUpdateUser($edit = [], $ldap_authenticated = FALSE, $user) {
     if (count($edit)) {
-      $user = user_save($user, $edit);
+      foreach ($edit as $key => $property) {
+        $user->$key = $property;
+      }
+      $user->save();
+      $user = $user->uid();
     }
     if ($ldap_authenticated) {
       user_set_authmaps($user, ['authname_ldap_user' => $user->name]);
@@ -182,7 +186,8 @@ class LdapTestFunctions {
             $new_roles[$id] = $name;
           }
         }
-        user_save($user, ['roles' => $new_roles]);
+        $user->roles = $new_roles;
+        user_save($user);
       }
     }
   }
