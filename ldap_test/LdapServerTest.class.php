@@ -424,7 +424,7 @@ class LdapServerTest extends LdapServer {
     if ($dn && !isset($test_data['entries'][$dn])) {
       $test_data['entries'][$dn] = $ldap_entry;
       $test_data['ldap'][$dn] = $ldap_entry;
-      variable_set('ldap_test_server__' . $this->sid, $test_data);
+      config_set('ldap_test.settings', 'ldap_test_server__' . $this->sid, $test_data);
       $this->refreshFakeData();
       $result = TRUE;
     }
@@ -476,7 +476,7 @@ class LdapServerTest extends LdapServer {
 
     $test_data['entries'][$dn] = $ldap_entry;
     $test_data['ldap'][$dn] = $ldap_entry;
-    variable_set('ldap_test_server__' . $this->sid, $test_data);
+    config_set('ldap_test.settings', 'ldap_test_server__' . $this->sid, $test_data);
     $this->refreshFakeData();
     return TRUE;
 
@@ -503,7 +503,7 @@ class LdapServerTest extends LdapServer {
       }
     }
     if ($deleted) {
-      variable_set('ldap_test_server__' . $this->sid, $test_data);
+      config_set('ldap_test.settings', 'ldap_test_server__' . $this->sid, $test_data);
       $this->refreshFakeData();
       return TRUE;
     }

@@ -49,8 +49,8 @@ class LdapTestCase extends DrupalWebTestCase {
       $modules = $modules[0];
     }
     parent::setUp($modules);
-    variable_set('ldap_simpletest', 2);
-    variable_set('ldap_help_watchdog_detail', 0);
+    config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
+    config_set('ldap_help.settings', 'ldap_help_watchdog_detail', 0);
     $this->createTestUserFields();
 
   }

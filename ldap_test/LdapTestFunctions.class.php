@@ -43,9 +43,9 @@ class LdapTestFunctions {
   public function configureLdapServers($sids, $feetures = FALSE, $feature_name = NULL) {
     foreach ($sids as $i => $sid) {
       $current_sids[$sid] = $sid;
-      variable_set('ldap_test_server__' . $sid, $this->data['ldap_servers'][$sid]);
+      config_set('ldap_test.settings', 'ldap_test_server__' . $sid, $this->data['ldap_servers'][$sid]);
     }
-    variable_set('ldap_test_servers', $current_sids);
+    config_set('ldap_test.settings', 'ldap_test_servers', $current_sids);
   }
 
   /**
@@ -57,7 +57,7 @@ class LdapTestFunctions {
         $test_data = [];
       }
     $test_data['properties'][$prop] = $value;
-    variable_set('ldap_test_server__' . $sid, $test_data);
+    config_set('ldap_test.settings', 'ldap_test_server__' . $sid, $test_data);
   }
 
   /**
@@ -79,7 +79,7 @@ class LdapTestFunctions {
     $count_set = (int) isset($test_data['ldap'][$dn][$attr_name]['count']);
     // don't count the 'count'.
     $test_data['ldap'][$dn][$attr_name]['count'] = count($test_data['ldap'][$dn][$attr_name]) - $count_set;
-    variable_set('ldap_test_server__' . $sid, $test_data);
+    config_set('ldap_test.settings', 'ldap_test_server__' . $sid, $test_data);
     // Clear server cache;.
     $ldap_server = ldap_servers_get_servers($sid, NULL, TRUE, TRUE);
   }
@@ -315,10 +315,10 @@ class LdapTestFunctions {
 
     $this->data['ldap_servers'][$sid]['ldap'] = $this->ldapData['ldap_servers'][$sid];
     $this->data['ldap_servers'][$sid]['csv'] = $this->csvTables;
-    variable_set('ldap_test_server__' . $sid, $this->data['ldap_servers'][$sid]);
+    config_set('ldap_test.settings', 'ldap_test_server__' . $sid, $this->data['ldap_servers'][$sid]);
     $current_sids = config_get('ldap_test.settings', 'ldap_test_servers');
     $current_sids[] = $sid;
-    variable_set('ldap_test_servers', array_unique($current_sids));
+    config_set('ldap_test.settings', 'ldap_test_servers', array_unique($current_sids));
   }
 
   /**
