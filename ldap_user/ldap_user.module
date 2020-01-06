@@ -1302,3 +1302,15 @@ function ldap_user_reset_provision_server($ldap_user_conf, $account) {
     }
   }
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function ldap_user_autoload_info() {
+  return array(
+    'LdapUserConf' => 'LdapUserConf.class.php',
+    'LdapUserConfAdmin' => 'LdapUserConfAdmin.class.php',
+    'LdapUserCron' => 'ldap_user.cron.inc',
+    'LdapUserWs' => 'ldap_user.ws.inc',
+  );
+}
