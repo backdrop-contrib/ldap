@@ -64,7 +64,7 @@ class LdapUserConfAdmin extends LdapUserConf {
     foreach ($this->saveable as $property) {
       $save[$property] = $this->{$property};
     }
-    variable_set('ldap_user_conf', $save);
+    config_set('ldap_user.settings', 'ldap_user_conf', $save);
     ldap_user_conf_cache_clear();
   }
 
@@ -72,7 +72,7 @@ class LdapUserConfAdmin extends LdapUserConf {
    *
    */
   public static function uninstall() {
-    variable_del('ldap_user_conf');
+    config_clear('ldap_user.settings', 'ldap_user_conf');
   }
 
   /**

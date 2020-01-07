@@ -60,10 +60,10 @@ function _ldap_user_orphans($ldap_user_conf) {
 
   // If maxed out reset uid check counter.
   if ($user_count < $ldap_user_conf->orphanedCheckQty) {
-    variable_set('ldap_user_cron_last_uid_checked', 1);
+    config_set('ldap_user.settings', 'ldap_user_cron_last_uid_checked', 1);
   }
   else {
-    variable_set('ldap_user_cron_last_uid_checked', $uids[count($uids) - 1]);
+    config_set('ldap_user.settings', 'ldap_user_cron_last_uid_checked', $uids[count($uids) - 1]);
   }
 
   $batches = floor($user_count / LDAP_SERVERS_MAXFILTER_ORS) + 1;

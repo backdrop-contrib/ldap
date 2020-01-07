@@ -29,7 +29,7 @@ class LdapUserUnitTests extends LdapTestCase {
    */
   public function setUp() {
     parent::setUp(['ldap_servers', 'ldap_user', 'ldap_authentication', 'ldap_test']);
-    variable_set('ldap_simpletest', 2);
+    config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
   }
 
   /**
@@ -37,8 +37,8 @@ class LdapUserUnitTests extends LdapTestCase {
    */
   public function tearDown() {
     parent::tearDown();
-    variable_del('ldap_help_watchdog_detail');
-    variable_del('ldap_simpletest');
+    config_clear('ldap_help.settings', 'ldap_help_watchdog_detail');
+    config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
   }
 
   /**
@@ -684,7 +684,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
    */
   public function setUp() {
     parent::setUp(['ldap_user', 'ldap_test']);
-    variable_set('ldap_simpletest', 2);
+    config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
   }
 
   /**
@@ -692,8 +692,8 @@ class LdapUserIntegrationTests extends LdapTestCase {
    */
   public function tearDown() {
     parent::tearDown();
-    variable_del('ldap_help_watchdog_detail');
-    variable_del('ldap_simpletest');
+    config_clear('ldap_help.settings', 'ldap_help_watchdog_detail');
+    config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
   }
 
   /**
@@ -861,11 +861,11 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $ldap_user_conf->save();
       $ldap_user_conf = ldap_user_conf('default', TRUE);
 
-      variable_set('user_email_verification', TRUE);
+      config_set('system.core', 'user_email_verification', TRUE);
       // Or USER_REGISTER_ADMINISTRATORS_ONLY, USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL.
-      variable_set('user_register', USER_REGISTER_VISITORS);
+      config_set('system.core', 'user_register', USER_REGISTER_VISITORS);
       // user_cancel_block_unpublish, user_cancel_reassign, user_cancel_delete.
-      variable_set('user_cancel_method', 'user_cancel_block');
+      config_set('system.core', 'user_cancel_method', 'user_cancel_block');
       $username = 'sstephens';
       $this->drupalLogout();
       if ($sstephens = user_load_by_name($username)) {
@@ -1218,7 +1218,7 @@ class LdapUserUITests extends LdapTestCase {
    */
   public function setUp() {
     parent::setUp(['ldap_user', 'ldap_test']);
-    variable_set('ldap_simpletest', 2);
+    config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
   }
 
   /**
@@ -1226,8 +1226,8 @@ class LdapUserUITests extends LdapTestCase {
    */
   public function tearDown() {
     parent::tearDown();
-    variable_del('ldap_help_watchdog_detail');
-    variable_del('ldap_simpletest');
+    config_clear('ldap_help.settings', 'ldap_help_watchdog_detail');
+    config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
   }
 
   /**
