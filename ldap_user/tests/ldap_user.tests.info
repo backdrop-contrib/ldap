@@ -1,0 +1,17 @@
+[LdapUserUnitTests]
+name = LDAP User Unit Tests
+description = Test functions outside of real contexts.
+group = LDAP User
+file = ldap_user.test
+
+[LdapUserIntegrationTests]
+name = LDAP User Integration Tests
+description = Test provisioning and synching in real contexts such as account creation on logon, synching on user edit, etc.
+group = LDAP User
+file = ldap_user.test
+
+[LdapUserUITests]
+name = LDAP User User Interface
+description = Test ldap user admin interface.
+group = LDAP User
+file = ldap_user.test

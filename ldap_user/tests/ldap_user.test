@@ -2,7 +2,6 @@
 
 /**
  * @file
- * See getInfo() for test summary.
  *
  * @todo test for ldapUserConf->setSynchMapping()
  * @todo test for ldapUserConf->ldapAssociateDrupalAccount($drupal_username)
@@ -13,17 +12,6 @@ module_load_include('php', 'ldap_test', 'LdapTestCase.class');
  *
  */
 class LdapUserUnitTests extends LdapTestCase {
-
-  /**
-   *
-   */
-  public static function getInfo() {
-    return [
-      'name' => 'LDAP User Unit Tests',
-      'description' => 'Test functions outside of real contexts.',
-      'group' => 'LDAP User',
-    ];
-  }
 
   /**
    *
@@ -683,17 +671,6 @@ class LdapUserIntegrationTests extends LdapTestCase {
   /**
    *
    */
-  public static function getInfo() {
-    return [
-      'name' => 'LDAP User Integration Tests',
-      'description' => 'Test provisioning and synching in real contexts such as account creation on logon, synching on user edit, etc.',
-      'group' => 'LDAP User',
-    ];
-  }
-
-  /**
-   *
-   */
   public function __construct($test_id = NULL) {
     parent::__construct($test_id);
   }
@@ -1224,17 +1201,6 @@ class LdapUserIntegrationTests extends LdapTestCase {
  *
  */
 class LdapUserUITests extends LdapTestCase {
-
-  /**
-   *
-   */
-  public static function getInfo() {
-    return [
-      'name' => 'LDAP User User Interface',
-      'description' => 'Test ldap user admin interface.',
-      'group' => 'LDAP User',
-    ];
-  }
 
   /**
    *
