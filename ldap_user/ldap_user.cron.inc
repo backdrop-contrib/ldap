@@ -27,7 +27,7 @@ function _ldap_user_orphans($ldap_user_conf) {
    *   - order by uid asc (get oldest first)
    */
 
-  $last_uid_checked = variable_get('ldap_user_cron_last_uid_checked', 1);
+  $last_uid_checked = config_get('ldap_user.settings', 'ldap_user_cron_last_uid_checked');
 
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'user')
@@ -73,7 +73,7 @@ function _ldap_user_orphans($ldap_user_conf) {
   }
 
   if (count($email_list) > 0) {
-    $site_email = variable_get('site_mail', FALSE);
+    $site_email = config_get('system.core', 'site_mail');
     $params = ['accounts' => $email_list];
     if ($site_email) {
       drupal_mail(

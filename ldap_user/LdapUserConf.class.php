@@ -237,7 +237,7 @@ class LdapUserConf {
       );
 
     $this->setSynchMapping(TRUE);
-    $this->detailedWatchdog = variable_get('ldap_help_watchdog_detail', 0);
+    $this->detailedWatchdog = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   }
 
   /**
@@ -245,7 +245,7 @@ class LdapUserConf {
    */
   public function load() {
 
-    if ($saved = variable_get("ldap_user_conf", FALSE)) {
+    if ($saved = config_get('ldap_user.settings', 'ldap_user_conf')) {
       $this->inDatabase = TRUE;
       foreach ($this->saveable as $property) {
         if (isset($saved[$property])) {
@@ -260,7 +260,7 @@ class LdapUserConf {
       $this->accountsWithSameEmail = (int) module_exists('sharedemail');
     }
     // Determine account creation configuration.
-    $user_register = variable_get('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+    $user_register = config_get('system.core', 'user_register');
     if ($this->acctCreation == LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR_DEFAULT || $user_register == USER_REGISTER_VISITORS) {
       $this->createLDAPAccounts = TRUE;
       $this->createLDAPAccountsAdminApproval = FALSE;

@@ -1,0 +1,5 @@
+{
+    "_config_name": "ldap_user.settings",
+    "ldap_user_conf": [],
+    "ldap_user_cron_last_uid_checked": 1
+}

@@ -137,7 +137,7 @@ function ldap_user_cron() {
 function ldap_user_mail($key, &$message, $params) {
   switch ($key) {
     case 'orphaned_accounts':
-      $message['subject'] = variable_get('site_name') . ' ' . t('Orphaned LDAP Users');
+      $message['subject'] = config_get('system.core', 'site_name') . ' ' . t('Orphaned LDAP Users');
       $message['body'][] = t('The following !count Drupal users no longer have
         corresponding LDAP Entries.  Perhaps they have been removed from the LDAP
         and should be removed:', ['!count' => count($params['accounts'])])
@@ -1145,7 +1145,7 @@ function ldap_user_token_replace($token, $account, $entity = NULL) {
  */
 function ldap_user_token_tokenize_entry($account, $token_keys, $pre = LDAP_SERVERS_TOKEN_PRE, $post = LDAP_SERVERS_TOKEN_POST, $user_entity = NULL) {
 
-  $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   $tokens = [];
   if (!$user_entity) {
     list($discard, $user_entity) = ldap_user_load_user_acct_and_entity($account->uid, 'uid');
@@ -1313,4 +1313,15 @@ function ldap_user_autoload_info() {
     'LdapUserCron' => 'ldap_user.cron.inc',
     'LdapUserWs' => 'ldap_user.ws.inc',
   );
+}
+
+/**
+ * Implements hook_config_info().
+ */
+function ldap_user_config_info() {
+  $prefixes['ldap_user.settings'] = array(
+    'label' => t('LDAP User Module settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
 }
