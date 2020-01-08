@@ -423,72 +423,6 @@ function ldap_user_user_entity_fields() {
 }
 
 /**
- * Update authmap table, changing ldap_authentication to ldap_user, disable ldap_profile.
- */
-function ldap_user_update_7201() {
-  if (module_exists('ldap_profile')) {
-    module_disable(['ldap_profile', TRUE]);
-  }
-  _ldap_user_install_update_authmap();
-}
-
-/**
- * Attach ldap_user_last_checked field to user entity to track reconciliation of ldap and drupal accounts.
- */
-function ldap_user_update_7202() {
-
-  return t('ldap_user_last_checked field added to user entity.');
-
-}
-
-/**
- * Make sure all user entity fields are created.
- */
-function ldap_user_update_7203() {
-
-  if (module_exists('ldap_groups')) {
-    module_disable(['ldap_groups', TRUE]);
-  }
-
-  $fields_added = ldap_user_update_check_user_fields();
-
-  if (count($fields_added)) {
-    $fields = join(', ', $fields_added);
-    return t('%fields added to user entity.', ['%fields' => $fields]);
-  }
-  else {
-    return t('no fields needed to be added to user entity.');
-  }
-
-}
-
-/**
- * Make sure all user entity field instances are created.
- */
-function ldap_user_update_7204() {
-
-  $fields_added = ldap_user_update_check_user_fields();
-
-  if (count($fields_added)) {
-    $fields = join(', ', $fields_added);
-    return t('%fields added to user entity.', ['%fields' => $fields]);
-  }
-  else {
-    return t('no fields needed to be added to user entity.');
-  }
-
-}
-
-/**
- * Make sure all user entity field instances are created.
- */
-function ldap_user_update_7205() {
-
-  return ldap_user_update_7204();
-
-}
-
-/**
  *
  */
 function ldap_user_update_check_user_fields($query = FALSE) {
@@ -514,26 +448,4 @@ function ldap_user_update_check_user_fields($query = FALSE) {
   }
   return $fields_added;
 
-}
-
-/**
- * Set an appropriate default value for accountsWithSameEmail.
- */
-function ldap_user_update_7206() {
-  $message = NULL;
-  $ldap_user_conf = ldap_user_conf('admin', TRUE);
-  // If the configuration variable is not set, set a reasonable default and
-  // advise the administrator.
-  if (module_exists('sharedemail')) {
-    $message = t('The module "sharedemail" was detected. LDAP User configuration has been set so that user accounts can be provisioned regardless of whether an existing user account has the same email address.');
-    $ldap_user_conf->accountsWithSameEmail = LDAP_USER_ACCOUNTS_WITH_SAME_EMAIL_ENABLED;
-  }
-  else {
-    // The "sharedemail" module is not enabled; do not enable this setting.
-    // Do not mention anything in the hook_update_N output.
-    $ldap_user_conf->accountsWithSameEmail = LDAP_USER_ACCOUNTS_WITH_SAME_EMAIL_DISABLED;
-  }
-  $ldap_user_conf->save();
-
-  return $message;
 }
