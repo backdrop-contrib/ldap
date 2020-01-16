@@ -838,8 +838,11 @@ class LdapUserConf {
 
     if ($save) {
       $account = user_load($drupal_user->uid);
-      $result = user_save($account, $user_edit, 'ldap_user');
-      return $result;
+      foreach($user_edit as $key => $property) {
+        $account->$key = $property;
+      }
+      $account->save();
+      return $account;
     }
     else {
       return TRUE;
@@ -1106,7 +1109,11 @@ class LdapUserConf {
       if ($existing_account_from_puid) {
         // 1. correct username and authmap.
         $this->entryToUserEdit($ldap_user, $user_edit, $ldap_server, LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, [LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER]);
-        $account = user_save($existing_account_from_puid, $user_edit, 'ldap_user');
+        foreach($user_edit as $key => $property) {
+          $existing_account_from_puid->$key = $property;
+        }
+        $account = $existing_account_from_puid;
+        $account->save();
         user_set_authmaps($account, ["authname_ldap_user" => $user_edit['name']]);
         // 2. attempt synch if appropriate for current context.
         if ($account) {
@@ -1145,7 +1152,8 @@ class LdapUserConf {
             drupal_set_message(t('Another user already exists in the system with the same email address. You should contact the system administrator in order to solve this conflict.'), 'error');
             return FALSE;
           }
-          $account = user_save(NULL, $user_edit, 'ldap_user');
+          $account = entity_create('user', $user_edit);
+          $account->save();
           if (!$account) {
             drupal_set_message(t('User account creation failed because of system problems.'), 'error');
           }
@@ -1208,7 +1216,10 @@ class LdapUserConf {
         $user_edit['ldap_user_puid_property'][LANGUAGE_NONE][0]['value'] = $ldap_server->unique_persistent_attr;
         $user_edit['ldap_user_puid_sid'][LANGUAGE_NONE][0]['value'] = $ldap_server->sid;
         $user_edit['ldap_user_current_dn'][LANGUAGE_NONE][0]['value'] = $ldap_user['dn'];
-        $account = user_save($account, $user_edit, 'ldap_user');
+        foreach($user_edit as $key => $property) {
+          $account->$key = $property;
+        }
+        $account->save();
         return (boolean) $account;
       }
     }

@@ -350,7 +350,11 @@ class LdapUserUnitTests extends LdapTestCase {
     $this->assertTrue($pass, t('provisionDrupalAccount recognized PUID conflict and fixed username.'), $this->testId());
 
     $user_edit = ['name' => 'hpotter'];
-    $hpotter = user_save($hpottergranger, $user_edit, 'ldap_user');
+    foreach($user_edit as $key => $property) {
+        $hpottergranger->$key = $property;
+      }
+    $hpotter = $hpottergranger;
+    $hpotter->save();
 
     // Delete and recreate test account to make sure account is in correct state.
     $ldap_user_conf->deleteDrupalAccount('hpotter');
@@ -726,7 +730,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
         'pass' => user_password(),
         'status' => 1,
       ];
-      $user_acct = new stdClass();
+      $user_acct = entity_create('user', $user_edit);
       $user_acct->is_new = TRUE;
       $user_acct->field_fname[LANGUAGE_NONE][0]['value'] = 'Bercilak';
       $user_acct->field_lname[LANGUAGE_NONE][0]['value'] = 'Hautdesert';
@@ -735,7 +739,8 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $desired_dn = "cn=bhautdeser,ou=people,dc=hogwarts,dc=edu";
 
       $pre_entry = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
-      $drupal_account = user_save($user_acct, $user_edit);
+      $user_acct->save();
+      $drupal_account = $user_acct;
       $ldap_entry_post = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
 
       $ldap_entry_success = (
@@ -763,8 +768,10 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $user_acct_pre = user_load_by_name('bhautdeser');
       $edit = [];
       $edit['field_fname'][LANGUAGE_NONE][0]['value'] = 'Bredbeddle';
+      $user_acct->field_fname = $edit['field_fname'];
       $edit['field_lname'][LANGUAGE_NONE][0]['value'] = 'Hautdesert';
-      $user_acct = user_save($user_acct, $edit);
+      $user_acct->field_lname = $edit['field_lname'];
+      $user_acct->save();
       $user_acct_post = user_load_by_name('bhautdeser');
 
       // Clear cache.
@@ -793,8 +800,10 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $user_acct_pre = user_load_by_name('bhautdeser');
       $edit = [];
       $edit['field_fname'][LANGUAGE_NONE][0]['value'] = 'Bredbeddle';
+      $user_acct->field_fname = $edit['field_fname'];
       $edit['field_lname'][LANGUAGE_NONE][0]['value'] = 'Hautdesert';
-      $user_acct = user_save($user_acct, $edit);
+      $user_acct->field_lname = $edit['field_lname'];
+      $user_acct->save();
       $user_acct_post = user_load_by_name('bhautdeser');
 
       // Clear cache.
@@ -981,7 +990,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
         'pass' => user_password(),
         'status' => 1,
       ];
-      $user_acct = new stdClass();
+      $user_acct = entity_create('user', $user_edit);
       $user_acct->is_new = TRUE;
       $user_acct->field_fname[LANGUAGE_NONE][0]['value'] = 'Bercilak';
       $user_acct->field_lname[LANGUAGE_NONE][0]['value'] = 'Hautdesert';
@@ -990,7 +999,8 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $desired_dn = "cn=bhautdeser,ou=people,dc=hogwarts,dc=edu";
 
       $pre_entry = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
-      $drupal_account = user_save($user_acct, $user_edit);
+      $user_acct->save();
+      $drupal_account = $user_acct;
       $ldap_entry_pre_delete = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
 
       $ldap_entry = $ldap_user_conf->getProvisionRelatedLdapEntry($drupal_account);

@@ -111,7 +111,7 @@ function ldap_user_ws($action, $direction_tag, $drupal_user_name_or_dn, $key) {
       if ($direction = LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
         $drupal_user->status = 0;
         $edit = ['status' => 0];
-        $saved_account = user_save($drupal_user, ['status' => 0]);
+        $saved_account = user_save($drupal_user);
         return ldap_user_ws_out([(boolean) ($saved_account), 'Disabled Account ' . $drupal_user_name]);
       }
       break;

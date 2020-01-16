@@ -189,7 +189,8 @@ function _ldap_user_orphan_process_batch($ldap_user_conf, $batch, $user_count, $
         if ($account = $accounts[$user_data['uid']]) {
           $user_edit = [];
           $user_edit['ldap_user_last_checked'][LANGUAGE_NONE][0]['value'] = time();
-          $account = user_save($account, $user_edit, 'ldap_user');
+          $account->ldap_user_last_checked = $user_edit['ldap_user_last_checked'];
+          $account->save();
           if (!$user_data['exists']) {
             /**
              * $ldap_user_conf->orphanedDrupalAcctBehavior will either be
