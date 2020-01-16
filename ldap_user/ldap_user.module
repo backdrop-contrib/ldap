@@ -435,29 +435,6 @@ function ldap_user_ldap_user_attrs_list_alter(&$available_user_attrs, &$params) 
 }
 
 /**
- * Implements hook_help().
- */
-function ldap_user_help($path, $arg) {
-
-  $ldap_user_help = t('LDAP user configuration determines how and when
-    Drupal accounts are created based on LDAP data and which user fields
-    are derived and synched to and from LDAP. See !helplink.',
-    [
-      '!helplink' => l(LDAP_USER_DRUPAL_HELP_URL, LDAP_USER_DRUPAL_HELP_URL),
-    ]);
-
-  switch ($path) {
-    case 'admin/config/people/ldap/user':
-      $output = '<p>' . $ldap_user_help . '</p>';
-      return $output;
-
-    case 'admin/help#ldap_user':
-      $output = '<p>' . $ldap_user_help . '</p>';
-      return $output;
-  }
-}
-
-/**
  * Implements hook_form_FORM_ID_alter(). for user_login_block.
  */
 function ldap_user_form_user_login_block_alter(&$form, &$form_state) {
