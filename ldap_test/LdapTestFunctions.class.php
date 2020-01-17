@@ -144,7 +144,7 @@ class LdapTestFunctions {
    *
    */
   public function ldapUserIsAuthmapped($username) {
-    $authmaps = user_get_authmaps($username);
+    $authmaps = ldap_user_user_get_authmaps($username);
     return ($authmaps && in_array('ldap_user', array_keys($authmaps)));
   }
 
@@ -160,7 +160,7 @@ class LdapTestFunctions {
       $user = $user->uid();
     }
     if ($ldap_authenticated) {
-      user_set_authmaps($user, ['authname_ldap_user' => $user->name]);
+      ldap_user_user_set_authmaps($user, ['authname_ldap_user' => $user->name]);
     }
     return $user;
   }
