@@ -1114,7 +1114,7 @@ class LdapUserConf {
         }
         $account = $existing_account_from_puid;
         $account->save();
-        user_set_authmaps($account, ["authname_ldap_user" => $user_edit['name']]);
+        ldap_user_user_set_authmaps($account, ["authname_ldap_user" => $user_edit['name']]);
         // 2. attempt synch if appropriate for current context.
         if ($account) {
           $account = $this->synchToDrupalAccount($account, $user_edit, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER, $ldap_user, TRUE);
@@ -1158,7 +1158,7 @@ class LdapUserConf {
             drupal_set_message(t('User account creation failed because of system problems.'), 'error');
           }
           else {
-            user_set_authmaps($account, ['authname_ldap_user' => $account->name]);
+            ldap_user_user_set_authmaps($account, ['authname_ldap_user' => $account->name]);
             ldap_user_ldap_provision_semaphore('drupal_created', 'set', $account->name);
           }
           return $account;

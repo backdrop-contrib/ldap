@@ -342,7 +342,7 @@ class LdapUserUnitTests extends LdapTestCase {
     if (!$pass) {
       debug('hpotter'); debug($hpotter); debug('hpottergranger'); debug($hpottergranger);
     }
-    $authmaps = user_get_authmaps('hpotter-granger');
+    $authmaps = ldap_user_user_get_authmaps('hpotter-granger');
     $pass = $authmaps['ldap_user'] == 'hpotter-granger';
     $this->assertTrue($pass, t('provisionDrupalAccount recognized PUID conflict and fixed authmap.'), $this->testId());
 
