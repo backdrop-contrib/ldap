@@ -1242,7 +1242,7 @@ function ldap_user_get_authname($data) {
 
   // Run query if uid is not statically cached.
   if (!array_key_exists($uid, $cache)) {
-    $authname = db_query('SELECT authname FROM {authmap} WHERE uid = :uid AND module = :module', [
+    $authname = db_query('SELECT authname FROM {ldap_authmap} WHERE uid = :uid AND module = :module', [
       ':uid' => $uid,
       ':module' => 'ldap_user',
     ])->fetchField();
