@@ -974,16 +974,14 @@ function ldap_user_user_update(&$user_edit, $account, $category) {
 /**
  * Implements hook_user_presave()
  */
-function ldap_user_user_presave(&$user_edit, $account, $category) {
+function ldap_user_user_presave($account) {
 
+  $user_edit = array();
   if (ldap_user_ldap_exclude($account, $user_edit)) {
     return;
   }
   if (isset($account->name)) {
     $drupal_username = $account->name;
-  }
-  elseif (!empty($user_edit['name'])) {
-    $drupal_username = $user_edit['name'];
   }
   else {
     return;
