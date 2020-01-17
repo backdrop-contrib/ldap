@@ -909,18 +909,22 @@ class LdapUserIntegrationTests extends LdapTestCase {
         // User login form.
         $this->drupalGet($login_path);
         $sstephens = user_load_by_name($username);
-        $this->drupalPost($login_path, [], t('Log in'));
+        $edit = [
+          'pass[pass1]' => 'password',
+          'pass[pass2]' => 'password',
+        ];
+        $this->drupalPost($login_path, $edit, t('Save password & log in'));
         $sstephens = user_load_by_name($username);
 
         $edit = [
           'mail' => $username . '@hogwarts.edu',
-          'pass[pass1]' => 'goodpwd',
-          'pass[pass2]' => 'goodpwd',
+          'current_pass' => 'password',
+          'pass' => 'goodpwd',
           'field_fname[und][0][value]' => 'Samantha',
           'field_lname[und][0][value]' => 'Stephens',
         ];
 
-        $this->drupalPost(NULL, $edit, t('Save'));
+        $this->drupalPost('user/' . $sstephens->uid . '/edit', $edit, t('Save'));
         $sstephens = user_load_by_name($username);
         // Clear cache.
         $servers = ldap_servers_get_servers(NULL, NULL, FALSE, TRUE);
@@ -1339,7 +1343,7 @@ class LdapUserUITests extends LdapTestCase {
       isset($ldap_user_conf->ldapEntryProvisionTriggers[LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE]) &&
       isset($ldap_user_conf->ldapEntryProvisionTriggers[LDAP_USER_LDAP_ENTRY_PROV_ON_AUTHENTICATE]) &&
       isset($ldap_user_conf->ldapEntryProvisionTriggers[LDAP_USER_LDAP_ENTRY_DELETE_ON_USER_DELETE]),
-       t('ldap provision triggers  set correctly'), $this->testId('user interface tests'));
+       t('ldap provision triggers set correctly'), $this->testId('user interface tests'));
 
     $field_token = '[field.field_lname]';
     $field_lname_set_correctly = (

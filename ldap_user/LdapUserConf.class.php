@@ -1230,7 +1230,7 @@ class LdapUserConf {
 
   /**
    * Populate $user edit array (used in hook_user_save, hook_user_update, etc)
-   * ... should not assume all attribues are present in ldap entry.
+   * ... should not assume all attributes are present in ldap entry.
    *
    * @param $ldap_user
    * @param array $edit
