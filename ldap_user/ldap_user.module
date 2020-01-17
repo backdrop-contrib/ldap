@@ -884,9 +884,10 @@ function ldap_user_user_login(&$edit, $account) {
 /**
  * Implements hook_user_insert().
  */
-function ldap_user_user_insert(&$user_edit, $account, $category) {
+function ldap_user_user_insert($account) {
 
   global $user;
+  $user_edit = array();
   $not_associated = ldap_user_ldap_exclude($account, $user_edit);
   // Check for first time user.
   $new_account_request = (boolean) ($user->uid == 0 && $account->access == 0 && $account->login == 0);
@@ -929,7 +930,8 @@ function ldap_user_user_insert(&$user_edit, $account, $category) {
 /**
  * Implements hook_user_update()
  */
-function ldap_user_user_update(&$user_edit, $account, $category) {
+function ldap_user_user_update($account) {
+  $user_edit = array();
   if (ldap_user_ldap_exclude($account, $user_edit)) {
     return;
   }
