@@ -3,5 +3,6 @@
     "ldap_servers_encryption": 10,
     "ldap_servers_simpletest": false,
     "ldap_servers_overrides": [],
-    "ldap_servers_encrypt_key": false
+    "ldap_servers_encrypt_key": false,
+    "ldap_servers_simpletest_globals": []
 }
