@@ -429,34 +429,6 @@ function ldap_authentication_user_login_authenticate_validate($form, &$form_stat
 }
 
 /**
- * Implements hook_user_presave().
- *  A user account is about to be created or updated.
- */
-function ldap_authentication_user_presave(&$edit, $account, $category = NULL) {
-
-}
-
-/**
- * Implements hook_user_insert().
- *
- * A user account was created.
- * The module should save its custom additions to the user object into the database.
- */
-function ldap_authentication_user_insert(&$edit, $account, $category) {
-
-}
-
-/**
- * Implements hook_user_update().
- *
- *  A user account was updated.
- *  Modules may use this hook to update their user data in a custom storage after a user account has been updated.
- */
-function ldap_authentication_user_update($edit, $user, $category) {
-
-}
-
-/**
  *
  */
 function ldap_authentication_show_ldap_help_link($user = NULL) {
