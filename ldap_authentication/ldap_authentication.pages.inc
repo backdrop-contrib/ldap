@@ -51,9 +51,9 @@ function ldap_authentication_profile_update_form_validate($form, &$form_state) {
  */
 function ldap_authentication_profile_update_form_submit($form, &$form_state) {
   global $user;
-  if (user_save($user, [
-    'mail' => $form_state['values']['mail'],
-  ])) {
+  $current_user = $user;
+  $current_user->mail = $form_state['values']['mail'];
+  if (user_save($current_user)) {
     // Prevents the cached setting from being used again.
     unset($_SESSION['ldap_authentication_template']);
     $form_state['redirect'] = isset($_GET['next']) ? $_GET['next'] : '<front>';

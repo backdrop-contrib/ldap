@@ -331,7 +331,10 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
         else {
           $user_edit = ['name' => $drupal_accountname];
         }
-        $drupal_account = user_save($drupal_account, $user_edit, 'ldap_user');
+        foreach ($user_edit as $key => $property) {
+          $drupal_account->$key = $property;
+        }
+        $drupal_account->save();
         user_set_authmaps($drupal_account, ["authname_ldap_user" => $authname]);
         $drupal_account_is_authmapped = TRUE;
       }
@@ -377,7 +380,10 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
     $user_edit = ['mail' => $ldap_user['mail']];
 
     $watchdog_tokens['%username'] = $drupal_account->name;
-    if (!$updated_account = user_save($drupal_account, $user_edit)) {
+    foreach ($user_edit as $key => $property) {
+      $drupal_account->$key = $property;
+    }
+    if (!$updated_account = user_save($drupal_account)) {
       watchdog('ldap_authentication', 'Failed to make changes to user %username updated %changed.', $watchdog_tokens, WATCHDOG_ERROR);
     }
     elseif ($auth_conf->emailUpdate == LDAP_AUTHENTICATION_EMAIL_UPDATE_ON_LDAP_CHANGE_ENABLE_NOTIFY) {
