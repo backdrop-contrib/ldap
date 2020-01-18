@@ -500,3 +500,13 @@ function ldap_authentication_show_ldap_help_link($user = NULL) {
     }
   }
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function ldap_authentication_autoload_info() {
+  return array(
+    'LdapAuthenticationConf' => 'LdapAuthenticationConf.class.php',
+    'LdapAuthenticationConfAdmin' => 'LdapAuthenticationConfAdmin.class.php',
+  );
+}
