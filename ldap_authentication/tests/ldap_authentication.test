@@ -83,7 +83,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     $user1 = user_load(1);
     $password = $this->randomString(20);
-    require_once DRUPAL_ROOT . '/includes/password.inc';
+    require_once DRUPAL_ROOT . '/core/includes/password.inc';
     $account = [
       'name' => $user1->name,
       'pass' => user_hash_password(trim($password)),
@@ -199,7 +199,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     $user1 = user_load(1);
     $password = $this->randomString(20);
-    require_once DRUPAL_ROOT . '/includes/password.inc';
+    require_once DRUPAL_ROOT . '/core/includes/password.inc';
     $account = [
       'name' => $user1->name,
       'pass' => user_hash_password(trim($password)),
@@ -433,7 +433,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     $user1 = user_load(1);
     $password = $this->randomString(20);
-    require_once DRUPAL_ROOT . '/includes/password.inc';
+    require_once DRUPAL_ROOT . '/core/includes/password.inc';
     $account = [
       'name' => $user1->name,
       'pass' => user_hash_password(trim($password)),
