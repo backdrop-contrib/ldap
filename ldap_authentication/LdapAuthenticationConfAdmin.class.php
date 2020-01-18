@@ -251,7 +251,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
    *
    */
   public static function uninstall() {
-    variable_del('ldap_authentication_conf');
+    config_clear('ldap_authentication.settings', 'ldap_authentication_conf');
   }
 
   /**

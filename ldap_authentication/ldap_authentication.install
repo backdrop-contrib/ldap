@@ -36,7 +36,7 @@ function ldap_authentication_install() {
  * Implements hook_uninstall().
  */
 function ldap_authentication_uninstall() {
-  variable_del('ldap_authentication_conf');
+
 }
 
 /**
