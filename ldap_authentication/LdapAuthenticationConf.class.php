@@ -300,7 +300,7 @@ class LdapAuthenticationConf {
    */
   public function load() {
 
-    if ($saved = variable_get("ldap_authentication_conf", FALSE)) {
+    if ($saved = config_get('ldap_authentication.settings', 'ldap_authentication_conf')) {
       $this->inDatabase = TRUE;
       foreach ($this->saveable as $property) {
         if (isset($saved[$property])) {
@@ -323,8 +323,11 @@ class LdapAuthenticationConf {
 
     $this->ldapUser = new LdapUserConf();
     $this->ssoEnabled = module_exists('ldap_sso');
-    $this->apiPrefs['requireHttps'] = variable_get('ldap_servers_require_ssl_for_credentials', 0);
-    $this->apiPrefs['encryption'] = variable_get('ldap_servers_encryption', LDAP_SERVERS_ENC_TYPE_CLEARTEXT);
+    $this->apiPrefs['requireHttps'] = config_get('ldap_servers.settings', 'ldap_servers_require_ssl_for_credentials');
+    if ($this->apiPrefs['requireHttps'] === NULL) {
+      $this->apiPrefs['requireHttps'] = 0;
+    }
+    $this->apiPrefs['encryption'] = config_get('ldap_servers.settings', 'ldap_servers_encryption');
 
   }
 
@@ -353,7 +356,10 @@ class LdapAuthenticationConf {
      */
     $ldap_user_conf = ldap_user_conf();
     // If user does not already exists and deferring to user settings AND user settings only allow.
-    $user_register = variable_get('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+    $user_register = config_get('system.core', 'user_register');
+    if ($user_register === NULL) {
+      $user_register = USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL;
+    }
 
     foreach ($this->excludeIfTextInDn as $test) {
       if (stripos($ldap_user['dn'], $test) !== FALSE) {

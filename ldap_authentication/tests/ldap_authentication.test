@@ -661,11 +661,15 @@ class LdapAuthenticationTestCase extends LdapTestCase {
   public function testUI() {
 
     // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    $test = config_get('ldap_servers.settings', 'ldap_servers_simpletest');
+    if ($test === NULL) {
+      $test = 2;
+    }
     $setup_success = (
         module_exists('ldap_user') &&
         module_exists('ldap_servers') &&
         module_exists('ldap_authentication') &&
-        (variable_get('ldap_simpletest', 2) > 0)
+        ($test > 0)
       );
     $this->assertTrue($setup_success, ' ldap_authentication UI setup successful', $this->testId('user interface tests'));
 

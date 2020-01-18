@@ -510,3 +510,15 @@ function ldap_authentication_autoload_info() {
     'LdapAuthenticationConfAdmin' => 'LdapAuthenticationConfAdmin.class.php',
   );
 }
+
+
+/**
+ * Implements hook_config_info().
+ */
+function ldap_authentication_config_info() {
+  $prefixes['ldap_authentication.settings'] = array(
+    'label' => t('LDAP Authentication settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}

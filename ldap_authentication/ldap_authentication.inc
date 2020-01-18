@@ -41,7 +41,10 @@ function _ldap_authentication_login_form_alter(&$form, &$form_state, $form_id) {
   }
 
   if ($form_id == 'user_login_block') {
-    $user_register = variable_get('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+    $user_register = config_get('system.core', 'user_register');
+    if ($user_register === NULL) {
+      $user_register = USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL;
+    }
     $vars = [
       'show_reset_pwd' => ldap_authentication_show_reset_pwd(),
       'auth_conf' => $auth_conf,
@@ -153,7 +156,7 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
     return;
   }
 
-  $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
 
   // Default to name.
   $entered_name = $form_state['values']['name'];
@@ -443,7 +446,10 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
      * mail etc as parameters would make it more useful for external
      * authentication modules.
      */
-    $user_register = variable_get('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+    $user_register = config_get('system.core', 'user_register');
+    if ($user_register === NULL) {
+      $user_register = USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL;
+    }
     if ($auth_conf->ldapUser->acctCreation == LDAP_USER_ACCT_CREATION_USER_SETTINGS_FOR_LDAP &&
             $user_register == USER_REGISTER_ADMINISTRATORS_ONLY) {
       watchdog('ldap_user', 'Failed to create account for %drupal_accountname. Administrative user must create user.',
@@ -452,9 +458,12 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
           $watchdog_tokens));
       return;
     }
-
+    $user_register = config_get('system.core', 'user_register');
+    if ($user_register === NULL) {
+      $user_register = USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL;
+    }
     if ($auth_conf->ldapUser->acctCreation == LDAP_AUTHENTICATION_ACCT_CREATION_USER_SETTINGS_FOR_LDAP &&
-        variable_get('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL) == USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL) {
+        $user_register == USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL) {
       // If admin approval required, set status to 0.
       $user_edit = ['name' => $drupal_accountname, 'status' => 0];
     }
@@ -504,7 +513,7 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
  * Given authname, determine if corresponding drupal account exists and is authmapped.
  */
 function ldap_authentication_corresponding_drupal_user($authname, $auth_conf, &$watchdog_tokens) {
-  $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   if (!($drupal_account = user_load_by_name($authname)) && !($drupal_account = user_load_by_mail($authname))) {
     $uid = db_query("SELECT uid FROM {authmap} WHERE authname = :authname AND module = 'ldap_user'", [':authname' => $authname])->fetchColumn();
     $drupal_account = $uid ? user_load($uid) : FALSE;
@@ -541,7 +550,7 @@ function ldap_authentication_corresponding_drupal_user($authname, $auth_conf, &$
  *
  */
 function ldap_authentication_test_credentials($auth_conf, $sso_login, $authname, $password, &$watchdog_tokens) {
-  $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   $authentication_result = LDAP_AUTHENTICATION_RESULT_FAIL_GENERIC;
   $ldap_user = FALSE;
   $ldap_server = NULL;

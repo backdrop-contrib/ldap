@@ -242,7 +242,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
    *
    */
   public static function getSaveableProperty($property) {
-    $ldap_authentication_conf = variable_get('ldap_authentication_conf', []);
+    $ldap_authentication_conf = config_get('ldap_authentication.settings', 'ldap_authentication_conf');
     return isset($ldap_authentication_conf[$property]) ? $ldap_authentication_conf[$property] : FALSE;
 
   }

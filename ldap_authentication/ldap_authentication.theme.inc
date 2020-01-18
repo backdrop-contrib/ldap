@@ -24,7 +24,11 @@ function theme_ldap_authentication_user_login_block_links($variables) {
 
   // The code below modified from user.module user_login_block function.
   $items = [];
-  if (variable_get('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL)) {
+  $user_register = config_get('system.core', 'user_register');
+  if ($user_register === NULL) {
+    $user_register = USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL;
+  }
+  if ($user_register) {
     $items[] = l(t('Create new account'), 'user/register', ['attributes' => ['title' => t('Create a new user account.')]]);
   }
   if ($show_reset_pwd) {
