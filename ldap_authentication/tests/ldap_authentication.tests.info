@@ -1,0 +1,5 @@
+[LdapAuthenticationTestCase]
+name = LDAP Authentication Tests
+description = Test ldap authentication.
+group = LDAP Authentication
+file = ldap_authentication.test

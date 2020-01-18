@@ -17,17 +17,6 @@ class LdapAuthenticationTestCase extends LdapTestCase {
   protected $ldap_test_data;
 
   /**
-   * Get info.
-   */
-  public static function getInfo() {
-    return [
-      'name' => 'LDAP Authentication Tests',
-      'description' => 'Test ldap authentication.',
-      'group' => 'LDAP Authentication',
-    ];
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function __construct($test_id = NULL) {
