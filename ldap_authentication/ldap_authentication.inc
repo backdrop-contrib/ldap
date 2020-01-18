@@ -335,7 +335,7 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
           $drupal_account->$key = $property;
         }
         $drupal_account->save();
-        user_set_authmaps($drupal_account, ["authname_ldap_user" => $authname]);
+        ldap_user_user_set_authmaps($drupal_account, ["authname_ldap_user" => $authname]);
         $drupal_account_is_authmapped = TRUE;
       }
     }
@@ -358,7 +358,7 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
     // LDAP_authen.AC.disallow.ldap.drupal.
     else {
       // Add ldap_authentication authmap to user.  account name is fine here, though cn could be used.
-      user_set_authmaps($drupal_account, ['authname_ldap_user' => $authname]);
+      ldap_user_user_set_authmaps($drupal_account, ['authname_ldap_user' => $authname]);
       $drupal_account_is_authmapped = TRUE;
       if ($detailed_watchdog_log) {
         watchdog('ldap_authentication', 'set authmap for %username authname_ldap_user', $watchdog_tokens, WATCHDOG_DEBUG);
@@ -493,7 +493,7 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
       return;
     }
     else {
-      user_set_authmaps($drupal_account, ['authname_ldap_user' => $authname]);
+      ldap_user_user_set_authmaps($drupal_account, ['authname_ldap_user' => $authname]);
       // Using Rules allows emails to be fired and many other possible reactions
       // to the creation of a user.
       if (module_exists('rules')) {
@@ -521,13 +521,13 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
 function ldap_authentication_corresponding_drupal_user($authname, $auth_conf, &$watchdog_tokens) {
   $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   if (!($drupal_account = user_load_by_name($authname)) && !($drupal_account = user_load_by_mail($authname))) {
-    $uid = db_query("SELECT uid FROM {authmap} WHERE authname = :authname AND module = 'ldap_user'", [':authname' => $authname])->fetchColumn();
+    $uid = db_query("SELECT uid FROM {ldap_authmap} WHERE authname = :authname AND module = 'ldap_user'", [':authname' => $authname])->fetchColumn();
     $drupal_account = $uid ? user_load($uid) : FALSE;
   }
 
   if (is_object($drupal_account)) {
     // Patch 1599632.
-    $authmaps = user_get_authmaps($authname);
+    $authmaps = ldap_user_user_get_authmaps($authname);
     $drupal_account_is_authmapped = isset($authmaps['ldap_user']);
     $user_data = $drupal_account->data;
     if ($drupal_account->uid == 1 && $detailed_watchdog_log) {
