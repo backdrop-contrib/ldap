@@ -8,3 +8,4 @@ type = module
 php = 5.4
 configure = admin/config/people/ldap/authentication
 tags[] = Account Management
+test_dependencies[] = ldap_sso:ldap_sso
