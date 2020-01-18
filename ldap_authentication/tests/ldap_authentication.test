@@ -34,7 +34,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       'ldap_test',
     // don't need any real servers, configured, just ldap_servers code base.
     ]);
-    variable_set('ldap_simpletest', 2);
+    config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
   }
 
   /**

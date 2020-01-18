@@ -234,7 +234,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
     foreach ($this->saveable as $property) {
       $save[$property] = $this->{$property};
     }
-    variable_set('ldap_authentication_conf', $save);
+    config_set('ldap_authentication.settings', 'ldap_authentication_conf', $save);
     $this->load();
   }
 
