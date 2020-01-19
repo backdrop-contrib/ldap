@@ -46,7 +46,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
    */
   public function setUp($addl_modules = []) {
     parent::setUp(['ldap_authentication', 'ldap_authorization', 'ldap_authorization_og']);
-    variable_set('ldap_simpletest', 2);
+    config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
 
     $this->user1 = $this->drupalCreateUser();
     $this->groups = [];

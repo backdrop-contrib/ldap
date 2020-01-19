@@ -32,7 +32,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     // don't need any real servers, configured, just ldap_servers code base.
       'ldap_test',
     ]);
-    variable_set('ldap_simpletest', 2);
+    config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
   }
 
   /**
@@ -40,8 +40,8 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
    */
   public function tearDown() {
     parent::tearDown();
-    variable_del('ldap_help_watchdog_detail');
-    variable_del('ldap_simpletest');
+    config_clear('ldap_help.settings', 'ldap_help_watchdog_detail');
+    config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
   }
 
   /**
@@ -135,7 +135,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
 
     $this->removeUserFromGroup($test_data, 'cn=hpotter,ou=people,dc=hogwarts,dc=edu', 'cn=honors students,ou=groups,dc=hogwarts,dc=edu', "dc=hogwarts,dc=edu");
 
-    variable_set('ldap_test_server__' . $sid, $test_data);
+    config_set('ldap_test.settings', 'ldap_test_server__' . $sid, $test_data);
 
     $hpotter_dn = 'cn=hpotter,ou=people,dc=hogwarts,dc=edu';
     $this->drupalPost('user', $hpotter_logon_edit, t('Log in'));
@@ -155,7 +155,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     );
 
     // Return test data to original state.
-    variable_set('ldap_test_server__' . $sid, $test_data_pre_test);
+    config_set('ldap_test.settings', 'ldap_test_server__' . $sid, $test_data_pre_test);
     $this->drupalGet('user/logout');
 
     /**
@@ -483,7 +483,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       $ldap_simpletest_initial = 2;
     }
     // Need to be out of fake server mode to test ui.
-    variable_del('ldap_simpletest');
+    config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
 
     $sid = 'activedirectory1';
     $this->prepTestData(LDAP_TEST_LDAP_NAME, [$sid], 'provisionToDrupal', 'default');
@@ -603,7 +603,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       }
     }
     // Return to fake server mode.
-    variable_set('ldap_simpletest', $ldap_simpletest_initial);
+    config_set('ldap_servers.settings', 'ldap_servers_simpletest', $ldap_simpletest_initial);
   }
 
 }
