@@ -339,6 +339,9 @@ class LdapAuthenticationTestCase extends LdapTestCase {
   public function testSSOUserLogon() {
 
     module_enable(['ldap_sso', 'ldap_help']);
+    if (!module_exists('ldap_sso')) {
+      return;
+    }
 
     $sid = 'activedirectory1';
     $testid = 'SSOUserLogon3';
