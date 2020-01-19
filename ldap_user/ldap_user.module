@@ -1314,13 +1314,20 @@ function ldap_user_user_set_authmaps($account, $authmaps) {
   foreach ($authmaps as $key => $value) {
     $module = explode('_', $key, 2);
     if ($value) {
-      db_merge('ldap_authmap')
-        ->key(array(
-          'uid' => $account->uid,
-          'module' => $module[1],
-        ))
-        ->fields(array('authname' => $value))
-        ->execute();
+      $count = db_select('ldap_authmap')
+        ->fields('ldap_authmap')
+        ->condition('authname', $value)
+        ->execute()
+        ->rowCount();
+      if (!$count) {
+        db_merge('ldap_authmap')
+          ->key(array(
+            'uid' => $account->uid,
+            'module' => $module[1],
+          ))
+          ->fields(array('authname' => $value))
+          ->execute();
+      }
     }
     else {
       db_delete('ldap_authmap')
