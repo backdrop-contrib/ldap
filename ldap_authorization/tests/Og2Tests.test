@@ -132,13 +132,17 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
 
     $this->ldapTestId = $this->module_name . ': setup success';
     // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    $simpletest = config_get('ldap_servers.settings', 'ldap_servers_simpletest');
+    if ($simpletest === NULL) {
+      $simpletest = 2;
+    }
     $setup_success = (
         module_exists('ldap_authentication') &&
         module_exists('ldap_servers') &&
         module_exists('ldap_user') &&
         module_exists('ldap_authorization') &&
         module_exists('ldap_authorization_og') &&
-        (variable_get('ldap_simpletest', 0) == 2)
+        ($simpletest == 2)
       );
     $this->assertTrue($setup_success, ' ldap_authorizations og setup successful', $this->ldapTestId);
 

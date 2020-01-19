@@ -266,8 +266,8 @@ class LdapAuthorizationConsumerAbstract {
    * This is a function to clear off.
    */
   public function filterOffPastAuthorizationRecords(&$user, &$user_auth_data, $time = NULL) {
-    if ($time != NULL || variable_get('ldap_help_user_data_clear', 0)) {
-      $clear_time = ($time) ? $time : variable_get('ldap_help_user_data_clear_set_date', 0);
+    if ($time != NULL || config_get('ldap_help.settings', 'ldap_help_user_data_clear')) {
+      $clear_time = ($time) ? $time : config_get('ldap_help.settings', 'ldap_help_user_data_clear_set_date');
       if ($clear_time > 0 && $clear_time < time()) {
         foreach ($user_auth_data as $consumer_id => $entry) {
           if ($entry['date_granted'] < $clear_time) {
@@ -321,7 +321,7 @@ class LdapAuthorizationConsumerAbstract {
       $user_auth_data = [];
     }
 
-    $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+    $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
     $this->sortConsumerIds($op, $consumers);
     $results = [];
     $watchdog_tokens = [];

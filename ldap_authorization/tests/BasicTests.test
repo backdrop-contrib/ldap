@@ -50,12 +50,16 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
   public function testSimpleStuff() {
 
     // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    $simpletest = config_get('ldap_servers.settings', 'ldap_servers_simpletest');
+    if ($simpletest === NULL) {
+      $simpletest = 2;
+    }
     $setup_success = (
         module_exists('ldap_authentication') &&
         module_exists('ldap_servers') &&
         module_exists('ldap_authorization') &&
         module_exists('ldap_authorization_drupal_role') &&
-        (variable_get('ldap_simpletest', 2) > 0)
+        ($simpletest > 0)
       );
     $this->assertTrue($setup_success, ' ldap_authorizations setup successful', 'LDAP Authorization: Test Setup Success');
 
@@ -126,8 +130,8 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     $this->consumerAdminConf['drupal_role']->save();
 
     // setup:  remove hpotter from honors members.
-    $test_data_pre_test = variable_get('ldap_test_server__' . $sid, NULL);
-    $test_data = variable_get('ldap_test_server__' . $sid, NULL);
+    $test_data_pre_test = config_get('ldap_test.settings', 'ldap_test_server__' . $sid);
+    $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $sid);
 
     $this->removeUserFromGroup($test_data, 'cn=hpotter,ou=people,dc=hogwarts,dc=edu', 'cn=honors students,ou=groups,dc=hogwarts,dc=edu', "dc=hogwarts,dc=edu");
 
@@ -474,7 +478,10 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     // TODO: Fix failing tests, excluding to make branch pass.
     return;
 
-    $ldap_simpletest_initial = variable_get('ldap_simpletest', 2);
+    $ldap_simpletest_initial = config_get('ldap_servers.settings', 'ldap_servers_simpletest');
+    if ($ldap_simpletest_initial === NULL) {
+      $ldap_simpletest_initial = 2;
+    }
     // Need to be out of fake server mode to test ui.
     variable_del('ldap_simpletest');
 

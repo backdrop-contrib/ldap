@@ -60,7 +60,7 @@ function ldap_authorization_help_watchdog() {
  */
 function _ldap_authorizations_user_authorizations(&$user, $op, $consumer_type, $context) {
   $debug = FALSE;
-  $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   $authorizations = [];
   $notifications = [];
   $watchdog_tokens = ['%username' => $user->name];
@@ -342,7 +342,7 @@ function _ldap_authorizations_user_authorizations(&$user, $op, $consumer_type, $
  */
 function _ldap_authorizations_user_authorizations_set(&$user, $consumer, $filtered_ldap_authorizations, &$ldap_entry, $watchdog_tokens, $test) {
 
-  $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   ldap_authorization_cleanse_empty_og_fields($user);
 
   /**
@@ -487,7 +487,7 @@ function _ldap_authorizations_user_authorizations_set(&$user, $consumer, $filter
  */
 function _ldap_authorization_ldap_authorization_maps_alter(&$user, &$user_ldap_entry, &$ldap_server, &$consumer_conf, &$authz_ids, $op) {
 
-  $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
   $watchdog_tokens = [];
 
   // Groups extracted from user's DN. such as ou=IT => group = "IT".
