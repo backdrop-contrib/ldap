@@ -256,7 +256,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     $hgrainger = $this->testFunctions->drupalLdapUpdateUser(['name' => 'hgrainger', 'mail' => 'hgrainger@hogwarts.edu'], TRUE, $user);
 
     // Remove authmap in case it exists so test will work.
-    db_delete('authmap')
+    db_delete('ldap_authmap')
       ->condition('uid', $user->uid)
       ->condition('module', 'ldap_user')
       ->execute();
