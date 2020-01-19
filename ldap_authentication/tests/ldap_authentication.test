@@ -535,7 +535,9 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     /**
     * LDAP_authen.WL.php.php disabled -- desired result: authenticate fail with warning the authentication disabled
     */
-    module_disable(['php']);
+    if (module_exists('php')) {
+      module_disable(['php']);
+    }
     $this->AttemptLogonNewUser('adumbledore');
     $this->assertText(
       LDAP_AUTHENTICATION_DISABLED_FOR_BAD_CONF_MSG,
@@ -547,9 +549,10 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     /**
     * LDAP_authen.WL.php.true -- desired result: authenticate success
     */
-    $this->AttemptLogonNewUser('hpotter');
-    $this->assertText(t('Member for'), 'Able to authenticate because php returned true (allowTestPhp).', $testid);
-
+    if (module_exists('php')) {
+      $this->AttemptLogonNewUser('hpotter');
+      $this->assertText(t('Member for'), 'Able to authenticate because php returned true (allowTestPhp).', $testid);
+    }
     /**
     *  LDAP_authen.WL.php.false-- desired result: authenticate fail
     */
@@ -780,16 +783,20 @@ class LdapAuthenticationTestCase extends LdapTestCase {
         ],
         'required' => TRUE,
       ],
-      'allowTestPhp' => [
-        'property' => 'allowTestPhp',
-        'values' => [
-          'pretend php',
-          'pretend php',
-        ],
-      ],
     ];
 
     module_enable(['php']);
+    if (module_exists('php')) {
+      $form_tests = [
+        'allowTestPhp' => [
+          'property' => 'allowTestPhp',
+          'values' => [
+            'pretend php',
+            'pretend php',
+          ],
+        ],
+      ];
+    }
     foreach ([0, 1] as $i) {
       $edit = [];
       foreach ($form_tests as $field_name => $conf) {
