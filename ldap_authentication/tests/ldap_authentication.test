@@ -99,7 +99,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     ];
 
     $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Member for'), 'User 1 successfully authenticated', $testid);
+    $this->assertText(t('Log out'), 'User 1 successfully authenticated', $testid);
     $this->drupalGet('user/logout');
 
     /** LDAP_authen.MM.ULT.user1.badpwd  -- result: Drupal logon error message. **/
@@ -110,7 +110,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     ];
 
     $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Sorry, unrecognized username or password'), 'User 1 failed with bad password', $testid);
+    $this->assertText(t('Sorry, incorrect password.'), 'User 1 failed with bad password', $testid);
     $this->drupalLogout();
 
     /** LDAP_authen.MM.ULT.drupal.goodpwd - result: Successful logon **/
@@ -131,7 +131,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       'pass' => 'mydabpassword',
     ];
     $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Sorry, unrecognized username or password'), 'Drupal user  (not ldap associated) with bad password failed to authenticate.', $testid);
+    $this->assertText(t('Sorry, incorrect password.'), 'Drupal user  (not ldap associated) with bad password failed to authenticate.', $testid);
     $this->drupalGet('user/logout');
 
     /** LDAP_authen.MM.ULT.ldap.newaccount.badpwd - result: Drupal logon error message. **/
@@ -140,7 +140,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       'pass' => 'mydabpassword',
     ];
     $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Sorry, unrecognized username or password'), 'New Ldap user with bad password failed to authenticate.', $testid);
+    $this->assertText(t('Sorry, unrecognized username.'), 'New Ldap user with bad password failed to authenticate.', $testid);
     $this->drupalGet('user/logout');
 
     /** LDAP_authen.MM.ULT.ldap.newaccount.goodpwd - result: Successful logon, with user record created and authmapped to ldap **/
@@ -159,7 +159,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       'pass' => 'mydabpassword',
     ];
     $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Sorry, unrecognized username or password'), 'Existing Ldap user with bad password failed to authenticate.', $testid);
+    $this->assertText(t('Sorry, incorrect password.'), 'Existing Ldap user with bad password failed to authenticate.', $testid);
     $this->drupalGet('user/logout');
 
     /** LDAP_authen.MM.ULT.existingacct.goodpwd - result: Successful logon. **/
@@ -215,7 +215,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     ];
 
     $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Member for'), 'User 1 successfully authenticated', $testid);
+    $this->assertText(t('Log out'), 'User 1 successfully authenticated', $testid);
     $this->drupalGet('user/logout');
 
     /** LDAP_authen.EM.ULT.user1.badpwd  -- result: Drupal logon error message. **/
@@ -226,7 +226,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     ];
 
     $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Sorry, unrecognized username or password'), 'User 1 failed with bad password', $testid);
+    $this->assertText(t('Sorry, incorrect password.'), 'User 1 failed with bad password', $testid);
     $this->drupalLogout();
 
     /** LDAP_authen.EM.ULT.drupal.goodpwd - result: failed logon **/
@@ -449,7 +449,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     ];
 
     $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Member for'), 'User 1 successfully authenticated in LDAP_authen.WL.user1', $testid);
+    $this->assertText(t('Log out'), 'User 1 successfully authenticated in LDAP_authen.WL.user1', $testid);
     $this->drupalGet('user/logout');
 
     module_enable(['ldap_authorization']);
