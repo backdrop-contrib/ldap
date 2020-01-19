@@ -121,7 +121,11 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
       unset($user->roles[$rid]);
       $user_edit = ['roles' => $user->roles];
       $account = user_load($user->uid);
-      $user = user_save($account, $user_edit);
+      foreach ($user_edit as $key => $property) {
+        $account->$key = $property;
+      }
+      $account->save();
+      $user = $account;
       $result = ($user && !isset($user->roles[$rid]));
       if ($result && isset($user_auth_data[$consumer_id])) {
         unset($user_auth_data[$consumer_id]);
@@ -166,7 +170,11 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
     }
 
     $account = user_load($user->uid);
-    $user = user_save($account, $user_edit);
+    foreach ($user_edit as $key => $property) {
+      $account->$key = $property;
+    }
+    $account->save();
+    $user = $account;
     $result = ($user && !empty($user->roles[$rid]));
 
     if ($this->detailedWatchdogLog) {
