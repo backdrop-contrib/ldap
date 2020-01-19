@@ -368,3 +368,14 @@ function ldap_authorization_ldap_user_attrs_list_alter(&$available_user_attrs, &
   ];
 
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function ldap_authorization_autoload_info() {
+  return array(
+    'LdapAuthorizationConsumerAbstract' => 'LdapAuthorizationConsumerAbstract.class.php',
+    'LdapAuthorizationConsumerConf' => 'LdapAuthorizationConsumerConf.class.php',
+    'LdapAuthorizationConsumerConfAdmin' => 'LdapAuthorizationConsumerConfAdmin.class.php',
+  );
+}
