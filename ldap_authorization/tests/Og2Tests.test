@@ -480,7 +480,10 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
       ],
       ],
     ];
-    $hpotter = user_save($hpotter, $data);
+    foreach ($data as $key => $property) {
+      $hpotter->$key = $property;
+    }
+    $hpotter->save();
 
     // Apply correct authorizations.  should remove the administrator role but not the manually created 'troublemaker' role.
     list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'set', 'og_group', 'logon');
@@ -508,7 +511,8 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
     $hpotter = user_load($hpotter->uid, TRUE);
     $roles = $hpotter->roles;
     unset($roles[$superadmin->rid]);
-    user_save($hpotter, ['roles' => $roles]);
+    $hpotter->roles = $roles;
+    $hpotter->save();
     $hpotter = user_load($hpotter->uid, TRUE);
     list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'set', 'og_group', 'logon');
     $hpotter = user_load($hpotter->uid, TRUE);

@@ -448,7 +448,10 @@ function _ldap_authorizations_user_authorizations_set(&$user, $consumer, $filter
     $user2 = user_load($user->uid);
     $user->picture = $user2->picture;
   }
-  $user = user_save($user, $user_edit);
+  foreach ($user_edit as $key => $property) {
+    $user->$key = $property;
+  }
+  $user->save();
 
   $watchdog_tokens['%user_data_post_save'] = print_r($user->data, TRUE);
   $watchdog_tokens['%user_roles_post_save'] = print_r($user->roles, TRUE);

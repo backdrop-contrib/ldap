@@ -227,7 +227,7 @@ function ldap_authorization_test_form_submit($form, &$form_state) {
     if ($username) {
       if (!$user = user_load_by_name($username)) {
         // If not existing user, create fake user assumed to be ldap authenticated.
-        $user = new stdClass();
+        $user = entity_create('user', array());
         $user->name = $username;
         $user->ldap_test = TRUE;
         $user->ldap_authenticated = TRUE;
@@ -241,7 +241,8 @@ function ldap_authorization_test_form_submit($form, &$form_state) {
       if ($form_state['values']['user_data_clear'] == 1) {
         $user_data = $user->data;
         unset($user_data['ldap_authorizations'][$consumer_type]);
-        $user = user_save($user, ['data' => $user_data]);
+        $user->data = $user_data;
+        $user->save();
       }
 
       $action = ($form_state['values']['execute_authorizations'] == 1) ? "test_query_set" : 'test_query';
