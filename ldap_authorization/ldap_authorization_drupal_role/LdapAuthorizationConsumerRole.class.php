@@ -51,6 +51,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
 
     $new_role = new stdClass();
     $new_role->name = empty($consumer['value']) ? $consumer_id : $consumer['value'];
+    $new_role->label = $new_role->name;
     if (!($status = user_role_save($new_role))) {
       // If role is not created, remove from array to user object doesn't have it stored as granted.
       watchdog('user', 'failed to create drupal role %role in ldap_authorizations module', ['%role' => $new_role->name]);
