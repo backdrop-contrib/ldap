@@ -319,12 +319,12 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     $troublemaker = new stdClass();
     $troublemaker->name = 'troublemaker';
     user_role_save($troublemaker);
-    $troublemaker = user_role_load_by_name('troublemaker');
+    $troublemaker = user_role_load('troublemaker');
 
     $superadmin = new stdClass();
     $superadmin->name = 'superadmin';
     user_role_save($superadmin);
-    $superadmin = user_role_load_by_name('superadmin');
+    $superadmin = user_role_load('superadmin');
 
     /**
    * LDAP_authorz.Flags.revokeLdapProvisioned: test flag for
