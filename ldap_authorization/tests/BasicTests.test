@@ -14,17 +14,6 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
   /**
    *
    */
-  public static function getInfo() {
-    return [
-      'name' => 'LDAP Authorization Basic Tests',
-      'description' => 'Test ldap authorization.',
-      'group' => 'LDAP Authorization',
-    ];
-  }
-
-  /**
-   *
-   */
   public function __construct($test_id = NULL) {
     parent::__construct($test_id);
   }

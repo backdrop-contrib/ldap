@@ -37,17 +37,6 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
   /**
    *
    */
-  public static function getInfo() {
-    return [
-      'group' => 'LDAP Authorization',
-      'name' => 'OG 7.x-2.x Tests.',
-      'description' => 'Test ldap authorization og 2.',
-    ];
-  }
-
-  /**
-   *
-   */
   public function __construct($test_id = NULL) {
     parent::__construct($test_id);
   }
