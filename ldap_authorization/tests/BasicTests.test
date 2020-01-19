@@ -320,12 +320,16 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     $troublemaker->name = 'troublemaker';
     $troublemaker->label = 'troublemaker';
     user_role_save($troublemaker);
+    // user_role_load() needs static reset.
+    backdrop_static_reset('user_roles');
     $troublemaker = user_role_load('troublemaker');
 
     $superadmin = new stdClass();
     $superadmin->name = 'superadmin';
     $superadmin->label = 'superadmin';
     user_role_save($superadmin);
+    // user_role_load() needs static reset.
+    backdrop_static_reset('user_roles');
     $superadmin = user_role_load('superadmin');
 
     /**
