@@ -112,7 +112,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
       $result = FALSE;
     }
     // User doesn't have role.
-    elseif (!$user->roles[$rid]) {
+    elseif (!isset($user->roles[$rid])) {
       if (isset($user_auth_data[$consumer_id])) {
         unset($user_auth_data[$consumer_id]);
       }

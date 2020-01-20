@@ -463,7 +463,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     $roles_by_name = array_flip(user_roles());
     $hpotter = user_load_by_name('hpotter');
     $hpotter = user_load($hpotter->uid, TRUE);
-    $role_granted = isset($hpotter->roles[$roles_by_name[$new_role]]);
+    $role_granted = isset($roles_by_name[$new_role]) && isset($hpotter->roles[$roles_by_name[$new_role]]);
 
     $this->assertTrue(
       ($new_role_created && $role_granted),
