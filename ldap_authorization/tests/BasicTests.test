@@ -107,7 +107,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
 
     $hpotter = $this->testFunctions->userByNameFlushingCache('hpotter');
     $roles = array_values($hpotter->roles);
-    $desired_roles = ['students', 'authenticated user', 'cn=gryffindor,ou=groups,dc=hogwarts,dc=edu', 'cn=honors students,ou=groups,dc=hogwarts,dc=edu'];
+    $desired_roles = ['students', 'authenticated', 'cn=gryffindor,ou=groups,dc=hogwarts,dc=edu', 'cn=honors students,ou=groups,dc=hogwarts,dc=edu'];
     $diff1 = array_diff($roles, $desired_roles);
     $diff2 = array_diff($desired_roles, $roles);
     $correct_roles = (count($diff1) == 0 && count($diff2) == 0);

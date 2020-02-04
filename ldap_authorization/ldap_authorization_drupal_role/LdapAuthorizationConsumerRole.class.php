@@ -112,14 +112,14 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
       $result = FALSE;
     }
     // User doesn't have role.
-    elseif (!isset($user->roles[$rid])) {
+    elseif (!in_array($rid, $user->roles)) {
       if (isset($user_auth_data[$consumer_id])) {
         unset($user_auth_data[$consumer_id]);
       }
       $result = TRUE;
     }
     else {
-      unset($user->roles[$rid]);
+      $user->roles = array_diff($user->roles, [$rid]);
       $user_edit = ['roles' => $user->roles];
       $account = user_load($user->uid);
       foreach ($user_edit as $key => $property) {
@@ -127,7 +127,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
       }
       $account->save();
       $user = $account;
-      $result = ($user && !isset($user->roles[$rid]));
+      $result = ($user && !in_array($rid, $user->roles));
       if ($result && isset($user_auth_data[$consumer_id])) {
         unset($user_auth_data[$consumer_id]);
       }
@@ -164,7 +164,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
       return FALSE;
     }
 
-    $user->roles[$rid] = $role_name;
+    $user->roles[] = $rid;
     $user_edit = ['roles' => $user->roles];
     if ($this->detailedWatchdogLog) {
       watchdog('ldap_authorization', 'grantSingleAuthorization in drupal rold' . print_r($user, TRUE), [], WATCHDOG_DEBUG);
@@ -176,7 +176,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
     }
     $account->save();
     $user = $account;
-    $result = ($user && !empty($user->roles[$rid]));
+    $result = ($user && in_array($rid, $user->roles));
 
     if ($this->detailedWatchdogLog) {
       watchdog('ldap_authorization', 'LdapAuthorizationConsumerDrupalRole.grantSingleAuthorization()
