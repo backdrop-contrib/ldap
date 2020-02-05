@@ -153,8 +153,11 @@ class LdapTestFunctions {
    */
   public function drupalLdapUpdateUser($edit = [], $ldap_authenticated = FALSE, $user) {
     if (count($edit)) {
-      foreach ($edit as $key => $property) {
-        $user->$key = $property;
+      if (!empty($user->data)) {
+        $edit['data'] = !empty($edit['data']) ? array_merge($user->data, $edit['data']) : $user->data;
+      }
+      foreach ($edit as $key => $value) {
+        $user->$key = $value;
       }
       $user->save();
     }
