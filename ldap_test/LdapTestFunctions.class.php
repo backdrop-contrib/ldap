@@ -157,7 +157,7 @@ class LdapTestFunctions {
         $edit['data'] = !empty($edit['data']) ? array_merge($user->data, $edit['data']) : $user->data;
       }
       foreach ($edit as $key => $value) {
-        $user->$key = $value;
+        $user->{$key} = $value;
       }
       $user->save();
     }

@@ -122,8 +122,8 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
       $user->roles = array_diff($user->roles, [$rid]);
       $user_edit = ['roles' => $user->roles];
       $account = user_load($user->uid);
-      foreach ($user_edit as $key => $property) {
-        $account->$key = $property;
+      foreach ($user_edit as $key => $value) {
+        $account->{$key} = $value;
       }
       $account->save();
       $user = $account;
@@ -171,8 +171,8 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
     }
 
     $account = user_load($user->uid);
-    foreach ($user_edit as $key => $property) {
-      $account->$key = $property;
+    foreach ($user_edit as $key => $value) {
+      $account->{$key} = $value;
     }
     $account->save();
     $user = $account;
