@@ -448,8 +448,8 @@ function _ldap_authorizations_user_authorizations_set(&$user, $consumer, $filter
     $user2 = user_load($user->uid);
     $user->picture = $user2->picture;
   }
-  foreach ($user_edit as $key => $property) {
-    $user->$key = $property;
+  foreach ($user_edit as $key => $value) {
+    $user->{$key} = $value;
   }
   $user->save();
 

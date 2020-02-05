@@ -408,10 +408,10 @@ class LdapAuthorizationConsumerAbstract {
 
     if ($user_save) {
       $user = user_load($user->uid, TRUE);
-      $user_edit = $user->data;
+      $user_edit = ['data' => $user->data];
       $user_edit['data']['ldap_authorizations'][$this->consumerType] = $user_auth_data;
-      foreach ($user_edit as $key => $property) {
-        $user->$key = $property;
+      foreach ($user_edit as $key => $value) {
+        $user->{$key} = $value;
       }
       $user->save();
       // Reload this.

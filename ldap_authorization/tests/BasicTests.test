@@ -385,8 +385,11 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       ],
       ],
     ];
-    foreach ($data as $key => $property) {
-      $hpotter->$key = $property;
+    if (!empty($hpotter->data)) {
+      $data['data'] = !empty($data['data']) ? array_merge($hpotter->data, $data['data']) : $hpotter->data;
+    }
+    foreach ($data as $key => $value) {
+      $hpotter->{$key} = $value;
     }
     $hpotter->save();
 
