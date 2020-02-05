@@ -331,8 +331,11 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
         else {
           $user_edit = ['name' => $drupal_accountname];
         }
-        foreach ($user_edit as $key => $property) {
-          $drupal_account->$key = $property;
+        if (!empty($drupal_account->data)) {
+          $user_edit['data'] = !empty($user_edit['data']) ? array_merge($drupal_account->data, $user_edit['data']) : $drupal_account->data;
+        }
+        foreach ($user_edit as $key => $value) {
+          $drupal_account->{$key} = $value;
         }
         $drupal_account->save();
         ldap_user_user_set_authmaps($drupal_account, ["authname_ldap_user" => $authname]);
@@ -380,8 +383,11 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
     $user_edit = ['mail' => $ldap_user['mail']];
 
     $watchdog_tokens['%username'] = $drupal_account->name;
-    foreach ($user_edit as $key => $property) {
-      $drupal_account->$key = $property;
+    if (!empty($drupal_account->data)) {
+      $user_edit['data'] = !empty($user_edit['data']) ? array_merge($drupal_account->data, $user_edit['data']) : $drupal_account->data;
+    }
+    foreach ($user_edit as $key => $value) {
+      $drupal_account->{$key} = $value;
     }
     if (!$updated_account = user_save($drupal_account)) {
       watchdog('ldap_authentication', 'Failed to make changes to user %username updated %changed.', $watchdog_tokens, WATCHDOG_ERROR);
