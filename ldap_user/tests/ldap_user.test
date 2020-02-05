@@ -350,9 +350,7 @@ class LdapUserUnitTests extends LdapTestCase {
     $this->assertTrue($pass, t('provisionDrupalAccount recognized PUID conflict and fixed username.'), $this->testId());
 
     $user_edit = ['name' => 'hpotter'];
-    foreach($user_edit as $key => $property) {
-        $hpottergranger->$key = $property;
-      }
+    $hpottergranger->name = 'hpotter';
     $hpotter = $hpottergranger;
     $hpotter->save();
 

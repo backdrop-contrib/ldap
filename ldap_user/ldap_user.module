@@ -871,8 +871,11 @@ function ldap_user_user_login(&$edit, $account) {
           $account2 = user_load($account->uid);
           $account->picture = $account2->picture;
         }
-        foreach($user_edit as $key => $property) {
-          $account->$key = $property;
+        if (!empty($account->data)) {
+          $user_edit['data'] = !empty($user_edit['data']) ? array_merge($account->data, $user_edit['data']) : $account->data;
+        }
+        foreach($user_edit as $key => $value) {
+          $account->{$key} = $value;
         }
         $account->save();
       }

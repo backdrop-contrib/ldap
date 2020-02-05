@@ -838,8 +838,11 @@ class LdapUserConf {
 
     if ($save) {
       $account = user_load($drupal_user->uid);
-      foreach($user_edit as $key => $property) {
-        $account->$key = $property;
+      if (!empty($account->data)) {
+        $user_edit['data'] = !empty($user_edit['data']) ? array_merge($account->data, $user_edit['data']) : $account->data;
+      }
+      foreach($user_edit as $key => $value) {
+        $account->{$key} = $value;
       }
       $account->save();
       return $account;
@@ -1109,8 +1112,11 @@ class LdapUserConf {
       if ($existing_account_from_puid) {
         // 1. correct username and authmap.
         $this->entryToUserEdit($ldap_user, $user_edit, $ldap_server, LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, [LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER]);
-        foreach($user_edit as $key => $property) {
-          $existing_account_from_puid->$key = $property;
+        if (!empty($existing_account_from_puid->data)) {
+          $user_edit['data'] = !empty($user_edit['data']) ? array_merge($existing_account_from_puid->data, $user_edit['data']) : $existing_account_from_puid->data;
+        }
+        foreach($user_edit as $key => $value) {
+          $existing_account_from_puid->{$key} = $value;
         }
         $account = $existing_account_from_puid;
         $account->save();
@@ -1216,8 +1222,11 @@ class LdapUserConf {
         $user_edit['ldap_user_puid_property'][LANGUAGE_NONE][0]['value'] = $ldap_server->unique_persistent_attr;
         $user_edit['ldap_user_puid_sid'][LANGUAGE_NONE][0]['value'] = $ldap_server->sid;
         $user_edit['ldap_user_current_dn'][LANGUAGE_NONE][0]['value'] = $ldap_user['dn'];
-        foreach($user_edit as $key => $property) {
-          $account->$key = $property;
+        if (!empty($account->data)) {
+          $user_edit['data'] = !empty($user_edit['data']) ? array_merge($account->data, $user_edit['data']) : $account->data;
+        }
+        foreach($user_edit as $key => $value) {
+          $account->{$key} = $value;
         }
         $account->save();
         return (boolean) $account;
