@@ -175,7 +175,8 @@ class LdapTestFunctions {
     if (is_numeric($user)) {
       $user = user_load($user);
     }
-    $key = array_search($role_name, $user->roles);
+    $roles_by_name = array_flip(user_roles());
+    $key = array_search($roles_by_name[$role_name], $user->roles);
     if ($key == TRUE) {
       // Get the rid from the roles table.
       $roles = user_roles(TRUE);
@@ -184,8 +185,8 @@ class LdapTestFunctions {
         // Make a copy of the roles array, without the deleted one.
         $new_roles = [];
         foreach ($user->roles as $id => $name) {
-          if ($id != $rid) {
-            $new_roles[$id] = $name;
+          if ($name != $rid) {
+            $new_roles[$name] = $name;
           }
         }
         $user->roles = $new_roles;
