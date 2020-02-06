@@ -165,6 +165,8 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     $roles = array_values($hpotter->roles);
     $this->consumerAdminConf['drupal_role']->regrantLdapProvisioned = 0;
     $this->consumerAdminConf['drupal_role']->save();
+    // removeRoleFromUser() needs static reset.
+    backdrop_static_reset('user_roles');
     $this->testFunctions->removeRoleFromUser($hpotter, "cn=gryffindor,ou=groups,dc=hogwarts,dc=edu");
     $this->drupalPost('user', $hpotter_logon_edit, t('Log in'));
     $hpotter = $this->testFunctions->userByNameFlushingCache('hpotter');
@@ -462,6 +464,8 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     ];
     $this->drupalPost('user', $edit, t('Log in'));
 
+    // user_roles() needs static reset.
+    backdrop_static_reset('user_roles');
     $new_role_created = in_array($new_role, array_values(user_roles()));
     $roles_by_name = array_flip(user_roles());
     $hpotter = user_load_by_name('hpotter');
