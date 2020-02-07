@@ -79,7 +79,7 @@ class LdapQuery {
 
     // Special properties that don't map directly from storage and defaults.
     $this->inDatabase = TRUE;
-    $this->detailedWatchdogLog = variable_get('ldap_help_watchdog_detail', 0);
+    $this->detailedWatchdogLog = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
 
     $this->baseDn = $this->linesToArray($this->base_dn_str);
     $this->attributes = ($this->attributes_str) ? $this->csvToArray($this->attributes_str, TRUE) : [];
