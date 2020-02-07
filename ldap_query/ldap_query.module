@@ -161,3 +161,14 @@ function ldap_query_help($path, $arg) {
   }
 
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function ldap_query_autoload_info() {
+  return array(
+    'LdapQuery' => 'LdapQuery.class.php',
+    'LdapQueryAdmin' => 'LdapQueryAdmin.class.php',
+    'LdapQueryInc' => 'ldap_query.inc',
+  );
+}
