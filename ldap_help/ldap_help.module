@@ -138,3 +138,14 @@ function ldap_help_help($path, $arg) {
   }
 
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function ldap_help_config_info() {
+  $prefixes['ldap_help.settings'] = array(
+    'label' => t('LDAP Help settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}

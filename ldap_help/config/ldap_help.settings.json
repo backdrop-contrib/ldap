@@ -1,0 +1,6 @@
+{
+    "_config_name": "ldap_help.settings",
+    "ldap_help_watchdog_detail": 0,
+    "ldap_help_user_data_clear": 0,
+    "ldap_help_user_data_clear_set_date": 0
+}
