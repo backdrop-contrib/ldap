@@ -1,8 +1,9 @@
 name = LDAP Help
 description = LDAP Help for configuration and reporting issues.
-package = Lightweight Directory Access Protocol
-core = 7.x
+package = LDAP
+backdrop = 1.x
+type = module
 php = 5.4
-
 dependencies[] = ldap_servers
 dependencies[] = ldap_test
+tags[] = Account Management
