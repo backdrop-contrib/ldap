@@ -80,8 +80,11 @@ function ldap_help_get_server($phpinfo, &$info) {
   $ldapmodules = [
     'ldap_servers', 'ldap_authentication', 'ldap_authorization',
     'ldap_authorization_drupal_role', 'ldap_authorization_og', 'ldap_feeds',
-    'ldap_query', 'ldap_sso', 'ldap_views',
+    'ldap_query', 'ldap_views',
   ];
+  if (module_exists('ldap_sso')) {
+    $ldapmodules[] = 'ldap_sso';
+  }
 
   foreach ($ldapmodules as $ldapmodule) {
     $data['status'] = $modules[$ldapmodule]->status;
