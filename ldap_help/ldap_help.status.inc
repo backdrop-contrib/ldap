@@ -256,7 +256,10 @@ function ldap_help_parsePHPModules() {
  */
 function ldap_help_get_user_settings() {
 
-  $user_register = variable_get('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL);
+  $user_register = config_get('system.core', 'user_register');
+  if ($user_register === NULL) {
+    $user_register = USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL;
+  }
   $options = [
     USER_REGISTER_ADMINISTRATORS_ONLY => t('Administrators only'),
     USER_REGISTER_VISITORS => t('Visitors'),
