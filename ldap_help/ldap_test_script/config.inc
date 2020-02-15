@@ -2,11 +2,11 @@
 
 /**
  * @file
- * Test script for testing ldap functionality outside of Drupal.
+ * Test script for testing ldap functionality outside of Backdrop.
  */
 
-// Remove this line after moving out the scripts outside of drupal root.
-die('Move this script outside of Drupal and uncomment the die statement in config.inc to run.');
+// Remove this line after moving out the scripts outside of Backdrop root.
+die('Move this script outside of Backdrop and uncomment the die statement in config.inc to run.');
 
 /**
  *
@@ -14,12 +14,14 @@ die('Move this script outside of Drupal and uncomment the die statement in confi
 function ldap_help_config() {
 
   // These variables are just for convenience, they can be hard coded directly into the $config array.
-  $provision_root = 'ou=test,ou=drupal,dc=ad,dc=mycollege,dc=edu';
-  $query_root = 'dc=ad,dc=mycollege,dc=edu';
-  $user_root = 'ou=people,dc=mycollege,dc=edu';
-  $bind_user = 'cn=drupal-ldap,ou=service accounts,dc=ad,dc=mycollege,dc=edu';
-  $bind_pwd = 'password';
-  $server_address = 'ad.mycollege.edu';
+  $provision_root = 'dc=local';
+  $provision_root_group = 'ou=groups,' . $provision_root;
+  $provision_root_user = 'ou=people,' . $provision_root;
+  $query_root = 'ou=groups,dc=local';
+  $user_root = 'ou=people,dc=local';
+  $bind_user = 'cn=admin,dc=local';
+  $bind_pwd = 'admin';
+  $server_address = 'simpleldap.local';
 
   $config = [
     'servers' => [
@@ -34,8 +36,8 @@ function ldap_help_config() {
         'server_bind_pw' => $bind_pwd,
         'test_queries' => [
           'user' => [
-            'filter'  => 'cn=jbarclay',
-            'show_attr' => ['dn', 'cn', 'displayname', 'sn', 'givenname', 'mail', 'samaccountname', 'email'],
+            'filter'  => 'cn=ldapuser',
+            'show_attr' => ['dn', 'cn', 'sn', 'mail'],
           ],
         ],
         'test_provisions' => [],
@@ -51,8 +53,8 @@ function ldap_help_config() {
         'server_bind_pw' => $bind_pwd,
         'test_queries' => [
           'group' => [
-            'filter'  => 'cn=ed-it-nag',
-            'show_attr' => ['dn', 'cn', 'samaccountname'],
+            'filter'  => 'cn=default_group',
+            'show_attr' => ['dn', 'cn', 'member'],
           ],
         ],
         'test_provisions' => [],
@@ -70,35 +72,30 @@ function ldap_help_config() {
         'test_provisions' => [
           'simple_user' => [
             'delete_if_exists' => TRUE,
-            'find_filter' => "distinguishedName=cn=ed-drupal-user-17,$provision_root",
-            'dn' => "cn=ed-drupal-user-17, $provision_root",
+            'find_filter' => "cn=test-user,$provision_root_user",
+            'dn' => "cn=test-user,$provision_root_user",
             'attr' => [
-              "displayName" => "Drupal User",
-              "cn" => 'ed-drupal-user-17',
-              "samaccountname" => 'ed-drupal-user-17',
-              "objectclass" => [
-                "top", "person", "organizationalPerson", "user",
+              "sn" => "BackdropCMS",
+              "cn" => 'test-user',
+              'mail' => 'test-user@blah.com',
+              "objectClass" => [
+                "inetOrgPerson",
               ],
-              "description" => "test user",
-              'mail' => 'ed-drupal-user-17@blah.com',
-              'givenName' => 'Drupal',
-              'sn' => 'User',
-              'distinguishedName' => "cn=ed-drupal-user-17,$provision_root",
             ],
           ],
           'simple_group' => [
             'delete_if_exists' => TRUE,
-            'find_filter' => "distinguishedName=cn=ed-drupal-group2,$provision_root",
-            'dn' => "cn=ed-drupal-group2,$provision_root",
+            'find_filter' => "cn=test-group,$provision_root_group",
+            'dn' => "cn=test-group,$provision_root_group",
             'attr' => [
-              "cn" => 'ed-drupal-group2',
-              "sAMAccountName" => 'ed-drupal-group2',
-              'instanceType' => '4',
+              "cn" => 'test-group',
               "objectClass" => [
-                "top", "group",
+                "groupOfNames",
               ],
-              'name' => 'ed-drupal-group2',
-              'distinguishedName' => "cn=ed-drupal-group2,$provision_root",
+              "member" => [
+                "cn=test-user,$provision_root_user",
+                "cn=ldapuser,$provision_root_user",
+              ],
             ],
           ],
         ],
