@@ -1,13 +1,13 @@
 
-This script is intended to help separate LDAP Drupal module configuration and bugs from LDAP server, ldap php extension, and related connectivity and LDAP permissions issues.  It uses the php ldap extension functions like ldap_connect(), ldap_search(), etc. rather than the Drupal LDAP module code.
+This script is intended to help separate LDAP module configuration and bugs from LDAP server, ldap php extension, and related connectivity and LDAP permissions issues. It uses the php ldap extension functions like ldap_connect(), ldap_search(), etc. rather than the Backdrop LDAP module code.
 
 Watchout for the following:
--- The test script does not depend on the Drupal LDAP module and should not be run within a web server context.  -- Command line PHP with the LDAP Extension enabled are requirements.
+-- The test script does not depend on the Backdrop LDAP module and should not be run within a web server context.  -- Command line PHP with the LDAP Extension enabled are requirements.
 -- Often command line PHP will have a different php.ini configuration than the web server's php.ini.  See http://php.net/manual/features.commandline.php
 
-Additional background on prerequisites and debugging Drupal LDAP module are available at:
-http://drupal.org/node/1023900
-http://drupal.org/node/1141764
+Additional background on prerequisites and debugging Backdrop LDAP module are available at:
+https://backdropcms.org/project/ldap#prerequisites
+https://backdropcms.org/project/ldap#debugging
 
 
 --------------------------------
@@ -45,37 +45,37 @@ Running the Script
         ),
         'test_provisions' => array(
           'simple_user' => array(
-            'dn' =>  "cn=ed-drupal-user-17,ou=people,dc=ad,dc=mycollege,dc=edu",
+            'dn' =>  "cn=ed-user-17,ou=people,dc=ad,dc=mycollege,dc=edu",
             'delete_if_exists' => TRUE,
-            'find_filter' => "distinguishedName=cn=ed-drupal-user-17,ou=people,dc=ad,dc=mycollege,dc=edu",
+            'find_filter' => "distinguishedName=cn=ed-user-17,ou=people,dc=ad,dc=mycollege,dc=edu",
             'attr' => array(
-              "displayName" => "Drupal User",
-              "cn" => 'ed-drupal-user-17',
-              "samaccountname" => 'ed-drupal-user-17',
+              "displayName" => "Backdrop User",
+              "cn" => 'ed-user-17',
+              "samaccountname" => 'ed-user-17',
               "objectclass" => array(
                 "top", "person", "organizationalPerson", "user",
               ),
               "description" => "test user",
-              'mail' => 'ed-drupal-user-17@ad.mycollege.edu',
-              'givenName' => 'Drupal',
+              'mail' => 'ed-user-17@ad.mycollege.edu',
+              'givenName' => 'Backdrop',
               'sn' => 'User',
-              'distinguishedName' =>  "cn=ed-drupal-user-17,ou=people,dc=ad,dc=mycollege,dc=edu",
+              'distinguishedName' =>  "cn=ed-user-17,ou=people,dc=ad,dc=mycollege,dc=edu",
             ),
           ),
           'simple_group' => array(
-            'dn' =>  "cn=ed-drupal-group2,ou=groups,dc=ad,dc=mycollege,dc=edu",
+            'dn' =>  "cn=ed-group2,ou=groups,dc=ad,dc=mycollege,dc=edu",
             'delete_if_exists' => TRUE,
-            'find_filter' => "distinguishedName=cn=ed-drupal-group2,ou=groups,dc=ad,dc=mycollege,dc=edu",
+            'find_filter' => "distinguishedName=cn=ed-group2,ou=groups,dc=ad,dc=mycollege,dc=edu",
             'attr' => array(
-              "cn" => 'ed-drupal-group2',
-              "sAMAccountName" => 'ed-drupal-group2',
+              "cn" => 'ed-group2',
+              "sAMAccountName" => 'ed-group2',
               'instanceType' =>  '4',
               "objectClass" => array(
                 "top", "group",
               ),
-              'name' => 'ed-drupal-group2',
+              'name' => 'ed-group2',
               'objectCategory' =>  'CN=Group,CN=Schema,CN=Configuration,dc=mycollege,dc=edu',
-              'distinguishedName' =>  "cn=ed-drupal-group2,ou=groups,dc=ad,dc=mycollege,dc=edu",
+              'distinguishedName' =>  "cn=ed-group2,ou=groups,dc=ad,dc=mycollege,dc=edu",
             ),
           ),
         ),
