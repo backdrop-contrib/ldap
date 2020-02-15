@@ -112,6 +112,7 @@ function ldap_help_connect($address, $port, $tls, $test = FALSE) {
   }
 
   $con = ldap_connect($address, $port);
+  ldap_set_option($con, LDAP_OPT_PROTOCOL_VERSION, 3);
 
   if (!$con || ldap_errno($con) != LDAP_SUCCESS) {
     $err = ldap_errno($con) . ":" . ldap_error($con) . ":" . ldap_err2str(ldap_errno($con)) . "!";

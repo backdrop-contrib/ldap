@@ -27,7 +27,7 @@ foreach ($config['servers'] as $sid => $server) {
   /**
    * Test LDAP Connect.
    */
-  $results = ldap_help_connect($server['server_address'], $server['server_port'], $server['server_tls'], TRUE);
+  $results = ldap_help_connect($server['server_address'], $server['server_port'], $server['server_tls'], FALSE);
   $test_name = "\"" . $sid . "\"";
 
   ldap_help_display(NULL, "------------------------------------------\n$test_name connect\n------------------------------------------");
@@ -127,7 +127,7 @@ foreach ($config['servers'] as $sid => $server) {
   }
 
   /**
-   * Test LDAP Provisioning.
+   * Test LDAP Provisioning: Create new entries.
    */
   foreach ($server['test_provisions'] as $provision_id => $provision) {
     ldap_help_display(NULL, "------------------------------------------\n$test_name provision \"$provision_id\"\n------------------------------------------");
