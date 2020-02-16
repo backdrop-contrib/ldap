@@ -50,7 +50,9 @@ class LdapTestCase extends DrupalWebTestCase {
     }
     parent::setUp($modules);
     config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
-    config_set('ldap_help.settings', 'ldap_help_watchdog_detail', 0);
+    if (module_exists('ldap_help')) {
+      config_set('ldap_help.settings', 'ldap_help_watchdog_detail', 0);
+    }
     $this->createTestUserFields();
 
   }
@@ -60,7 +62,9 @@ class LdapTestCase extends DrupalWebTestCase {
    */
   public function tearDown() {
     parent::tearDown();
-    config_clear('ldap_help.settings', 'ldap_help_watchdog_detail');
+    if (module_exists('ldap_help')) {
+      config_clear('ldap_help.settings', 'ldap_help_watchdog_detail');
+    }
     config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
   }
 

@@ -156,7 +156,7 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
     return;
   }
 
-  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
+  $detailed_watchdog_log = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
 
   // Default to name.
   $entered_name = $form_state['values']['name'];
@@ -525,7 +525,7 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
  * Given authname, determine if corresponding drupal account exists and is authmapped.
  */
 function ldap_authentication_corresponding_drupal_user($authname, $auth_conf, &$watchdog_tokens) {
-  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
+  $detailed_watchdog_log = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
   if (!($drupal_account = user_load_by_name($authname)) && !($drupal_account = user_load_by_mail($authname))) {
     $uid = db_query("SELECT uid FROM {ldap_authmap} WHERE authname = :authname AND module = 'ldap_user'", [':authname' => $authname])->fetchColumn();
     $drupal_account = $uid ? user_load($uid) : FALSE;
@@ -562,7 +562,7 @@ function ldap_authentication_corresponding_drupal_user($authname, $auth_conf, &$
  *
  */
 function ldap_authentication_test_credentials($auth_conf, $sso_login, $authname, $password, &$watchdog_tokens) {
-  $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
+  $detailed_watchdog_log = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
   $authentication_result = LDAP_AUTHENTICATION_RESULT_FAIL_GENERIC;
   $ldap_user = FALSE;
   $ldap_server = NULL;

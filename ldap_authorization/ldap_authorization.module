@@ -88,7 +88,8 @@ function ldap_authorization_menu() {
  */
 function ldap_authorization_user_login(&$edit, $user) {
   list($authorizations, $notifications) = ldap_authorizations_user_authorizations($user, 'set', NULL, 'logon');
-  if (config_get('ldap_help.settings', 'ldap_help_watchdog_detail')) {
+  $detailed_watchdog_log = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
+  if ($detailed_watchdog_log) {
     foreach ($authorizations as $consumer_type => $authorization_ids) {
       $ul = theme('item_list', ['title' => $consumer_type, 'items' => array_keys($authorization_ids), 'type' => 'ul']);
       watchdog('ldap_authentication', 'ldap_authorization_user_login.authorizations' . $ul, [], WATCHDOG_DEBUG);
@@ -208,7 +209,7 @@ function ldap_authorization_get_consumer_object($consumer_type) {
     require_once drupal_get_path('module', $consumer['consumer_module']) . '/' . $consumer['consumer_class_file'];
     $class = $consumer['consumer_class_name'];
     $consumer_obj = new $class($consumer_type);
-    $consumer_obj->detailedWatchdogLog = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
+    $consumer_obj->detailedWatchdogLog = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
     return $consumer_obj;
   }
   else {

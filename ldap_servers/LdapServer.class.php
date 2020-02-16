@@ -227,11 +227,11 @@ class LdapServer {
    * @param $sid
    */
   public function __construct($sid) {
-    $config = config('ldap_help.settings');
+    $detailed_watchdog_log = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
     if (!is_scalar($sid)) {
       return;
     }
-    $this->detailed_watchdog_log = $config->get('ldap_help_watchdog_detail');
+    $this->detailed_watchdog_log = $detailed_watchdog_log;
     $server_record = FALSE;
     if (module_exists('ctools')) {
       ctools_include('export');
@@ -262,7 +262,7 @@ class LdapServer {
     else {
       $this->inDatabase = TRUE;
       $this->sid = $sid;
-      $this->detailedWatchdogLog = $config->get('ldap_help_watchdog_detail');
+      $this->detailedWatchdogLog = $detailed_watchdog_log;
       foreach ($this->field_to_properties_map() as $db_field_name => $property_name) {
         if (isset($server_record->$db_field_name)) {
           $this->{$property_name} = $server_record->$db_field_name;

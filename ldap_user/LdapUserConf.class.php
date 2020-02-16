@@ -237,7 +237,7 @@ class LdapUserConf {
       );
 
     $this->setSynchMapping(TRUE);
-    $this->detailedWatchdog = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
+    $this->detailedWatchdog = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
   }
 
   /**
