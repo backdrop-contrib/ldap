@@ -23,3 +23,20 @@ function ldap_views_get_qid(&$view) {
       $current_display->display_options['query']['options']['qid'] :
       $current_display->handler->default_display->display->display_options['query']['options']['qid'];
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function ldap_views_autoload_info() {
+  return array(
+    'ldap_views_plugin_query_ldap' => 'plugins/ldap_views_plugin_query_ldap.inc',
+    'ldap_views_handler_argument' => 'handlers/ldap_views_handler_argument.inc',
+    'ldap_views_handler_argument_attribute' => 'handlers/ldap_views_handler_argument_attribute.inc',
+    'ldap_views_handler_field' => 'handlers/ldap_views_handler_field.inc',
+    'ldap_views_handler_field_attribute' => 'handlers/ldap_views_handler_field_attribute.inc',
+    'ldap_views_handler_filter' => 'handlers/ldap_views_handler_filter.inc',
+    'ldap_views_handler_filter_attribute' => 'handlers/ldap_views_handler_filter_attribute.inc',
+    'ldap_views_handler_sort' => 'handlers/ldap_views_handler_sort.inc',
+    'ldap_views_handler_sort_attribute' => 'handlers/ldap_views_handler_sort_attribute.inc',
+  );
+}
