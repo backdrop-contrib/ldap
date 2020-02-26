@@ -211,12 +211,12 @@ function ldap_servers_test_form_submit($form, &$form_state) {
 
   if ($ldap_server->bind_method == LDAP_SERVERS_BIND_METHOD_SERVICE_ACCT) {
     $results_tables['basic'][] = [
-      t('Binding with DN for non-anonymous search (%bind_dn).  Using password ',
+      t('Testing method: Binding with DN for non-anonymous search (%bind_dn).  Using password ',
       ['%bind_dn' => $ldap_server->binddn]) . ' ' . $bindpw_type,
     ];
   }
   else {
-    $results_tables['basic'][] = [t('Binding with null DN for anonymous search.')];
+    $results_tables['basic'][] = [t('Testing method: Binding with null DN for anonymous search.')];
   }
 
   if (@$values['grp_test_grp_dn_writeable'] && @$values['grp_test_grp_dn']) {
@@ -303,7 +303,7 @@ function ldap_servers_test_form_submit($form, &$form_state) {
       $results_tables['basic'][] = [theme_item_list(['items' => $mapping, 'title' => t('Attributes available to anonymous search', ['%bind_dn' => $ldap_server->binddn]), 'type' => 'ul', 'attributes' => []])];
     }
     $results_tables['basic'][] = [
-      t('Binding with DN (%bind_dn).  Using supplied password ',
+      t('Testing method: Binding with DN (%bind_dn).  Using supplied password ',
       ['%bind_dn' => $ldap_user['dn']]),
     ];
     $result = $ldap_server->bind($ldap_user['dn'], $values['testing_drupal_userpw'], FALSE);
