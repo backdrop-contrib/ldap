@@ -53,7 +53,7 @@ function ldap_views_views_data() {
       'handler' => 'ldap_views_handler_sort',
     ],
     'filter' => [
-      'handler' => 'views_handler_filter_string',
+      'handler' => 'ldap_views_handler_filter',
     ],
   ];
   $data['ldap']['cn'] = [
