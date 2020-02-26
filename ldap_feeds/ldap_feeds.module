@@ -37,7 +37,7 @@ function ldap_feeds_feeds_plugins() {
     'name' => 'Drupal User LDAP Entry Fetcher',
     'description' => 'Fetches one entry for each LDAP authenticated user.  Fetches both LDAP entry attributes such as
     <code>cn, dn,</code> etc.
-      and Drupal user data such as <code>uid, name, mail, created, status, language, </code>and <code>signature</code>.
+      and Drupal user data such as <code>uid, name, mail, created, status, langcode, </code>and <code>signature</code>.
       Make sure to add dn in your LDAP query for this parser, if you use custom attributes.',
     'handler' => [
       // This is the key name, not the class name.
@@ -83,7 +83,7 @@ function ldap_feeds_drupal_user_attributes() {
     'mail' => ['token' => 'drupal.mail', 'description' => 'Drupal email address.  e.g. jdoe@gmail.com'],
     'created' => ['token' => 'drupal.created', 'description' => 'Drupal account created timestamp in unix e.g. 432432432'],
     'status' => ['token' => 'drupal.status', 'description' => 'Drupal user status  e.g. 1 or 0'],
-    'language' => ['token' => 'drupal.language', 'description' => 'Drupal language.'],
+    'langcode' => ['token' => 'drupal.langcode', 'description' => 'Drupal langcode.'],
     'signature' => ['token' => 'drupal.signature', 'description' => 'Drupal signature.  e.g. Happy Joe'],
     'login' => ['token' => 'drupal.login', 'description' => 'Drupal unix timestamp of last login  e.g. 1317494439'],
     'init' => ['token' => 'drupal.init', 'description' => 'Drupal user init  e.g. jdoe@gmail.com'],
