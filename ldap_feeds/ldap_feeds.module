@@ -185,3 +185,14 @@ function ldap_feeds_drupal_user_legend(&$form, $importer) {
   $form['legendset']['legend']['sources'] = $sources;
 
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function ldap_feeds_autoload_info() {
+  return array(
+    'FeedsLdapQueryFetcher' => 'FeedsLdapQueryFetcher.inc',
+    'FeedsLdapEntryParser' => 'FeedsLdapEntryParser.inc',
+    'FeedsDrupalUserLdapEntryFetcher' => 'FeedsDrupalUserLdapEntryFetcher.inc',
+  );
+}
