@@ -71,6 +71,9 @@ function theme_ldap_authorization_test_results($variables) {
       if ($user = user_load_by_name($username)) {
         $username_link = l($username, 'user/' . $user->uid . '/edit');
       }
+      else {
+        $username_link = $username . ' is not a Backdrop user.';
+      }
       foreach ($user_results as $consumer_type => $authorizations) {
         if (is_array($authorizations) && count($authorizations) > 0) {
           $authorizations = $consumer->convertToFriendlyAuthorizationIds($authorizations);
