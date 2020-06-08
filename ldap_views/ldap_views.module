@@ -19,9 +19,16 @@ function ldap_views_views_api() {
  */
 function ldap_views_get_qid(&$view) {
   $current_display = $view->display[$view->current_display];
-  return isset($current_display->display_options['query']['options']['qid']) ?
-      $current_display->display_options['query']['options']['qid'] :
-      $current_display->handler->default_display->display->display_options['query']['options']['qid'];
+  if (isset($current_display->display_options['query']['options']['qid'])) {
+    return $current_display->display_options['query']['options']['qid'];
+  }
+  elseif (isset($current_display->handler->default_display->display->display_options['query']['options']['qid'])) {
+    return $current_display->handler->default_display->display->display_options['query']['options']['qid'];
+  }
+  else {
+    drupal_set_message('Please specify the "Query settings" of the view before set the fields or filter/sort criterias.','error');
+    return;
+  }
 }
 
 /**
