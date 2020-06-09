@@ -1026,6 +1026,8 @@ function ldap_user_user_delete($account) {
     $boolean_result = $ldap_user_conf->deleteProvisionedLdapEntries($account);
     // No need to watchdog here, because fail in deleteProvisionedLdapEntries provides watchdog entry.
   }
+  // Remove account's entry from 'ldap_authmap' table.
+  ldap_user_user_set_authmaps($account, ['authname_ldap_user' => '']);
 }
 
 /**
