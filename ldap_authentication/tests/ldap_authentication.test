@@ -100,6 +100,8 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       'pass' => $password,
     ];
 
+    // Reset the internal cache by the TRUE parameter.
+    user_load(1, TRUE);
     $this->drupalPost('user', $edit, t('Log in'));
     $this->assertText(t('Log out'), 'User 1 successfully authenticated', $testid);
     $this->drupalGet('user/logout');
@@ -216,6 +218,8 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       'pass' => $password,
     ];
 
+    // Reset the internal cache by the TRUE parameter.
+    user_load(1, TRUE);
     $this->drupalPost('user', $edit, t('Log in'));
     $this->assertText(t('Log out'), 'User 1 successfully authenticated', $testid);
     $this->drupalGet('user/logout');
@@ -453,6 +457,8 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       'pass' => $password,
     ];
 
+    // Reset the internal cache by the TRUE parameter.
+    user_load(1, TRUE);
     $this->drupalPost('user', $edit, t('Log in'));
     $this->assertText(t('Log out'), 'User 1 successfully authenticated in LDAP_authen.WL.user1', $testid);
     $this->drupalGet('user/logout');
@@ -768,8 +774,8 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       'excludeIfNoAuthorizations' => [
         'property' => 'excludeIfNoAuthorizations',
         'values' => [
-          [TRUE],
-          [TRUE],
+          TRUE,
+          TRUE,
         ],
       ],
       'emailOption' => [
