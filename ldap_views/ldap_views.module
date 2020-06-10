@@ -26,7 +26,7 @@ function ldap_views_get_qid(&$view) {
     return $current_display->handler->default_display->display->display_options['query']['options']['qid'];
   }
   else {
-    drupal_set_message('Please specify the "Query settings" of the view before set the fields or filter/sort criterias.','error');
+    backdrop_set_message(t('Please specify the "Query settings" of the view before set the fields or filter/sort criteria!'), 'error');
     return;
   }
 }

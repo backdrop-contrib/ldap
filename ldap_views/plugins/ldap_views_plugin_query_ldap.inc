@@ -268,12 +268,22 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
     $offset      = property_exists($view->query, 'offset') ? $view->query->offset : 0;
     $result      = [];
     $sort_fields = [];
+    $set_of_sort_fields = [];
     if (!empty($this->orderby)) {
       foreach ($this->orderby as $orderby) {
         $sort_fields[drupal_strtolower($orderby['field'])]['direction'] = $orderby['direction'];
         $sort_fields[drupal_strtolower($orderby['field'])]['data']      = [];
+        $set_of_sort_fields[] = $orderby['field'];
       }
 
+    }
+
+    // Collect missing sort fields.
+    $missing_sort_fields = [];
+    foreach ($set_of_sort_fields as $sfield) {
+      if (!in_array($sfield, $attributes)) {
+        $missing_sort_fields[] = $sfield;
+      }
     }
 
     foreach ($entries as $key => &$entry) {
@@ -340,7 +350,14 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
         $countValue = $entries['count'];
         unset($entries['count']);
         $params[] = &$entries;
-        call_user_func_array('array_multisort', $params);
+        if (empty($missing_sort_fields)) {
+          call_user_func_array('array_multisort', $params);
+        }
+        else {
+          $missing_list = implode(', ', $missing_sort_fields);
+          $link_of_view = ' ' . l($this->pager->view->name, 'admin/structure/views/view/' . $this->pager->view->name);
+          backdrop_set_message(t('Missing sort criteria data: %list The sort criteria must be displayed fields in this view:', array('%list' => $missing_list)) . $link_of_view, 'error');
+        }
         $params['count'] = $countValue;
       }
       else {
