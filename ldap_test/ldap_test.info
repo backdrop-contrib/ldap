@@ -1,5 +1,5 @@
 name = LDAP Test Module
-description = Module for LDAP module for testing. Only for development and debugging purposes.
+description = Module for testing the LDAP module. Only for development and debugging purposes.
 package = LDAP
 backdrop = 1.x
 type = module
