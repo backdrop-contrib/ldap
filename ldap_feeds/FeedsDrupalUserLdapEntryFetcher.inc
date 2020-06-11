@@ -34,6 +34,7 @@ class FeedsDrupalUserLdapEntryFetcherResult extends FeedsFetcherResult {
    */
   public function getRaw() {
 
+    $results = [];
     // Needs to loop through all users, and query ldap for each, one at a time.
     $query = new EntityFieldQuery();
     $entities = $query
@@ -95,7 +96,7 @@ class FeedsDrupalUserLdapEntryFetcher extends FeedsFetcher {
    */
   public function configDefaults() {
     return [
-      'filterLdapAuthenticated' => [],
+      'filterLdapAuthenticated' => 0,
       'availableDrupalUserAttributes' => ldap_feeds_drupal_user_attributes(),
       'filterRoles' => [],
     ];

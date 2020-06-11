@@ -165,10 +165,11 @@ function ldap_feeds_drupal_user_legend(&$form, $importer) {
 
       $ldap_user = ldap_servers_get_user_ldap_data($ldap_server->testingDrupalUsername, $sid);
       foreach ($ldap_user['attr'] as $id => $value) {
-        if (!is_numeric($id) && is_scalar($ldap_user['attr'][$id][0]) && $ldap_user['attr'][$id]['count'] == 1) {
+        $set_count = isset($ldap_user['attr'][$id]['count']);
+        if ($set_count && !is_numeric($id) && is_scalar($ldap_user['attr'][$id][0]) && $ldap_user['attr'][$id]['count'] == 1) {
           $sources[$id] = ['name' => ['#markup' => $id], 'description' => ['#markup' => $ldap_user['attr'][$id][0]]];
         }
-        elseif ($ldap_user['attr'][$id]['count'] > 1) {
+        elseif ($set_count && ($ldap_user['attr'][$id]['count'] > 1)) {
           $item = t('MULTIVALUED ATTRIBUTE:') . join(" , \n", $ldap_user['attr'][$id]);
           $sources[$id] = ['name' => ['#markup' => $id], 'description' => ['#markup' => $item]];
         }
