@@ -1,12 +1,17 @@
 LDAP test script
 ----------------
 
-This script is intended to help separate LDAP module configuration and bugs from LDAP server, ldap php extension, and related connectivity and LDAP permissions issues. It uses the php ldap extension functions like ldap_connect(), ldap_search(), etc. rather than the Backdrop LDAP module code.
+This script is intended to help separate LDAP module configuration and bugs
+from LDAP server, ldap php extension, and related connectivity and LDAP
+permissions issues. It uses the php ldap extension functions like
+ldap_connect(), ldap_search(), etc. rather than the Backdrop LDAP module code.
 
 Watchout for the following:
-- The test script does not depend on the Backdrop LDAP module and should not be run within a web server context.
+- The test script does not depend on the Backdrop LDAP module and should not
+  be run within a web server context.
 - Command line PHP with the LDAP Extension enabled are requirements.
-- Often command line PHP will have a different php.ini configuration than the web server's php.ini. See http://php.net/manual/features.commandline.php
+- Often command line PHP will have a different php.ini configuration than the
+  web server's php.ini. See http://php.net/manual/features.commandline.php
 
 Additional background on prerequisites and debugging Backdrop LDAP module are available at:
 - https://backdropcms.org/project/ldap#prerequisites
@@ -27,7 +32,7 @@ Running the Script
     in provisioning part of array:
      - `delete_if_exists` - TURE | FALSE indicates if the provisioned object should be deleted if it exists
      - `find_filter` - is the filter to find the object. eg. 'cn=jdoe', 'distinguishedname=...' (This is needed only if delete_if_exists is TRUE)
-     - `attr` - is the array of attribute/values to provision. should not include 'dn'
+     - `attr` - is the array of attribute/values to provision. Should not include 'dn'.
 
     such as:
 
@@ -95,3 +100,6 @@ Running the Script
       
 4. From the ldap_test_script, type:
      `php test.php`
+
+5. If this script has created some unnecessary entries in the LDAP database by
+   the provision test ("test_user, "test_group"), then you should remove them.

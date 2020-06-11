@@ -53,7 +53,7 @@ function ldap_help_config() {
         'server_bind_pw' => $bind_pwd,
         'test_queries' => [
           'group' => [
-            'filter'  => 'cn=default_group',
+            'filter'  => 'cn=ldapgroup',
             'show_attr' => ['dn', 'cn', 'member'],
           ],
         ],
@@ -70,25 +70,25 @@ function ldap_help_config() {
         'server_bind_pw' => $bind_pwd,
         'test_queries' => [],
         'test_provisions' => [
-          'simple_user' => [
+          'test_user' => [
             'delete_if_exists' => TRUE,
-            'find_filter' => "cn=test-user,$provision_root_user",
-            'dn' => "cn=test-user,$provision_root_user",
+            'find_filter' => "cn=test_user,$provision_root_user",
+            'dn' => "cn=test_user,$provision_root_user",
             'attr' => [
               "sn" => "BackdropCMS",
-              "cn" => 'test-user',
-              'mail' => 'test-user@blah.com',
+              "cn" => 'test_user',
+              'mail' => 'test_user@blah.com',
               "objectClass" => [
                 "inetOrgPerson",
               ],
             ],
           ],
-          'simple_group' => [
+          'test_group' => [
             'delete_if_exists' => TRUE,
-            'find_filter' => "cn=test-group,$provision_root_group",
-            'dn' => "cn=test-group,$provision_root_group",
+            'find_filter' => "cn=test_group,$provision_root_group",
+            'dn' => "cn=test_group,$provision_root_group",
             'attr' => [
-              "cn" => 'test-group',
+              "cn" => 'test_group',
               "objectClass" => [
                 "groupOfNames",
               ],
