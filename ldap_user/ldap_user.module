@@ -309,7 +309,7 @@ function ldap_user_ldap_user_attrs_list_alter(&$available_user_attrs, &$params) 
   }
   // @todo make these merges so they don't override saved values such as 'enabled'
   $available_user_attrs['[property.status]'] = $available_user_attrs['[property.status]'] + [
-    'name' => 'Property: Acount Status',
+    'name' => 'Property: Account Status',
     'configurable_to_drupal' => 1,
     'configurable_to_ldap' => 1,
     'user_tokens' => '1=enabled, 0=blocked.',

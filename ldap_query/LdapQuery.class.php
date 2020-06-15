@@ -327,7 +327,7 @@ class LdapQuery {
           'field_group' => 'query',
           '#type' => 'textarea',
           '#title' => t('Base DNs to search in query.'),
-          '#description' => t('Each Base DN will be queried and results merged. e.g. <code>ou=groups,dc=hogwarts,dc=edu</code>') . t('Enter one per line in case if you need more than one.'),
+          '#description' => t('Each Base DN will be queried and results merged. e.g. <code>ou=groups,dc=hogwarts,dc=edu</code> ') . t('Enter one per line in case if you need more than one.'),
           '#cols' => 50,
           '#rows' => 6,
           '#required' => TRUE,
