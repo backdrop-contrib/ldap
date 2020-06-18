@@ -39,7 +39,7 @@ Permanent Unique Identifier Tasks:
 move data into ldap_user module structure
 - X add ldapUser object as property in ldap authentication object/class
 - X in update code, move loginConflictResolve and acctCreation values from authentication conf to provision conf
-- X move provisioning options in admin/config/people/ldap/authentication "Drupal User Account Creation" section to ldap_user module conf.
+- X move provisioning options in admin/config/people/ldap/authentication "Backdrop User Account Creation" section to ldap_user module conf.
 - X move "Allow account conflicts" option from server conf to ldap user conf
 - X create new fields in user and add to .install file
 - X add authmap data to user->ldap_authmap_* fields
@@ -53,7 +53,7 @@ move data into ldap_user module structure
 - X bring ldap_provision code into module
 - bring ldap_profile code into module
 - X allow rules for each field [sych on intitail provision, synch on logon, synch on periodic update, push to ldap entry]
-- X implement drupal user -> ldap entry synching
+- X implement Backdrop user -> ldap entry synching
 
 tests
 - make sure install creates fields
