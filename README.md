@@ -1350,9 +1350,9 @@ Local LDAP test server by Vagrant <a name="vagranttesting"></a>
 ---------------------------------
 You can test the LDAP module with a local LDAP test server.
 Main steps:
-  [1. Building a test environment](#buildingvagranttesting)
-  [2. Configure the LDAP module for the local test server](#configvagranttesting)
-  [3. Manual tests of the LDAP module on the local test server](#manualvagranttesting)
+1. [Building a test environment](#buildingvagranttesting)
+2. [Configure the LDAP module for the local test server](#configvagranttesting)
+3. [Manual tests of the LDAP module on the local test server](#manualvagranttesting)
 
 #### 1. Building a test environment <a name="buildingvagranttesting"></a>
 
