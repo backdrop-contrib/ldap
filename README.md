@@ -172,7 +172,7 @@ Installation <a name="installation"></a>
 
 - Enable the other LDAP modules you need. See below.
 
-- Configuration page: 
+- Configuration page:
   Administration > Configuration > User accounts > LDAP Configuration
   ( admin/config/people/ldap )
 
@@ -223,9 +223,9 @@ Implements two configuration pages:
       bindig method, LDAP user to Backdrop user relationship, group
       configuration, pagination etc.
     - Edit, delete or disable an LDAP server configuration
-    - Test: bindig, group create, delete, add member, remove member 
+    - Test: bindig, group create, delete, add member, remove member
 
-    
+
 LDAP User module <a name="user"></a>
 ----------------
 
@@ -358,12 +358,12 @@ Configuration page:
     - What actions would you like performed when consumer's authorizations
       are granted/revoked from user?
   - Edit, delete a consumer.
-  - Test: It shows what authorizations would be granted with this configuration. 
+  - Test: It shows what authorizations would be granted with this configuration.
 
-  
+
 #### Vocabulary of LDAP Authorization and its Code: <a name="vocabulary"></a>
 
-- Consumer: The "consumer" or entity that authorization is being granted. 
+- Consumer: The "consumer" or entity that authorization is being granted.
   Examples:  Backdrop role, Organic Group group
 - Consumer Type: Machine ID of a consumer. This is used in naming conventions.
   Examples: backdrop_role, og_group
@@ -645,15 +645,15 @@ Sample data and configuration (for further understanding):
     ),
     ```
 - Options B:
-  1. LDAP group entry attribute holding: `uniquemember`
-  2. User attribute held in: `dn`
- 
+  - LDAP group entry attribute holding: `uniquemember`
+  - User attribute held in: `dn`
+
 
 
 #### LDAP Authorization - Backdrop Roles module <a name="roles"></a>
 
 Implements LDAP authorization for Backdrop roles. It provides an
-"authorization consumer" for Backdrop roles. 
+"authorization consumer" for Backdrop roles.
 
 Dependency:
 - LDAP Authorization module
@@ -667,11 +667,11 @@ After configuring an "authorization consumer", use the "test" link to see
 the authorizations a given test user would be granted.
 
 
-  
+
 #### LDAP Authorization - OG (Organic Groups) module <a name="og"></a>
 
 Implements LDAP authorization for Organic Groups. It provides an
-"authorization consumer" for Organic Groups groups. 
+"authorization consumer" for Organic Groups groups.
 
 Dependencies:
 - LDAP Authorization module
@@ -695,7 +695,7 @@ Requirements:
 - Configuration that maps LDAP user entries to Organic Group membership
   (Implemented by LDAP Authorization - OG (Organic Groups) module).
 - LDAP Authorization modules do not require LDAP Authentication to be used.
-  LDAP Authorization modules will work other authentication modules including
+  LDAP Authorization modules will work with other authentication modules including
   Backdrop authentication. However, there must be a relationship established
   between the Backdrop user and an LDAP entry; this relationship is usually the
   username or email. This relationship is implemented in the LDAP Server module.
@@ -765,7 +765,7 @@ LDAP Query module <a name="query"></a>
 
 A module to allow you to execute custom queries, which can be display in Views
 or used in custom solutions. LDAP query builder and storage for queries used by
-other ldap modules such as LDAP Feeds module etc. 
+other ldap modules such as LDAP Feeds module etc.
 
 Dependencies:
 - LDAP Servers module
@@ -779,7 +779,7 @@ Configuration page:
   - Disable query
   - Delete query
   - Test query: After configuring a query, use the "test" link to see the results.
-  
+
 You can create and store queries what include these settings:
 - Name of query
 - LDAP Server used for query
@@ -798,7 +798,7 @@ LDAP Views module <a name="views"></a>
 -----------------
 
 It provides Views integration for LDAP data. It adds new, LDAP-related
-filter/sort criteria and fields to those available by views. 
+filter/sort criteria and fields to those available by views.
 
 Dependencies:
 - LDAP Query module
@@ -971,7 +971,7 @@ Caveats:
   have created. Look for "Action to take when previously imported users are
   missing in the feed".
 
-  
+
 #### Detailed example 2. <a name="feedsexample2"></a>
 
 Step by step example of using LDAP Feeds "LDAP Query Fetcher" to bring in user
@@ -979,21 +979,21 @@ data from LDAP to create new Backdrop users.
 
 1. Configure the LDAP server. Make sure fields related to LDAP and Backdrop users
    are filled out.
-2. Enable the following modules: 
+2. Enable the following modules:
    job_scheduler, feeds, feeds_ui, ldap_query, ldap_feeds, field_ui (core module)
-3. Add user account fields: 
+3. Add user account fields:
    ( admin/config/people/manage/fields )
    ```
    [Example]
      First Name Field :  First Name  field_fname  Text (short)  Text field
      Last Name Field :  Last Name  field_lname  Text (short)  Text field
    [/Example]
-   ```  
+   ```
    Include other fields as per your needs further ahead.
-4. Create new LDAP Query: 
+4. Create new LDAP Query:
    ( admin/config/people/ldap/query/add )
    ```
-   [Example]    
+   [Example]
      Machine name for this query configuration : ecm_users (Give unique name)
      Name : ECM Users (Human readable name for the query)
      LDAP Server used for query : select your LDAP server
@@ -1002,7 +1002,7 @@ data from LDAP to create new Backdrop users.
      Filter : (&(objectClass=user) (memberOf=CN=give_specific_group_name,CN=Users,DC=hogwarts,DC=com))
      Attributes to return : DN,SN,GIVENNAME,USERPRINCIPALNAME,MAILNICKNAME
    [/Example]
-   ``` 
+   ```
    - If you want all of users and not of specific group, you can skip section
      `memberOf` completely. Filter then becomes: (objectClass=user)
      Details: [LDAP Filter](https://ldapwiki.com/wiki/LDAP%20Filter%20Choices)
@@ -1015,7 +1015,7 @@ data from LDAP to create new Backdrop users.
    [Example]
       Name : LDAP Data to User Data
       Machine-Readable name : ldap_data_to_user_data
-   [/Example]        
+   [/Example]
    ``` 
 6. Basic settings: 
   ( admin/structure/feeds/ldap_data_to_user_data/settings )
@@ -1026,7 +1026,7 @@ data from LDAP to create new Backdrop users.
      Periodic import : 15 min
      Import on Submission : Checked
      Processed in background : Checked
-   [/Example]        
+   [/Example]
    ```
    - Uncheck the option "Import on Submission", if you need scheduled
      importation of users from LDAP to Backdrop. (Step 14.)
@@ -1035,7 +1035,7 @@ data from LDAP to create new Backdrop users.
    - "Save" this Basic settings.
 7. Set Fetcher to "LDAP Query Fetcher".
    ( admin/structure/feeds/ldap_data_to_user_data/fetcher )
-8. Fetcher Settings: 
+8. Fetcher Settings:
    ( admin/structure/feeds/ldap_data_to_user_data/settings/FeedsLdapQueryFetcher )
    Select "LDAP Query" in here. In this case: "ECM Users"
    "Save" this Fetcher settings.
@@ -1054,8 +1054,8 @@ data from LDAP to create new Backdrop users.
       Status : Active
       Additional roles : Select extra roles to assign to users upon import.
       Defuse e-mail addresses : Unchecked
-    [/Example]      
-    ```    
+    [/Example]
+    ```
 12. Set Mappings:
     ( admin/structure/feeds/ldap_data_to_user_data/mapping )
     SOURCE are fields from LDAP (result attributes of the "ECM Users" query)
@@ -1064,13 +1064,13 @@ data from LDAP to create new Backdrop users.
 
     ```
     [Example]
-      SOURCE              TARGET                      UNIQUE TARGET 
+      SOURCE              TARGET                      UNIQUE TARGET
       MAILNICKNAME        User name (name)            checked
       USERPRINCIPALNAME   Email address (mail)        checked
       GIVENNAME           First Name (field_fname)    unchecked
       SN                  Last Name (field_lname)     unchecked
-    [/Example]      
-    ```  
+    [/Example]
+    ```
 13. Manually triggered import:
     - Open the page of "LDAP Data to User Data" importer: import/ldap_data_to_user_data
       ( URL of the "Feeds importers": base_url/import )
@@ -1098,7 +1098,7 @@ A. Implement hook_cronapi()
       ),
     );
   }
-  ```  
+  ```
 
 B. Write Function to actually import
   ```
@@ -1107,11 +1107,11 @@ B. Write Function to actually import
     if (function_exists('feeds_source')){
       while (FEEDS_BATCH_COMPLETE != feeds_source('ldap_data_to_user_data')->import());
       watchdog('Cron LDAP Users Import', t('LDAP Users Imported Successfully.'), $vars, WATCHDOG_INFO,NULL);
-    } 
+    }
     else {
       watchdog('Cron LDAP Users Import', t('Function : feeds_source not found.'), $vars, WATCHDOG_ERROR,NULL);
     }
-  }       
+  }
   ```
 
 **Done! You have successfully scheduled a cron to import LDAP Users into Backdrop**
@@ -1237,7 +1237,7 @@ Would have the following tokens available for its templates:
     [samaccountname:0] = jdoe
     [samaccountname:last] = jdoe
   ```
-  
+
 #### Additional Example Tokens
 Use the test link at the servers page: admin/config/people/ldap/servers
 You can see the tokens and sample values when you enter a test username and
@@ -1249,7 +1249,7 @@ Automated testing <a name="automatedtesting"></a>
 -----------------
 
 You can test four LDAP modules by Simpletest:
-1. Enable the Simpletest module: 
+1. Enable the Simpletest module:
    Administration > Functionality > List modules > Testing: Enabled
 2. Open the Testing page: Administration > Configuration > Development > Testing
 3. Select these tests:
@@ -1261,8 +1261,8 @@ You can test four LDAP modules by Simpletest:
    - LDAP Authorization Basic Tests
    - OG 1.x-2.x Tests. (This requires the OG module. /Organic groups/)
 4. Press "Run tests" button.
-  
-  
+
+
 
 Manual testing <a name="manualtesting"></a>
 --------------
@@ -1270,7 +1270,7 @@ Manual testing <a name="manualtesting"></a>
 
 #### LDAP Server module
 
-After configuring a server, use the "test" link. 
+After configuring a server, use the "test" link.
 Available at admin/config/people/ldap/servers
 Fill the form, and press the "Test" button.
 
@@ -1311,7 +1311,7 @@ These are handy for understanding the expected behavior of the ldap user module.
 
 #### LDAP Authentication
 
-Login with a user provided by LDAP. 
+Login with a user provided by LDAP.
 
 
 
@@ -1346,13 +1346,13 @@ Try these:
 
 
 
-Local LDAP test server by Vagrant <a name="vagranttesting"></a>  
+Local LDAP test server by Vagrant <a name="vagranttesting"></a>
 ---------------------------------
 You can test the LDAP module with a local LDAP test server.
 Main steps:
-  - [1. Building a test environment](#buildingvagranttesting)
-  - [2. Configure the LDAP module for the local test server](#configvagranttesting)
-  - [3. Manual tests of the LDAP module on the local test server](#manualvagranttesting)
+  [1. Building a test environment](#buildingvagranttesting)
+  [2. Configure the LDAP module for the local test server](#configvagranttesting)
+  [3. Manual tests of the LDAP module on the local test server](#manualvagranttesting)
 
 #### 1. Building a test environment <a name="buildingvagranttesting"></a>
 
@@ -1413,7 +1413,7 @@ build a virtual machine with a working LDAP directory.
    - Press the "Commit" button.
 10. After testing, you can shut down the virtual machine with this command:
     `vagrant halt`
-    
+
 **LDAP**
 - The LDAP is pre-populated with some dummy data. Available at:
 ldap://simpleldap.local
@@ -1448,7 +1448,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
     ```
     [Example]
       Obfuscate LDAP Passwords : Clear text
-    [/Example]      
+    [/Example]
     ```
 - Add LDAP Server Configuration: admin/config/people/ldap/servers/add
     ```
@@ -1475,7 +1475,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
       User attribute held in "LDAP Group Entry Attribute Holding..." : dn
       Testing LDAP Group DN : cn=test_group,ou=groups,dc=local
       Testing LDAP Group DN that is writable : cn=test_group,ou=groups,dc=local
-    [/Example]      
+    [/Example]
     ```
 
 - User: admin/config/people/ldap/user
@@ -1484,9 +1484,9 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
       How to resolve LDAP conflicts with manually created Backdrop accounts : Reject manual creation of Backdrop accounts that conflict with LDAP Accounts.
       LDAP Servers Providing Provisioning Data : None
       LDAP Servers to Provision LDAP Entries on : None
-    [/Example]      
+    [/Example]
     ```
-  
+
 - Authentication: admin/config/people/ldap/authentication
     ```
     [Example]
@@ -1496,7 +1496,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
       Email Update : Update stored email if LDAP email differs at login but don't notify user.
       Email Template Handling : Never use the template.
       Password Behavior : Display password field disabled
-    [/Example]      
+    [/Example]
     ```
 
 - Add the "Backdrop role" consumer: admin/config/people/ldap/authorization/add/backdrop_role
@@ -1507,11 +1507,11 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
       Only apply the following LDAP to Backdrop role configuration to users authenticated via LDAP : Checked
       Convert full dn to value of first attribute before mapping : Checked
       Only grant Backdrop roles that match a filter above: Unchecked
-      When a user logs on : Checked 
+      When a user logs on : Checked
       Revoke Backdrop roles previously granted by LDAP Authorization but no longer valid : Checked
-      Re grant Backdrop roles previously granted by LDAP Authorization but removed manually : Checked 
-      Create Backdrop roles if they do not exist : Checked 
-    [/Example]      
+      Re grant Backdrop roles previously granted by LDAP Authorization but removed manually : Checked
+      Create Backdrop roles if they do not exist : Checked
+    [/Example]
     ```
 
 - Add LDAP Query: admin/config/people/ldap/query/add
@@ -1528,7 +1528,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
       Time Limit in Seconds : 0
       How aliases should be handled during the search : (default) aliases are never dereferenced.
       Scope of search : SUBTREE. (default)
-    [/Example]      
+    [/Example]
     ```
 
 #### 3. Manual tests of the LDAP module on the local test server <a name="manualvagranttesting"></a>
@@ -1557,9 +1557,9 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
     [Building a test environment](#buildingvagranttesting) > Step 8.
   - Verify that the user has appeared in the Backdrop user accounts list: admin/people
   - Create a new LDAP group: [Building a test environment](#buildingvagranttesting) > Step 9.
-    Let the LDAP user be a member of this new LDAP group. 
+    Let the LDAP user be a member of this new LDAP group.
   - Use the "test" link available at admin/config/people/ldap/authorization
-  - Write the username in this field: 
+  - Write the username in this field:
     "Backdrop usernames to test role authorizations results for"
   - Press the "Test" button.
   - The result page shows the name of LDAP group under "Authorization IDs".
@@ -1580,7 +1580,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
      - View name: User list
      - Show: LDAP Query
      - Press the "Continue & configure" button.
-  3. Selet the query of the view: 
+  3. Selet the query of the view:
      - Use "Settings" link: Other > Query settings > Settings
        ( admin/structure/views/nojs/display/user_list/page/query )
      - LDAP Search: users
@@ -1631,7 +1631,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
      - Press the "Save settings" button.
      - You can see the new empty "Surname" field on a user account page.
        ( user/1/edit )
-  3. Create new Feed importer: 
+  3. Create new Feed importer:
      - admin/structure/feeds/create
        ```
        [Example]
@@ -1708,7 +1708,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
         [Example]
           SOURCE : cn
           TARGET : User name (name)
-        [/Example]        
+        [/Example]
         ```
         - Press the "Save" button.
         - Press the "Gear" button under "Target configuration" and select "Unique".
@@ -1745,12 +1745,12 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
 
 - LDAP Feeds: Using LDAP Feeds "LDAP Query Fetcher" to bring in user data from
   LDAP to create new Backdrop users:
-  1. Enable the following modules: 
+  1. Enable the following modules:
      job_scheduler, feeds, feeds_ui, ldap_query, ldap_feeds
-  2. Create new LDAP Query: 
+  2. Create new LDAP Query:
      - admin/config/people/ldap/query/add
        ```
-       [Example]    
+       [Example]
          Machine name for this query configuration : get_ldap_users
          Name : Get LDAP Users
          local : Selected (LDAP Server used for query.)
@@ -1768,10 +1768,10 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
      [Example]
         Name : LDAP Data to User Data
         Machine-Readable name : ldap_data_to_user_data
-     [/Example]        
+     [/Example]
      ``` 
      - Press the "Create" button.
-  4. Basic settings: 
+  4. Basic settings:
      - admin/structure/feeds/ldap_data_to_user_data/settings
      ```
      [Example]
@@ -1779,10 +1779,10 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
        Periodic import : Off
        Import on Submission : Checked
        Processed in background : Unchecked
-     [/Example]        
+     [/Example]
      ```
      - Press the "Save" button.
-  5. Select a Fetcher: 
+  5. Select a Fetcher:
      - admin/structure/feeds/ldap_data_to_user_data/fetcher
        ```
        [Example]
@@ -1827,20 +1827,20 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
           Status : Active
           Additional roles : (none)
           Defuse e-mail addresses : Unchecked
-        [/Example]      
-        ```    
+        [/Example]
+        ```
       - Press the "Save" button.
   11. Set Mappings:
       - admin/structure/feeds/ldap_data_to_user_data/mapping
         SOURCE are fields from LDAP (result attributes of the "Get LDAP Users"
-        query) and TARGET are the fields from Backdrop user account (e.g. 
-        fields of `users` table). 
+        query) and TARGET are the fields from Backdrop user account (e.g.
+        fields of `users` table).
       - User name field:
         ```
         [Example]
           SOURCE : cn
           TARGET : User name (name)
-        [/Example]        
+        [/Example]
         ```
         - Press the "Save" button.
         - Press the "Gear" button under "Target configuration" and select "Unique".
@@ -1855,7 +1855,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
         ```
       - Press the "Save" button.
   12. Manually triggered import:
-      - Open the page of "LDAP Data to User Data" importer: 
+      - Open the page of "LDAP Data to User Data" importer:
         import/ldap_data_to_user_data
         ( URL of the "Feeds importers": base_url/import )
       - LDAP Query : Get LDAP Users
@@ -1936,7 +1936,7 @@ Debugging <a name="debugging"></a>
      `select cast(data as char(1000)) from users where data like '%ldap%';`
    - table: `ldap_servers`
    - table: `ldap_authorization`: Data used to map users LDAP entry to authorization rights.
-   - Picking through configuration: 
+   - Picking through configuration:
      - admin/config/development/configuration/single/export
      - Configuration group: Configuration
      - Configuration name: Select an LDAP module.
@@ -1946,7 +1946,7 @@ Debugging <a name="debugging"></a>
 
 #### Common Error Messages and Warnings
 
-- "No LDAP Extension is loaded for PHP" 
+- "No LDAP Extension is loaded for PHP"
   Signifies the php LDAP extension is not enabled. Use the same steps you would 
   to install any php extension. If it is available with the PHP version you
   installed, it is simply a matter of uncommenting the LDAP link in the php.ini
