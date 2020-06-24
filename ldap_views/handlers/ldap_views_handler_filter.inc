@@ -161,7 +161,7 @@ class ldap_views_handler_filter extends views_handler_filter {
         $which = in_array($this->operator, $this->operator_values(1)) ? 'value' : 'none';
       }
       else {
-        $source = 'edit-' . drupal_html_id($this->options['expose']['operator_id']);
+        $source = 'edit-' . backdrop_html_id($this->options['expose']['operator_id']);
       }
     }
 

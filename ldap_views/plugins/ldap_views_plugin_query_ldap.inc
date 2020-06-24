@@ -46,10 +46,10 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
     // Make sure an alias is assigned.
     $alias = $alias ? $alias : $field;
 
-    // PostgreSQL truncates aliases to 63 characters: http://drupal.org/node/571548
+    // PostgreSQL truncates aliases to 63 characters: https://drupal.org/node/571548
     // We limit the length of the original alias up to 60 characters
     // to get a unique alias later if its have duplicates.
-    $alias = drupal_substr($alias, 0, 60);
+    $alias = backdrop_substr($alias, 0, 60);
 
     // Create a field info array.
     $field_info = [
@@ -80,7 +80,7 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
   public function add_orderby($table, $field, $order, $alias = '', $params = []) {
     $this->orderby[] = [
       'field' => $field,
-      'direction' => drupal_strtoupper($order),
+      'direction' => backdrop_strtoupper($order),
     ];
   }
 
@@ -139,7 +139,7 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
       'field' => $field,
       'value' => $value,
       'operator' => ltrim($operator, '!'),
-      'negate' => drupal_substr($operator, 0, 1) == '!',
+      'negate' => backdrop_substr($operator, 0, 1) == '!',
     ];
   }
 
@@ -184,7 +184,7 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
   public function build_contextual_filter() {
     $contextual_filter = '';
     foreach ($this->filter as $condition) {
-      $contextual_filter .= drupal_substr($condition, 0, 1) != '(' ? "($condition)" : $condition;
+      $contextual_filter .= backdrop_substr($condition, 0, 1) != '(' ? "($condition)" : $condition;
     }
     return $contextual_filter;
   }
@@ -241,7 +241,7 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
     }
     foreach ($this->fields as $field) {
       $attributes[$field['alias']] = $field['field'];
-      $field_alias[$field['alias']] = drupal_strtolower($field['field']);
+      $field_alias[$field['alias']] = backdrop_strtolower($field['field']);
     }
 
     $ldap_data   = new LdapQuery(ldap_views_get_qid($view));
@@ -271,8 +271,8 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
     $set_of_sort_fields = [];
     if (!empty($this->orderby)) {
       foreach ($this->orderby as $orderby) {
-        $sort_fields[drupal_strtolower($orderby['field'])]['direction'] = $orderby['direction'];
-        $sort_fields[drupal_strtolower($orderby['field'])]['data']      = [];
+        $sort_fields[backdrop_strtolower($orderby['field'])]['direction'] = $orderby['direction'];
+        $sort_fields[backdrop_strtolower($orderby['field'])]['data']      = [];
         $set_of_sort_fields[] = $orderby['field'];
       }
 
@@ -333,7 +333,7 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
       $desc = SORT_DESC;
       foreach ($sort_fields as &$field) {
         $params[] = &$field['data'];
-        if (drupal_strtoupper($field['direction']) == 'ASC') {
+        if (backdrop_strtoupper($field['direction']) == 'ASC') {
           $params[] = &$asc;
         }
         else {
