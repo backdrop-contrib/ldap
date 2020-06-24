@@ -57,7 +57,7 @@ function theme_ldap_authentication_user_pass_message($variables) {
   /** @var object $auth_conf */
   extract($variables);
   if ($auth_conf->authenticationMode == LDAP_AUTHENTICATION_EXCLUSIVE && $auth_conf->passwordOption != LDAP_AUTHENTICATION_PASSWORD_FIELD_ALLOW) {
-    $msg = t('This page is only useful for the site administrator.  All other users
+    $msg = t('This page is only useful for the site administrator. All other users
       need to reset their passwords');
     if ($auth_conf->ldapUserHelpLinkUrl) {
       $msg .= ' ' . t('at') . ' ' . l(t($auth_conf->ldapUserHelpLinkText), $auth_conf->ldapUserHelpLinkUrl) . '.';
@@ -68,7 +68,7 @@ function theme_ldap_authentication_user_pass_message($variables) {
   }
   // Mixed mode.
   else {
-    // Warning will come up on validation.  we do not know if the user is ldap authenticated or not until they submit form.
+    // Warning will come up on validation. We do not know if the user is ldap authenticated or not until they submit form.
     $msg = "";
   }
 
@@ -93,11 +93,11 @@ function theme_ldap_authentication_user_pass_validate_ldap_authenticated($variab
   extract($variables);
   // Already know user exists and is ldap authenticated.
   if ($auth_conf->ldapUserHelpLinkUrl) {
-    $msg = t('You may not reset your password here.  You must reset your password via the directions at')
+    $msg = t('You may not reset your password here. You must reset your password via the directions at')
     . ' ' . l(t($auth_conf->ldapUserHelpLinkText), $auth_conf->ldapUserHelpLinkUrl);
   }
   else {
-    $msg = t('You may not reset your password here.  You must reset your password via one of your
+    $msg = t('You may not reset your password here. You must reset your password via one of your
       organization\'s password management sites.');
   }
   return $msg;

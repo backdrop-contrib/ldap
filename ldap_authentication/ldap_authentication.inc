@@ -79,7 +79,7 @@ function _ldap_authentication_login_form_alter(&$form, &$form_state, $form_id) {
  * @return NULL (alters $form by reference)
  */
 function _ldap_authentication_form_user_profile_form_alter(&$form, $form_state) {
-  // Keep in mind admin may be editing another users profile form.  don't assume current global $user.
+  // Keep in mind admin may be editing another users profile form. Don't assume current global $user.
   $auth_conf = ldap_authentication_get_valid_conf();
   if ($auth_conf && ldap_authentication_ldap_authenticated($form['#user'])) {
     if ($auth_conf->emailOption == LDAP_AUTHENTICATION_EMAIL_FIELD_REMOVE) {
@@ -160,12 +160,12 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
 
   // Default to name.
   $entered_name = $form_state['values']['name'];
-  $authname_drupal_property = $form_field_name = 'name';
+  $authname_backdrop_property = $form_field_name = 'name';
 
   // Email registration module populates name even though user entered email.
   if (!empty($form_state['values']['email'])) {
     $entered_name = $form_state['values']['email'];
-    $authname_drupal_property = 'mail';
+    $authname_backdrop_property = 'mail';
     $form_field_name = 'email';
   }
 
@@ -213,7 +213,7 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
     }
     elseif ($auth_conf->authenticationMode == LDAP_AUTHENTICATION_EXCLUSIVE) {
       if ($detailed_watchdog_log) {
-        watchdog('ldap_authentication', '%username : Previously authenticated in exclusive mode or uid is not 1.  Clear uid
+        watchdog('ldap_authentication', '%username : Previously authenticated in exclusive mode or uid is not 1. Clear uid
         in form_state and attempt ldap authentication.', $watchdog_tokens, WATCHDOG_DEBUG);
       }
       // Passed previous authentication, but only ldap should be used so override.
@@ -231,12 +231,12 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
   }
 
   /**
-   * III. determine if corresponding drupal account exists for $authname
+   * III. determine if corresponding backdrop account exists for $authname
    */
-  $drupal_account_is_authmapped = FALSE;
-  list($drupal_account, $drupal_account_is_authmapped) = ldap_authentication_corresponding_drupal_user($authname, $auth_conf, $watchdog_tokens);
-  $drupal_account_exists = is_object($drupal_account);
-  if ($drupal_account_exists && $drupal_account->uid == 1) {
+  $backdrop_account_is_authmapped = FALSE;
+  list($backdrop_account, $backdrop_account_is_authmapped) = ldap_authentication_corresponding_backdrop_user($authname, $auth_conf, $watchdog_tokens);
+  $backdrop_account_exists = is_object($backdrop_account);
+  if ($backdrop_account_exists && $backdrop_account->uid == 1) {
     // User 1 is not allowed to ldap authenticate.
     return;
   }
@@ -245,8 +245,8 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
    * IV. test credentials and if available get corresponding ldap user and ldap server
    */
   list($authentication_result, $ldap_user, $ldap_server_authenticated_on) = ldap_authentication_test_credentials($auth_conf, $sso_login, $authname, $form_state['values']['pass'], $watchdog_tokens);
-  $params['account'] = $drupal_account;
-  drupal_alter('ldap_entry', $ldap_user, $params);
+  $params['account'] = $backdrop_account;
+  backdrop_alter('ldap_entry', $ldap_user, $params);
   if ($authentication_result != LDAP_AUTHENTICATION_RESULT_SUCCESS) {
     ldap_authentication_fail_response($authentication_result, $auth_conf, $detailed_watchdog_log, $watchdog_tokens);
     return;
@@ -254,31 +254,31 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
 
   /**
    * IV.a Workaround for the provisioning server not always getting saved in
-   *      the user object.  So we save it in a session variable as a backup.
+   *      the user object. So we save it in a session variable as a backup.
    */
   if ($ldap_server_authenticated_on) {
     $_SESSION[LDAP_USER_SESSION_PROV_SID] = $ldap_server_authenticated_on->sid;
   }
 
   /**
-   * V. if account_name_attr is set, drupal username is different than authname
+   * V. if account_name_attr is set, backdrop username is different than authname
    */
   if ($ldap_server_authenticated_on->account_name_attr != '') {
     $watchdog_tokens['%account_name_attr'] = $ldap_server_authenticated_on->account_name_attr;
-    $drupal_accountname = $ldap_user['attr'][ldap_server_massage_text($ldap_server_authenticated_on->account_name_attr, 'attr_name', LDAP_SERVER_MASSAGE_QUERY_ARRAY)][0];
-    if (!$drupal_accountname) {
-      watchdog('ldap_authentication', 'Derived drupal username from attribute %account_name_attr returned no username for authname %authname.', $watchdog_tokens, WATCHDOG_ERROR);
+    $backdrop_accountname = $ldap_user['attr'][ldap_server_massage_text($ldap_server_authenticated_on->account_name_attr, 'attr_name', LDAP_SERVER_MASSAGE_QUERY_ARRAY)][0];
+    if (!$backdrop_accountname) {
+      watchdog('ldap_authentication', 'Derived backdrop username from attribute %account_name_attr returned no username for authname %authname.', $watchdog_tokens, WATCHDOG_ERROR);
       return;
     }
   }
   else {
-    $drupal_accountname = $authname;
+    $backdrop_accountname = $authname;
   }
-  $watchdog_tokens['%drupal_accountname'] = $drupal_accountname;
+  $watchdog_tokens['%backdrop_accountname'] = $backdrop_accountname;
 
   // @todo maybe we can add more tokens?
   $email_template_tokens = [
-    '@username' => $drupal_accountname,
+    '@username' => $backdrop_accountname,
   ];
 
   $email_template_used = FALSE;
@@ -304,65 +304,65 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
   }
 
   /**
-   * VI. Find or create corresponding drupal account and set authmaps
+   * VI. Find or create corresponding backdrop account and set authmaps
    *
    * at this point, the following are know:
    * - a corresponding ldap account has been found
    * - user's credentials tested against it and passed
-   * - their drupal accountname has been derived
+   * - their backdrop accountname has been derived
    *
    */
 
   /**
-   * VI.A: Drupal account doesn't exist with $authname used to logon,
-   *  but puid exists in another Drupal account; this means username has changed
-   *  and needs to be saved in Drupal account
+   * VI.A: Backdrop account doesn't exist with $authname used to logon,
+   *  but puid exists in another Backdrop account; this means username has changed
+   *  and needs to be saved in Backdrop account
    *
    */
-  if (!$drupal_account_exists && $ldap_server_authenticated_on) {
+  if (!$backdrop_account_exists && $ldap_server_authenticated_on) {
     $puid = $ldap_server_authenticated_on->userPuidFromLdapEntry($ldap_user['attr']);
     if ($puid) {
-      $drupal_account = $ldap_server_authenticated_on->userUserEntityFromPuid($puid);
-      if ($drupal_account) {
-        $drupal_account_exists = TRUE;
-        if ($drupal_accountname == $authname) {
-          $user_edit = [$authname_drupal_property => $drupal_accountname];
+      $backdrop_account = $ldap_server_authenticated_on->userUserEntityFromPuid($puid);
+      if ($backdrop_account) {
+        $backdrop_account_exists = TRUE;
+        if ($backdrop_accountname == $authname) {
+          $user_edit = [$authname_backdrop_property => $backdrop_accountname];
         }
         else {
-          $user_edit = ['name' => $drupal_accountname];
+          $user_edit = ['name' => $backdrop_accountname];
         }
-        if (!empty($drupal_account->data)) {
-          $user_edit['data'] = !empty($user_edit['data']) ? array_merge($drupal_account->data, $user_edit['data']) : $drupal_account->data;
+        if (!empty($backdrop_account->data)) {
+          $user_edit['data'] = !empty($user_edit['data']) ? array_merge($backdrop_account->data, $user_edit['data']) : $backdrop_account->data;
         }
         foreach ($user_edit as $key => $value) {
-          $drupal_account->{$key} = $value;
+          $backdrop_account->{$key} = $value;
         }
-        $drupal_account->save();
-        ldap_user_user_set_authmaps($drupal_account, ["authname_ldap_user" => $authname]);
-        $drupal_account_is_authmapped = TRUE;
+        $backdrop_account->save();
+        ldap_user_user_set_authmaps($backdrop_account, ["authname_ldap_user" => $authname]);
+        $backdrop_account_is_authmapped = TRUE;
       }
     }
   }
 
   /**
-   * VI.B: existing Drupal account but not authmapped to ldap modules,
+   * VI.B: existing Backdrop account but not authmapped to ldap modules,
    * ldap authmap or disallow.
    */
   // Account already exists.
-  if ($drupal_account_exists && !$drupal_account_is_authmapped) {
+  if ($backdrop_account_exists && !$backdrop_account_is_authmapped) {
     if ($auth_conf->ldapUser->loginConflictResolve == LDAP_USER_CONFLICT_LOG) {
       if ($account_with_same_email = user_load_by_mail($ldap_user['mail'])) {
         $watchdog_tokens['%conflict_name'] = $account_with_same_email->name;
-        watchdog('ldap_authentication', 'LDAP user with DN %dn has a naming conflict with a local drupal user %conflict_name', $watchdog_tokens, WATCHDOG_ERROR);
+        watchdog('ldap_authentication', 'LDAP user with DN %dn has a naming conflict with a local backdrop user %conflict_name', $watchdog_tokens, WATCHDOG_ERROR);
       }
-      drupal_set_message(t('Another user already exists in the system with the same login name. You should contact the system administrator in order to solve this conflict.'), 'error');
+      backdrop_set_message(t('Another user already exists in the system with the same login name. You should contact the system administrator in order to solve this conflict.'), 'error');
       return;
     }
-    // LDAP_authen.AC.disallow.ldap.drupal.
+    // LDAP_authen.AC.disallow.ldap.backdrop.
     else {
-      // Add ldap_authentication authmap to user.  account name is fine here, though cn could be used.
-      ldap_user_user_set_authmaps($drupal_account, ['authname_ldap_user' => $authname]);
-      $drupal_account_is_authmapped = TRUE;
+      // Add ldap_authentication authmap to user. account name is fine here, though cn could be used.
+      ldap_user_user_set_authmaps($backdrop_account, ['authname_ldap_user' => $authname]);
+      $backdrop_account_is_authmapped = TRUE;
       if ($detailed_watchdog_log) {
         watchdog('ldap_authentication', 'set authmap for %username authname_ldap_user', $watchdog_tokens, WATCHDOG_DEBUG);
       }
@@ -370,46 +370,46 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
   }
 
   /**
-   * VI.C: existing Drupal account with incorrect email.
+   * VI.C: existing Backdrop account with incorrect email.
    * Fix email if appropriate.
    */
   if ((!($auth_conf->templateUsageNeverUpdate && $email_template_used)) &&
-      $drupal_account_exists &&
-      $drupal_account->mail != $ldap_user['mail'] &&
+      $backdrop_account_exists &&
+      $backdrop_account->mail != $ldap_user['mail'] &&
       (
         $auth_conf->emailUpdate == LDAP_AUTHENTICATION_EMAIL_UPDATE_ON_LDAP_CHANGE_ENABLE_NOTIFY ||
         $auth_conf->emailUpdate == LDAP_AUTHENTICATION_EMAIL_UPDATE_ON_LDAP_CHANGE_ENABLE
       )) {
     $user_edit = ['mail' => $ldap_user['mail']];
 
-    $watchdog_tokens['%username'] = $drupal_account->name;
-    if (!empty($drupal_account->data)) {
-      $user_edit['data'] = !empty($user_edit['data']) ? array_merge($drupal_account->data, $user_edit['data']) : $drupal_account->data;
+    $watchdog_tokens['%username'] = $backdrop_account->name;
+    if (!empty($backdrop_account->data)) {
+      $user_edit['data'] = !empty($user_edit['data']) ? array_merge($backdrop_account->data, $user_edit['data']) : $backdrop_account->data;
     }
     foreach ($user_edit as $key => $value) {
-      $drupal_account->{$key} = $value;
+      $backdrop_account->{$key} = $value;
     }
-    if (!$updated_account = user_save($drupal_account)) {
+    if (!$updated_account = user_save($backdrop_account)) {
       watchdog('ldap_authentication', 'Failed to make changes to user %username updated %changed.', $watchdog_tokens, WATCHDOG_ERROR);
     }
     elseif ($auth_conf->emailUpdate == LDAP_AUTHENTICATION_EMAIL_UPDATE_ON_LDAP_CHANGE_ENABLE_NOTIFY) {
       if (isset($user_edit['mail'])) {
         $watchdog_tokens['%mail'] = $user_edit['mail'];
-        drupal_set_message(t('Your e-mail has been updated to match your current account (%mail).', $watchdog_tokens), 'status');
+        backdrop_set_message(t('Your e-mail has been updated to match your current account (%mail).', $watchdog_tokens), 'status');
       }
       if (isset($user_edit['name'])) {
         $watchdog_tokens['%new_username'] = $user_edit['name'];
-        drupal_set_message(t('Your old account username %username has been updated to %new_username.', $watchdog_tokens), 'status');
+        backdrop_set_message(t('Your old account username %username has been updated to %new_username.', $watchdog_tokens), 'status');
       }
     }
   }
 
   /**
-   * VI.C: no existing Drupal account.  consider provisioning Drupal account.
+   * VI.C: no existing Backdrop account. consider provisioning Backdrop account.
    */
-  if (!$drupal_account_exists) {
+  if (!$backdrop_account_exists) {
 
-    // VI.C.1 Do not provision Drupal account if another account has same email.
+    // VI.C.1 Do not provision Backdrop account if another account has same email.
     if (($auth_conf->ldapUser->acctCreation == LDAP_USER_ACCOUNTS_WITH_SAME_EMAIL_DISABLED) && ($account_with_same_email = user_load_by_mail($ldap_user['mail']))) {
       $error = TRUE;
       /**
@@ -432,25 +432,25 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
       if ($error) {
         $watchdog_tokens['%duplicate_name'] = $account_with_same_email->name;
         watchdog('ldap_authentication', 'LDAP user with DN %dn has email address
-          (%mail) conflict with a drupal user %duplicate_name', $watchdog_tokens, WATCHDOG_ERROR);
-        drupal_set_message(t('Another user already exists in the system with the same email address. You should contact the system administrator in order to solve this conflict.'), 'error');
+          (%mail) conflict with a backdrop user %duplicate_name', $watchdog_tokens, WATCHDOG_ERROR);
+        backdrop_set_message(t('Another user already exists in the system with the same email address. You should contact the system administrator in order to solve this conflict.'), 'error');
         return;
       }
     }
 
-    // VI.C.2 Do not provision Drupal account if provisioning disabled.
-    if (!$auth_conf->ldapUser->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE)) {
-      watchdog('ldap_user', 'Drupal account for authname=%authname account name=%account_name_attr does not exist and provisioning of Drupal accounts on authentication is not enabled', $watchdog_tokens, WATCHDOG_INFO);
+    // VI.C.2 Do not provision Backdrop account if provisioning disabled.
+    if (!$auth_conf->ldapUser->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE)) {
+      watchdog('ldap_user', 'Backdrop account for authname=%authname account name=%account_name_attr does not exist and provisioning of Backdrop accounts on authentication is not enabled', $watchdog_tokens, WATCHDOG_INFO);
       return;
     }
 
     /**
-     * VI.C.3 Provision Drupal account.
+     * VI.C.3 Provision Backdrop account.
      * New ldap_authentication provisioned account could
      * letuser_external_login_register create the account and set authmaps, but
      * would need to add mail and any other user->data data in
      * hook_user_presave which would mean requerying ldap or having a global
-     * variable.  At this point the account does not exist, so there is no
+     * variable. At this point the account does not exist, so there is no
      * reason not to create it here.
      *
      * @todo create patch for core user module's user_external_login_register
@@ -464,9 +464,9 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
     }
     if ($auth_conf->ldapUser->acctCreation == LDAP_USER_ACCT_CREATION_USER_SETTINGS_FOR_LDAP &&
             $user_register == USER_REGISTER_ADMINISTRATORS_ONLY) {
-      watchdog('ldap_user', 'Failed to create account for %drupal_accountname. Administrative user must create user.',
+      watchdog('ldap_user', 'Failed to create account for %backdrop_accountname. Administrative user must create user.',
           $watchdog_tokens, WATCHDOG_ERROR);
-      form_set_error('name', t('Server Error: Attempt to create account for %drupal_accountname failed. Administrative user must create user.',
+      form_set_error('name', t('Server Error: Attempt to create account for %backdrop_accountname failed. Administrative user must create user.',
           $watchdog_tokens));
       return;
     }
@@ -477,10 +477,10 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
     if ($auth_conf->ldapUser->acctCreation == LDAP_AUTHENTICATION_ACCT_CREATION_USER_SETTINGS_FOR_LDAP &&
         $user_register == USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL) {
       // If admin approval required, set status to 0.
-      $user_edit = ['name' => $drupal_accountname, 'status' => 0];
+      $user_edit = ['name' => $backdrop_accountname, 'status' => 0];
     }
     else {
-      $user_edit = ['name' => $drupal_accountname, 'status' => 1];
+      $user_edit = ['name' => $backdrop_accountname, 'status' => 1];
     }
 
     // If the email template was used, we want to pass in the email that was
@@ -489,21 +489,21 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
       $user_edit['mail'] = $ldap_user['mail'];
     }
 
-    // don't pass in ldap user to provisionDrupalAccount, because want to requery with correct attributes needed
+    // don't pass in ldap user to provisionBackdropAccount, because want to requery with correct attributes needed
     // this may be a case where efficiency dictates querying for all attributes.
-    $drupal_account = $auth_conf->ldapUser->provisionDrupalAccount(NULL, $user_edit, $ldap_user, TRUE);
+    $backdrop_account = $auth_conf->ldapUser->provisionBackdropAccount(NULL, $user_edit, $ldap_user, TRUE);
 
-    if ($drupal_account === FALSE) {
-      watchdog('ldap_user', 'Failed to find or create %drupal_accountname on logon.', $watchdog_tokens, WATCHDOG_ERROR);
-      form_set_error('name', t('Server Error: Failed to create Drupal user account for %drupal_accountname', $watchdog_tokens));
+    if ($backdrop_account === FALSE) {
+      watchdog('ldap_user', 'Failed to find or create %backdrop_accountname on logon.', $watchdog_tokens, WATCHDOG_ERROR);
+      form_set_error('name', t('Server Error: Failed to create Backdrop user account for %backdrop_accountname', $watchdog_tokens));
       return;
     }
     else {
-      ldap_user_user_set_authmaps($drupal_account, ['authname_ldap_user' => $authname]);
+      ldap_user_user_set_authmaps($backdrop_account, ['authname_ldap_user' => $authname]);
       // Using Rules allows emails to be fired and many other possible reactions
       // to the creation of a user.
       if (module_exists('rules')) {
-        rules_invoke_event('ldap_user_created', $drupal_account, $email_template_used);
+        rules_invoke_event('ldap_user_created', $backdrop_account, $email_template_used);
       }
     }
   }
@@ -517,45 +517,45 @@ function _ldap_authentication_user_login_authenticate_validate(&$form_state, $re
   * [#1009990],[#1865938]
   */
 
-  $form_state['uid'] = $drupal_account->uid;
-  return ($return_user) ? $drupal_account : NULL;
+  $form_state['uid'] = $backdrop_account->uid;
+  return ($return_user) ? $backdrop_account : NULL;
 }
 
 /**
- * Given authname, determine if corresponding drupal account exists and is authmapped.
+ * Given authname, determine if corresponding backdrop account exists and is authmapped.
  */
-function ldap_authentication_corresponding_drupal_user($authname, $auth_conf, &$watchdog_tokens) {
+function ldap_authentication_corresponding_backdrop_user($authname, $auth_conf, &$watchdog_tokens) {
   $detailed_watchdog_log = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
-  if (!($drupal_account = user_load_by_name($authname)) && !($drupal_account = user_load_by_mail($authname))) {
+  if (!($backdrop_account = user_load_by_name($authname)) && !($backdrop_account = user_load_by_mail($authname))) {
     $uid = db_query("SELECT uid FROM {ldap_authmap} WHERE authname = :authname AND module = 'ldap_user'", [':authname' => $authname])->fetchColumn();
-    $drupal_account = $uid ? user_load($uid) : FALSE;
+    $backdrop_account = $uid ? user_load($uid) : FALSE;
   }
 
-  if (is_object($drupal_account)) {
+  if (is_object($backdrop_account)) {
     // Patch 1599632.
     $authmaps = ldap_user_user_get_authmaps($authname);
-    $drupal_account_is_authmapped = isset($authmaps['ldap_user']);
-    $user_data = $drupal_account->data;
-    if ($drupal_account->uid == 1 && $detailed_watchdog_log) {
-      watchdog('ldap_authentication', '%username : Drupal username maps to user 1, so do not authenticate with ldap', $watchdog_tokens, WATCHDOG_DEBUG);
+    $backdrop_account_is_authmapped = isset($authmaps['ldap_user']);
+    $user_data = $backdrop_account->data;
+    if ($backdrop_account->uid == 1 && $detailed_watchdog_log) {
+      watchdog('ldap_authentication', '%username : Backdrop username maps to user 1, so do not authenticate with ldap', $watchdog_tokens, WATCHDOG_DEBUG);
     }
     elseif ($detailed_watchdog_log) {
-      watchdog('ldap_authentication', '%username : Drupal User Account found.  Continuing on to attempt ldap authentication', $watchdog_tokens, WATCHDOG_DEBUG);
+      watchdog('ldap_authentication', '%username : Backdrop User Account found. Continuing on to attempt ldap authentication', $watchdog_tokens, WATCHDOG_DEBUG);
     }
   }
   // Account does not exist.
   else {
-    $drupal_account_is_authmapped = FALSE;
+    $backdrop_account_is_authmapped = FALSE;
     if ($auth_conf->ldapUser->createLDAPAccounts == FALSE) {
       if ($detailed_watchdog_log) {
-        watchdog('ldap_authentication', '%username : Drupal User Account not found and configuration is set to not create new accounts.', $watchdog_tokens, WATCHDOG_DEBUG);
+        watchdog('ldap_authentication', '%username : Backdrop User Account not found and configuration is set to not create new accounts.', $watchdog_tokens, WATCHDOG_DEBUG);
       }
     }
     if ($detailed_watchdog_log) {
-      watchdog('ldap_authentication', '%username : Existing Drupal User Account not found.  Continuing on to attempt ldap authentication', $watchdog_tokens, WATCHDOG_DEBUG);
+      watchdog('ldap_authentication', '%username : Existing Backdrop User Account not found. Continuing on to attempt ldap authentication', $watchdog_tokens, WATCHDOG_DEBUG);
     }
   }
-  return [$drupal_account, $drupal_account_is_authmapped];
+  return [$backdrop_account, $backdrop_account_is_authmapped];
 }
 
 /**
@@ -580,7 +580,7 @@ function ldap_authentication_test_credentials($auth_conf, $sso_login, $authname,
       $authentication_result = LDAP_AUTHENTICATION_RESULT_FAIL_CONNECT;
       $watchdog_tokens['%err_msg'] = $ldap_server->errorMsg('ldap');
       if ($detailed_watchdog_log) {
-        watchdog('ldap_authentication', '%username : Failed connecting to %sid.  Error: %err_msg', $watchdog_tokens, WATCHDOG_DEBUG);
+        watchdog('ldap_authentication', '%username : Failed connecting to %sid. Error: %err_msg', $watchdog_tokens, WATCHDOG_DEBUG);
       }
       $watchdog_tokens['%err_msg'] = NULL;
       // Next server, please.
@@ -621,7 +621,7 @@ function ldap_authentication_test_credentials($auth_conf, $sso_login, $authname,
     if (!$bind_success) {
       if ($detailed_watchdog_log) {
         $watchdog_tokens['%err_text'] = $ldap_server->errorMsg('ldap');
-        watchdog('ldap_authentication', '%username : Trying server %sid where bind_method = %bind_method.  Error: %err_text', $watchdog_tokens, WATCHDOG_DEBUG);
+        watchdog('ldap_authentication', '%username : Trying server %sid where bind_method = %bind_method. Error: %err_text', $watchdog_tokens, WATCHDOG_DEBUG);
         $watchdog_tokens['%err_text'] = NULL;
       }
       $authentication_result = ($ldap_server->bind_method == LDAP_SERVERS_BIND_METHOD_USER) ? LDAP_AUTHENTICATION_RESULT_FAIL_CREDENTIALS : LDAP_AUTHENTICATION_RESULT_FAIL_BIND;
@@ -649,7 +649,7 @@ function ldap_authentication_test_credentials($auth_conf, $sso_login, $authname,
     if (!$ldap_user) {
       if ($detailed_watchdog_log) {
         $watchdog_tokens['%err_text'] = $ldap_server->errorMsg('ldap');
-        watchdog('ldap_authentication', '%username : Trying server %sid where bind_method = %bind_method.  Error: %err_text', $watchdog_tokens, WATCHDOG_DEBUG);
+        watchdog('ldap_authentication', '%username : Trying server %sid where bind_method = %bind_method. Error: %err_text', $watchdog_tokens, WATCHDOG_DEBUG);
         $watchdog_tokens['%err_text'] = NULL;
       }
       if ($ldap_server->ldapErrorNumber()) {
@@ -704,7 +704,7 @@ function ldap_authentication_test_credentials($auth_conf, $sso_login, $authname,
     if (!$credentials_pass) {
       if ($detailed_watchdog_log) {
         $watchdog_tokens['%err_text'] = $ldap_server->errorMsg('ldap');
-        watchdog('ldap_authentication', '%username : Testing user credentials on server %sid where bind_method = %bind_method.  Error: %err_text', $watchdog_tokens, WATCHDOG_DEBUG);
+        watchdog('ldap_authentication', '%username : Testing user credentials on server %sid where bind_method = %bind_method. Error: %err_text', $watchdog_tokens, WATCHDOG_DEBUG);
         $watchdog_tokens['%err_text'] = NULL;
       }
       $authentication_result = LDAP_AUTHENTICATION_RESULT_FAIL_CREDENTIALS;
@@ -724,8 +724,8 @@ function ldap_authentication_test_credentials($auth_conf, $sso_login, $authname,
       }
       // Update ldapUser with the sid of the server that the user authenticated
       // on if that option was enabled in the LDAP user configuration.
-      if ($auth_conf->ldapUser->drupalAcctProvisionServer == LDAP_USER_AUTH_SERVER_SID) {
-        $auth_conf->ldapUser->drupalAcctProvisionServer = $ldap_server->sid;
+      if ($auth_conf->ldapUser->backdropAcctProvisionServer == LDAP_USER_AUTH_SERVER_SID) {
+        $auth_conf->ldapUser->backdropAcctProvisionServer = $ldap_server->sid;
       }
       // Success.
       break;
@@ -747,17 +747,17 @@ function ldap_authentication_test_credentials($auth_conf, $sso_login, $authname,
  */
 function ldap_authentication_fail_response($authentication_result, $auth_conf, $detailed_watchdog_log, &$watchdog_tokens) {
   $watchdog_tokens['%err_text'] = _ldap_authentication_err_text($authentication_result);
-  // Fail scenario 1.  ldap auth exclusive and failed  throw error so no other authentication methods are allowed.
+  // Fail scenario 1. ldap auth exclusive and failed  throw error so no other authentication methods are allowed.
   if ($auth_conf->authenticationMode == LDAP_AUTHENTICATION_EXCLUSIVE) {
     if ($detailed_watchdog_log) {
       watchdog('ldap_authentication', '%username : setting error because failed at ldap and
-        LDAP_AUTHENTICATION_EXCLUSIVE is set to true.  So need to stop authentication of Drupal user that is not user 1.
+        LDAP_AUTHENTICATION_EXCLUSIVE is set to true. So need to stop authentication of Backdrop user that is not user 1.
         error message: %err_text', $watchdog_tokens, WATCHDOG_DEBUG);
     }
     form_set_error('name', $watchdog_tokens['%err_text']);
   }
   else {
-    // Fail scenario 2.  simply fails ldap.  return false, but don't throw form error
+    // Fail scenario 2. simply fails ldap. return false, but don't throw form error
     // don't show user message, may be using other authentication after this that may succeed.
     if ($detailed_watchdog_log) {
       watchdog('ldap_authentication',

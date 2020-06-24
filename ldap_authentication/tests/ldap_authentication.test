@@ -30,7 +30,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     parent::setUp([
       'ldap_authentication',
       'ldap_authorization',
-      'ldap_authorization_drupal_role',
+      'ldap_authorization_backdrop_role',
       'ldap_test',
     // don't need any real servers, configured, just ldap_servers code base.
     ]);
@@ -71,9 +71,9 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     $this->prepTestData(
       LDAP_TEST_LDAP_NAME,
       $sids,
-      'provisionToDrupal',
+      'provisionToBackdrop',
       'MixedModeUserLogon3',
-      'drupal_role_authentication_test'
+      'backdrop_role_authentication_test'
     );
 
     $ldap_servers = ldap_servers_get_servers($sid, 'enabled');
@@ -85,7 +85,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     $user1 = user_load(1);
     $password = $this->randomString(20);
-    require_once DRUPAL_ROOT . '/core/includes/password.inc';
+    require_once BACKDROP_ROOT . '/core/includes/password.inc';
     $account = [
       'name' => $user1->name,
       'pass' => user_hash_password(trim($password)),
@@ -102,79 +102,79 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     // Reset the internal cache by the TRUE parameter.
     user_load(1, TRUE);
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Log out'), 'User 1 successfully authenticated', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
-    /** LDAP_authen.MM.ULT.user1.badpwd  -- result: Drupal logon error message. **/
+    /** LDAP_authen.MM.ULT.user1.badpwd  -- result: Backdrop logon error message. **/
 
     $edit = [
       'name' => $user1->name,
       'pass' => 'mydabpassword',
     ];
 
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Sorry, incorrect password.'), 'User 1 failed with bad password', $testid);
-    $this->drupalLogout();
+    $this->backdropLogout();
 
-    /** LDAP_authen.MM.ULT.drupal.goodpwd - result: Successful logon **/
+    /** LDAP_authen.MM.ULT.backdrop.goodpwd - result: Successful logon **/
 
-    $drupal_user = $this->drupalCreateUser();
-    $raw_pass = $drupal_user->pass_raw;
+    $backdrop_user = $this->backdropCreateUser();
+    $raw_pass = $backdrop_user->pass_raw;
     $edit = [
-      'name' => $drupal_user->name,
+      'name' => $backdrop_user->name,
       'pass' => $raw_pass,
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Member for'), 'Drupal user (not ldap associated) successfully authenticated', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropPost('user', $edit, t('Log in'));
+    $this->assertText(t('Member for'), 'Backdrop user (not ldap associated) successfully authenticated', $testid);
+    $this->backdropGet('user/logout');
 
-    /** LDAP_authen.MM.ULT.drupal.badpwd - result: Drupal logon error message. **/
+    /** LDAP_authen.MM.ULT.backdrop.badpwd - result: Backdrop logon error message. **/
     $edit = [
-      'name' => $drupal_user->name,
+      'name' => $backdrop_user->name,
       'pass' => 'mydabpassword',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Sorry, incorrect password.'), 'Drupal user  (not ldap associated) with bad password failed to authenticate.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropPost('user', $edit, t('Log in'));
+    $this->assertText(t('Sorry, incorrect password.'), 'Backdrop user  (not ldap associated) with bad password failed to authenticate.', $testid);
+    $this->backdropGet('user/logout');
 
-    /** LDAP_authen.MM.ULT.ldap.newaccount.badpwd - result: Drupal logon error message. **/
+    /** LDAP_authen.MM.ULT.ldap.newaccount.badpwd - result: Backdrop logon error message. **/
     $edit = [
       'name' => 'hpotter',
       'pass' => 'mydabpassword',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Sorry, unrecognized username.'), 'New Ldap user with bad password failed to authenticate.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     /** LDAP_authen.MM.ULT.ldap.newaccount.goodpwd - result: Successful logon, with user record created and authmapped to ldap **/
     $edit = [
       'name' => 'hpotter',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Member for'), 'New Ldap user with good password authenticated.');
     $this->assertTrue($this->testFunctions->ldapUserIsAuthmapped('hpotter'), 'Ldap user properly authmapped.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
-    /** LDAP_authen.MM.ULT.existingacct.badpwd - result: Drupal logon error message. **/
+    /** LDAP_authen.MM.ULT.existingacct.badpwd - result: Backdrop logon error message. **/
     $edit = [
       'name' => 'hpotter',
       'pass' => 'mydabpassword',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Sorry, incorrect password.'), 'Existing Ldap user with bad password failed to authenticate.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     /** LDAP_authen.MM.ULT.existingacct.goodpwd - result: Successful logon. **/
     $edit = [
       'name' => 'hpotter',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Member for'), 'Existing Ldap user with good password authenticated.');
     $this->assertTrue($this->testFunctions->ldapUserIsAuthmapped('hpotter'), 'Existing Ldap user still properly authmapped.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
   }
 
@@ -191,7 +191,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       $sids,
       'ad_authentication',
       'ExclusiveModeUserLogon3',
-      'drupal_role_authentication_test'
+      'backdrop_role_authentication_test'
       );
 
     $ldap_servers = ldap_servers_get_servers($sid, 'enabled');
@@ -203,7 +203,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     $user1 = user_load(1);
     $password = $this->randomString(20);
-    require_once DRUPAL_ROOT . '/core/includes/password.inc';
+    require_once BACKDROP_ROOT . '/core/includes/password.inc';
     $account = [
       'name' => $user1->name,
       'pass' => user_hash_password(trim($password)),
@@ -220,79 +220,79 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     // Reset the internal cache by the TRUE parameter.
     user_load(1, TRUE);
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Log out'), 'User 1 successfully authenticated', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
-    /** LDAP_authen.EM.ULT.user1.badpwd  -- result: Drupal logon error message. **/
+    /** LDAP_authen.EM.ULT.user1.badpwd  -- result: Backdrop logon error message. **/
 
     $edit = [
       'name' => $user1->name,
       'pass' => 'mydabpassword',
     ];
 
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Sorry, incorrect password.'), 'User 1 failed with bad password', $testid);
-    $this->drupalLogout();
+    $this->backdropLogout();
 
-    /** LDAP_authen.EM.ULT.drupal.goodpwd - result: failed logon **/
+    /** LDAP_authen.EM.ULT.backdrop.goodpwd - result: failed logon **/
 
-    $drupal_user = $this->drupalCreateUser();
-    $raw_pass = $drupal_user->pass_raw;
+    $backdrop_user = $this->backdropCreateUser();
+    $raw_pass = $backdrop_user->pass_raw;
     $edit = [
-      'name' => $drupal_user->name,
+      'name' => $backdrop_user->name,
       'pass' => $raw_pass,
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Sorry, unrecognized username or password'), 'Drupal user successfully authenticated', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropPost('user', $edit, t('Log in'));
+    $this->assertText(t('Sorry, unrecognized username or password'), 'Backdrop user successfully authenticated', $testid);
+    $this->backdropGet('user/logout');
 
-    /** LDAP_authen.EM.ULT.drupal.badpwd - result: Drupal logon error message. **/
+    /** LDAP_authen.EM.ULT.backdrop.badpwd - result: Backdrop logon error message. **/
     $edit = [
-      'name' => $drupal_user->name,
+      'name' => $backdrop_user->name,
       'pass' => 'mydabpassword',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
-    $this->assertText(t('Sorry, unrecognized username or password'), 'Drupal user with bad password failed to authenticate.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropPost('user', $edit, t('Log in'));
+    $this->assertText(t('Sorry, unrecognized username or password'), 'Backdrop user with bad password failed to authenticate.', $testid);
+    $this->backdropGet('user/logout');
 
-    /** LDAP_authen.EM.ULT.ldap.newaccount.badpwd - result: Drupal logon error message. **/
+    /** LDAP_authen.EM.ULT.ldap.newaccount.badpwd - result: Backdrop logon error message. **/
     $edit = [
       'name' => 'hpotter',
       'pass' => 'mydabpassword',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Sorry, unrecognized username or password'), 'New Ldap user with bad password failed to authenticate.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     /** LDAP_authen.EM.ULT.ldap.newaccount.goodpwd - result: Successful logon, with user record created and authmapped to ldap **/
     $edit = [
       'name' => 'hpotter',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Member for'), 'New Ldap user with good password authenticated.');
     $this->assertTrue($this->testFunctions->ldapUserIsAuthmapped('hpotter'), 'Ldap user properly authmapped.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
-    /** LDAP_authen.EM.ULT.existingacct.badpwd - result: Drupal logon error message. **/
+    /** LDAP_authen.EM.ULT.existingacct.badpwd - result: Backdrop logon error message. **/
     $edit = [
       'name' => 'hpotter',
       'pass' => 'mydabpassword',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Sorry, unrecognized username or password'), 'Existing Ldap user with bad password failed to authenticate.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     /** LDAP_authen.MM.ULT.existingacct.goodpwd - result: Successful logon. **/
     $edit = [
       'name' => 'hpotter',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Member for'), 'Existing Ldap user with good password authenticated.');
     $this->assertTrue($this->testFunctions->ldapUserIsAuthmapped('hpotter'), 'Existing Ldap user still properly authmapped.', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
   }
 
@@ -360,8 +360,8 @@ class LdapAuthenticationTestCase extends LdapTestCase {
       );
 
     $this->setSsoServerEnvironment('REMOTE_USER', 'hpotter', 'mod_auth_sspi', TRUE);
-    $this->drupalGet('user/logout');
-    $this->drupalGet('user');
+    $this->backdropGet('user/logout');
+    $this->backdropGet('user');
 
     // Just test that the setup works.
     $authenticationConf = new LdapAuthenticationConfAdmin();
@@ -380,10 +380,10 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     $ldap_servers = ldap_servers_get_servers($sid, 'enabled');
     $this->assertTrue(count($ldap_servers) == 1, ' ldap_authentication test server setup successful', $testid);
-    $hpotter_drupal = user_load_by_name('hpotter');
+    $hpotter_backdrop = user_load_by_name('hpotter');
     $ldap_user_conf = ldap_user_conf('admin', TRUE);
-    $hpotter_ldap = $ldap_user_conf->getProvisionRelatedLdapEntry($hpotter_drupal);
-    debug('hpotter ldap entry'); debug($hpotter_drupal);
+    $hpotter_ldap = $ldap_user_conf->getProvisionRelatedLdapEntry($hpotter_backdrop);
+    debug('hpotter ldap entry'); debug($hpotter_backdrop);
 
     $tests = [
       'dontstripnames' => ['sso_name' => 'hpotter'],
@@ -402,10 +402,10 @@ class LdapAuthenticationTestCase extends LdapTestCase {
               $sso_name = $conf['sso_name'];
               $this->ldapTestId = "testSSO._SERVER-key=$server_var_key sso_name=$sso_name path=$test_path ldapImplementation=$ldapImplementation seamlessLogin=$seamlessLogin";
               $ldapAuthenticationConf = $this->setSsoServerEnvironment($server_var_key, $sso_name, $ldapImplementation, $seamlessLogin);
-              $this->drupalGet($test_path);
+              $this->backdropGet($test_path);
               // @FIXME: Broken test
               // $this->assertText(t('Member for'), 'Successful logon.', $this->ldapTestId);
-              $this->drupalGet('user/logout');
+              $this->backdropGet('user/logout');
             }
           }
         }
@@ -417,7 +417,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
    *
    */
   public function testAuthenticationWhitelistTests() {
-    require_once drupal_get_path('module', 'ldap_authentication') . '/LdapAuthenticationConfAdmin.class.php';
+    require_once backdrop_get_path('module', 'ldap_authentication') . '/LdapAuthenticationConfAdmin.class.php';
 
     $sid = 'activedirectory1';
     $testid = 'WL3';
@@ -425,16 +425,16 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     $this->prepTestData(
       'hogwarts',
       [$sid],
-      'provisionToDrupal',
+      'provisionToBackdrop',
       'WL3',
-      'drupal_role_authentication_test'
+      'backdrop_role_authentication_test'
       );
 
     $ldap_servers = ldap_servers_get_servers($sid, 'enabled');
     $this->assertTrue(count($ldap_servers) == 1, ' ldap_authentication test server setup successful', $testid);
 
     // These 2 modules are configured in setup, but disabled for most authentication tests.
-    module_disable(['ldap_authorization_drupal_role', 'ldap_authorization']);
+    module_disable(['ldap_authorization_backdrop_role', 'ldap_authorization']);
 
     /**
      * LDAP_authen.WL.user1  test for user 1 being excluded from white and black list tests
@@ -442,7 +442,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     $user1 = user_load(1);
     $password = $this->randomString(20);
-    require_once DRUPAL_ROOT . '/core/includes/password.inc';
+    require_once BACKDROP_ROOT . '/core/includes/password.inc';
     $account = [
       'name' => $user1->name,
       'pass' => user_hash_password(trim($password)),
@@ -459,12 +459,12 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     // Reset the internal cache by the TRUE parameter.
     user_load(1, TRUE);
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Log out'), 'User 1 successfully authenticated in LDAP_authen.WL.user1', $testid);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     module_enable(['ldap_authorization']);
-    module_enable(['ldap_authorization_drupal_role']);
+    module_enable(['ldap_authorization_backdrop_role']);
 
     /**
      * prep LDAP_authen.WL.allow
@@ -616,7 +616,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
      */
 
     // These 2 modules are configured in setup, but disabled for most authentication tests.
-    module_disable(['ldap_authorization_drupal_role', 'ldap_authorization']);
+    module_disable(['ldap_authorization_backdrop_role', 'ldap_authorization']);
     $authenticationConf = new LdapAuthenticationConfAdmin();
     $authenticationConf->excludeIfNoAuthorizations = 1;
     $authenticationConf->save();
@@ -637,9 +637,9 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     );
 
     module_enable(['ldap_authorization'], TRUE);
-    module_enable(['ldap_authorization_drupal_role'], TRUE);
+    module_enable(['ldap_authorization_backdrop_role'], TRUE);
     // Clear static cache.
-    $consumer = ldap_authorization_get_consumers('drupal_role', TRUE, TRUE);
+    $consumer = ldap_authorization_get_consumers('backdrop_role', TRUE, TRUE);
 
     $this->AttemptLogonNewUser('hpotter');
     $this->assertText(
@@ -665,7 +665,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
     $authenticationConf->excludeIfNoAuthorizations = 0;
     $authenticationConf->save();
     $authenticationConf = ldap_authentication_get_valid_conf(TRUE);
-    module_disable(['ldap_authorization_drupal_role', 'ldap_authorization']);
+    module_disable(['ldap_authorization_backdrop_role', 'ldap_authorization']);
 
   }
 
@@ -674,7 +674,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
    */
   public function testUI() {
 
-    // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    // Just to give warning if setup doesn't succeed. May want to take these out at some point.
     $test = config_get('ldap_servers.settings', 'ldap_servers_simpletest');
     if ($test === NULL) {
       $test = 2;
@@ -689,17 +689,17 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
     $sid = 'activedirectory1';
     $sids = ['activedirectory1'];
-    $this->prepTestData(LDAP_TEST_LDAP_NAME, $sids, 'provisionToDrupal', 'default');
+    $this->prepTestData(LDAP_TEST_LDAP_NAME, $sids, 'provisionToBackdrop', 'default');
 
-    $this->privileged_user = $this->drupalCreateUser([
+    $this->privileged_user = $this->backdropCreateUser([
       'administer site configuration',
     ]);
 
-    $this->drupalLogin($this->privileged_user);
+    $this->backdropLogin($this->privileged_user);
 
     $ldap_authentication_conf_pre = ldap_authentication_get_valid_conf();
 
-    $this->drupalGet('admin/config/people/ldap/authentication');
+    $this->backdropGet('admin/config/people/ldap/authentication');
 
     $form_tests = [
       'authenticationMode' => [
@@ -815,7 +815,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
         $property = isset($conf['property']) ? $conf['property'] : $field_name;
         $edit[$field_name] = $value;
       }
-      $this->drupalPost('admin/config/people/ldap/authentication', $edit, t('Save'));
+      $this->backdropPost('admin/config/people/ldap/authentication', $edit, t('Save'));
       $ldap_authentication_conf_post = ldap_authentication_get_valid_conf(TRUE);
 
       foreach ($form_tests as $field_name => $conf) {

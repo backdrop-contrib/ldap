@@ -54,8 +54,8 @@ class LdapAuthenticationConf {
    *
    * @var int
    *   LDAP_AUTHENTICATION_MODE_DEFAULT (LDAP_AUTHENTICATION_MIXED)
-   *   LDAP_AUTHENTICATION_MIXED - signifies both LDAP and Drupal authentication are allowed
-   *     Drupal authentication is attempted first.
+   *   LDAP_AUTHENTICATION_MIXED - signifies both LDAP and Backdrop authentication are allowed
+   *     Backdrop authentication is attempted first.
    *   LDAP_AUTHENTICATION_EXCLUSIVE - signifies only LDAP authenication is allowed
    */
   public $authenticationMode = LDAP_AUTHENTICATION_MODE_DEFAULT;
@@ -76,7 +76,7 @@ class LdapAuthenticationConf {
 
   /**
    * Text describing password to use, such as "Hogwards LDAP Password"
-   *  which will be inserted on logon forms.  Useful in organizations with
+   *  which will be inserted on logon forms. Useful in organizations with
    *  multiple account types for authentication.
    *
    * @var string
@@ -202,7 +202,7 @@ class LdapAuthenticationConf {
   public $apiPrefs = [];
 
   /**
-   * Advanced options.   whitelist / blacklist options.
+   * Advanced options. whitelist / blacklist options.
    *
    * These are on the fuzzy line between authentication and authorization
    * and determine if a user is allowed to authenticate with ldap.
@@ -340,7 +340,7 @@ class LdapAuthenticationConf {
    * Decide if a username is excluded or not.
    *
    * @param string $name
-   *   as proposed drupal username.
+   *   as proposed backdrop username.
    * @param array $ldap_user
    *   where top level keys are 'dn','attr','mail'.
    *
@@ -386,7 +386,7 @@ class LdapAuthenticationConf {
         }
       }
       else {
-        drupal_set_message(t(LDAP_AUTHENTICATION_DISABLED_FOR_BAD_CONF_MSG), 'warning');
+        backdrop_set_message(t(LDAP_AUTHENTICATION_DISABLED_FOR_BAD_CONF_MSG), 'warning');
         $tokens = ['!ldap_authentication_config' => l(t('LDAP Authentication Configuration'), 'admin/config/people/ldap/authentication')];
         watchdog('ldap_authentication', 'LDAP Authentication is configured to deny users based on php execution with php_eval function, but php module is not enabled. Please enable php module or remove php code at !ldap_authentication_config .', $tokens);
         return FALSE;
@@ -415,9 +415,9 @@ class LdapAuthenticationConf {
     if ($this->excludeIfNoAuthorizations) {
 
       if (!module_exists('ldap_authorization')) {
-        drupal_set_message(t(LDAP_AUTHENTICATION_DISABLED_FOR_BAD_CONF_MSG), 'warning');
+        backdrop_set_message(t(LDAP_AUTHENTICATION_DISABLED_FOR_BAD_CONF_MSG), 'warning');
         $tokens = ['!ldap_authentication_config' => l(t('LDAP Authentication Configuration'), 'admin/config/people/ldap/authentication')];
-        watchdog('ldap_authentication', 'LDAP Authentication is configured to deny users without LDAP Authorization mappings, but LDAP Authorization module is not enabled.  Please enable and configure LDAP Authorization or disable this option at !ldap_authentication_config .', $tokens);
+        watchdog('ldap_authentication', 'LDAP Authentication is configured to deny users without LDAP Authorization mappings, but LDAP Authorization module is not enabled. Please enable and configure LDAP Authorization or disable this option at !ldap_authentication_config .', $tokens);
         return FALSE;
       }
 
@@ -444,7 +444,7 @@ class LdapAuthenticationConf {
       }
 
       if (!$has_enabled_consumers) {
-        drupal_set_message(t(LDAP_AUTHENTICATION_DISABLED_FOR_BAD_CONF_MSG), 'warning');
+        backdrop_set_message(t(LDAP_AUTHENTICATION_DISABLED_FOR_BAD_CONF_MSG), 'warning');
         $tokens = ['!ldap_consumer_config' => l(t('LDAP Authorization Configuration'), 'admin/config/people/ldap/authorization')];
         watchdog('ldap_authentication', 'LDAP Authentication is configured to deny users without LDAP Authorization mappings, but 0 LDAP Authorization consumers are configured:  !ldap_consumer_config .', $tokens);
         return FALSE;
@@ -457,7 +457,7 @@ class LdapAuthenticationConf {
 
     // Allow other modules to hook in and refuse if they like.
     $hook_result = TRUE;
-    drupal_alter('ldap_authentication_allowuser_results', $ldap_user, $name, $hook_result);
+    backdrop_alter('ldap_authentication_allowuser_results', $ldap_user, $name, $hook_result);
 
     if ($hook_result === FALSE) {
       watchdog('ldap_authentication', "Authentication Allow User Result=refused for %name", ['%name' => $name], WATCHDOG_NOTICE);

@@ -57,6 +57,6 @@ function ldap_authentication_profile_update_form_submit($form, &$form_state) {
     // Prevents the cached setting from being used again.
     unset($_SESSION['ldap_authentication_template']);
     $form_state['redirect'] = isset($_GET['next']) ? $_GET['next'] : '<front>';
-    drupal_set_message(t('Your profile has been updated.'));
+    backdrop_set_message(t('Your profile has been updated.'));
   }
 }

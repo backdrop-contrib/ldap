@@ -8,12 +8,12 @@
 /**
  * Allow a custom module to check user's ldap details and refuse authentication.
  *
- * See also: http://drupal.org/node/1634930.
+ * See also: https://drupal.org/node/1634930.
  *
  * @param array $ldap_user
  *   See README.developers.txt for structure.
  * @param string $name
- *   The drupal account name or proposed drupal account name if none exists yet.
+ *   The backdrop account name or proposed backdrop account name if none exists yet.
  * @param bool $hook_result
  *   TRUE for allow, FALSE for deny.
  *   If set to TRUE or FALSE, another module has already set this and function
@@ -38,7 +38,7 @@ function hook_ldap_authentication_allowuser_results_alter(array $ldap_user, $nam
  * @param array $ldap_user
  *   See README.developers.txt for structure.
  * @param array $params
- *   Array of parameters. Includes account key with the Drupal account as value.
+ *   Array of parameters. Includes account key with the Backdrop account as value.
  */
 function hook_ldap_entry_alter(array &$ldap_user, array $params) {
   $ldap_user['mail'] = 'newmail@example.com';

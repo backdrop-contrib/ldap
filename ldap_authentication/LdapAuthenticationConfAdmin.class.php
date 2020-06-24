@@ -17,11 +17,11 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
   protected function setTranslatableProperties() {
 
     /**
-     * 0.  Logon Options
+     * 0. Logon Options
      */
 
     $values['authenticationModeOptions'] = [
-      LDAP_AUTHENTICATION_MIXED => t('Mixed mode. Drupal authentication is tried first.  On failure, LDAP authentication is performed.'),
+      LDAP_AUTHENTICATION_MIXED => t('Mixed mode. Backdrop authentication is tried first. On failure, LDAP authentication is performed.'),
       LDAP_AUTHENTICATION_EXCLUSIVE => t('Only LDAP Authentication is allowed except for user 1.
         If selected, (1) reset password links will be replaced with links to ldap end user documentation below.
         (2) The reset password form will be left available at user/password for user 1; but no links to it
@@ -31,7 +31,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
 
     $values['authenticationServersDescription'] = t('Check all LDAP server configurations to use in authentication.
      Each will be tested for authentication until successful or
-     until each is exhausted.  In most cases only one server configuration is selected.');
+     until each is exhausted. In most cases only one server configuration is selected.');
 
     /**
      * User Login Interface
@@ -44,7 +44,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
 
     $values['ldapUserHelpLinkUrlDescription'] = t('URL to LDAP user help/documentation for users resetting
      passwords etc. Should be of form http://domain.com/. Could be the institutions ldap password support page
-     or a page within this drupal site that is available to anonymous users.');
+     or a page within this backdrop site that is available to anonymous users.');
 
     $values['ldapUserHelpLinkTextDescription'] = t('Text for above link e.g. Account Help or Campus Password Help Page');
 
@@ -53,7 +53,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
      */
 
     $values['allowOnlyIfTextInDnDescription'] = t('A list of text such as ou=education
-      or cn=barclay that at least one of be found in user\'s dn string.  Enter one per line
+      or cn=barclay that at least one of be found in user\'s dn string. Enter one per line
       such as <pre>ou=education') . "\n" . t('ou=engineering</pre>   This test will be case insensitive.');
 
     $values['excludeIfTextInDnDescription'] = t('A list of text such as ou=evil
@@ -61,11 +61,11 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
       Enter one per line such as <pre>ou=evil') . "\n" . t('cn=bad</pre> This test will be case insensitive.');
 
     $values['allowTestPhpDescription'] = t('PHP code which should print 1
-        for allowing ldap authentication or 0 for not allowed.  Available variables are:
+        for allowing ldap authentication or 0 for not allowed. Available variables are:
         $_name and $_ldap_user_entry  See readme.txt for more info.');
 
-    $values['excludeIfNoAuthorizationsDescription'] = t('If the user is not granted any drupal roles,
-      organic groups, etc. by LDAP Authorization, login will be denied.  LDAP Authorization must be
+    $values['excludeIfNoAuthorizationsDescription'] = t('If the user is not granted any backdrop roles,
+      organic groups, etc. by LDAP Authorization, login will be denied. LDAP Authorization must be
       enabled for this to work.');
 
     /**
@@ -109,7 +109,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
     ];
 
     $values['cookieExpirePeriod'] = [-1 => t('Session'), 0 => t('Immediately')] +
-        drupal_map_assoc([3600, 86400, 604800, 2592000, 31536000, 315360000, 630720000], 'format_interval');
+        backdrop_map_assoc([3600, 86400, 604800, 2592000, 31536000, 315360000, 630720000], 'format_interval');
 
     $values['ssoEnabledDescription'] = '<strong>' . t('Single Sign on is enabled.') .
         '</strong> ' . t('To disable it, disable the LDAP SSO Module on the') . ' ' . l(t('Modules Form'), 'admin/modules') . '.<p>' .
@@ -122,7 +122,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
         . '</p>';
 
     $values['ssoExcludedPathsDescription'] = '<p>' .
-        t("Which paths will not check for SSO? cron.php is common example.  Specify pages by using their paths. Enter one path per line. The '*' character is a wildcard.
+        t("Which paths will not check for SSO? cron.php is common example. Specify pages by using their paths. Enter one path per line. The '*' character is a wildcard.
           Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page.",
           ['%blog' => 'blog', '%blog-wildcard' => 'blog/*', '%front' => '<front>']);
     '</p>';
@@ -155,7 +155,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
   }
 
   /**
-   * 0.  Logon Options.
+   * 0. Logon Options.
    */
   public $authenticationModeDefault = LDAP_AUTHENTICATION_MIXED;
   public $authenticationModeOptions;
@@ -164,7 +164,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
   protected $authenticationServersOptions = [];
 
   /**
-   * 1.  User Login Interface.
+   * 1. User Login Interface.
    */
   protected $loginUIUsernameTxtDescription;
   protected $loginUIPasswordTxtDescription;
@@ -173,7 +173,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
 
 
   /**
-   * 2.  LDAP User Restrictions.
+   * 2. LDAP User Restrictions.
    */
 
   protected $allowOnlyIfTextInDnDescription;
@@ -271,7 +271,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
   /**
    *
    */
-  public function drupalForm() {
+  public function backdropForm() {
 
     if (count($this->authenticationServersOptions) == 0) {
       $message = ldap_servers_no_enabled_servers_msg('configure LDAP Authentication');
@@ -395,7 +395,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
     $form['restrictions']['excludeIfNoAuthorizations'] = [
       '#type' => 'checkbox',
       '#title' => t('Deny access to users without Ldap Authorization Module
-        authorization mappings such as Drupal roles.
+        authorization mappings such as Backdrop roles.
         Requires LDAP Authorization to be enabled and configured!'),
       '#default_value' => $this->excludeIfNoAuthorizations,
       '#description' => t($this->excludeIfNoAuthorizationsDescription, $tokens),
@@ -448,7 +448,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
 
     $form['email']['template']['templateUsageResolveConflict'] = [
       '#type' => 'checkbox',
-      '#title' => t('If a Drupal account already exists with the same email, but different account name, use the email template instead of the LDAP email.'),
+      '#title' => t('If a Backdrop account already exists with the same email, but different account name, use the email template instead of the LDAP email.'),
       '#default_value' => $this->templateUsageResolveConflict,
     ];
 
@@ -592,9 +592,9 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
   /**
    * Validate form, not object.
    */
-  public function drupalFormValidate($values) {
+  public function backdropFormValidate($values) {
 
-    $this->populateFromDrupalForm($values);
+    $this->populateFromBackdropForm($values);
 
     $errors = $this->validate();
 
@@ -621,7 +621,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
             '%bind_method' => $methods[$enabled_servers[$sid]->bind_method],
           ];
 
-          $errors['ssoEnabled'] = t('Single Sign On is not valid with the server !edit (id=%sid) because that server configuration uses %bind_method.  Since the user\'s credentials are never available to this module with single sign on enabled, there is no way for the ldap module to bind to the ldap server with credentials.', $tokens);
+          $errors['ssoEnabled'] = t('Single Sign On is not valid with the server !edit (id=%sid) because that server configuration uses %bind_method. Since the user\'s credentials are never available to this module with single sign on enabled, there is no way for the ldap module to bind to the ldap server with credentials.', $tokens);
         }
       }
     }
@@ -631,7 +631,7 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
   /**
    *
    */
-  protected function populateFromDrupalForm($values) {
+  protected function populateFromBackdropForm($values) {
 
     $this->authenticationMode = ($values['authenticationMode']) ? (int) $values['authenticationMode'] : NULL;
     $this->sids = $values['authenticationServers'];
@@ -665,15 +665,15 @@ class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
   /**
    *
    */
-  public function drupalFormSubmit($values) {
+  public function backdropFormSubmit($values) {
 
-    $this->populateFromDrupalForm($values);
+    $this->populateFromBackdropForm($values);
     try {
       $save_result = $this->save();
     }
     catch (Exception $e) {
       $this->errorName = 'Save Error';
-      $this->errorMsg = t('Failed to save object.  Your form data was not saved.');
+      $this->errorMsg = t('Failed to save object. Your form data was not saved.');
       $this->hasError = TRUE;
     }
 
