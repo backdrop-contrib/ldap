@@ -64,7 +64,7 @@ Tests for LDAP Entry ==> Backdrop User Provisioning (simpletest: ldap_user/tests
 6.B. Event: Backdrop user create provision/synching.
     A. Create new user via admin/people/create [drush user-create jdoe --mail=test@test.com --password="sdfw3452352se"]
     B. field_lname, field_fname, field_dept, and field_display_name should be visible and populated
-    C. goto admin/config/people/ldap/user/test enter the username and hit the test button.  this will show the user object and entity
+    C. goto admin/config/people/ldap/user/test enter the username and hit the test button. This will show the user object and entity
        [drush user-information jdoe --full]
        if the devel module is enabled. In "user object (before provisioning or synching)"
        i.     user object->ldap_user_puid_sid should be the id of the server
@@ -72,19 +72,19 @@ Tests for LDAP Entry ==> Backdrop User Provisioning (simpletest: ldap_user/tests
        iii.   user object->ldap_user_puid_property  should be the name of the puid attribute
        iv.    user object->ldap_user_current_dn should be the dn of the ldap entry
        v.     user object->mail and init should be correct, matching email
-       vii.   user authmap should be empty.  this record is only generated when account created via ldap authentication
+       vii.   user authmap should be empty. This record is only generated when account created via ldap authentication
        [drush -y sql-query "SELECT * FROM authmap WHERE authname = 'jdoe'"]
     D. Now edit the the First Name, Last Name,  Display Name, and Department for that user /user/[uid]/edit. and Save.
     E. Results after save should be Dept and Display Name were changed; First name and Last Name reverted to LDAP provided first and last name.
  
-6.C. Event: user logon/authenticate.  Test create Backdrop account.
+6.C. Event: user logon/authenticate. Test create Backdrop account.
     enable ldap authentication, mixed mode
     A.1. Change "Backdrop Account Provisioning Events" to only "...on successful authentication" (admin/config/people/ldap/user)
     A.2. Authenticate with a user not in Backdrop (be sure user is deleted before test)
     B. view the user from the user list (admin/people/people) and make sure
          field_lname, field_fname, field_dept, and field_display_name should be visible and populated
          or use [drush user-information jdoe --full]
-    C. goto admin/config/people/ldap/user/test/<username> and hit the test button.  this will show the user object and entity
+    C. goto admin/config/people/ldap/user/test/<username> and hit the test button. This will show the user object and entity
        if the devel module is enabled
        i.     user object->ldap_user_puid_sid should be the id of the server
        ii.    user object->ldap_user_puid should be the value of the puid attribute
@@ -156,14 +156,14 @@ Test ldap entry provisioning workflow: User requests account -> email verificati
  
 8. Test admin/people/create form and LDAP Options.
   8.1 Test validation of existing ldap user admin/people/create form
-    A. Setup.  Enable and configure Backdrop to LDAP provisioning of users.
+    A. Setup. Enable and configure Backdrop to LDAP provisioning of users.
         On MANUAL BACKDROP ACCOUNT CREATION AND UPDATES, select "Show option on user create form".
     B. Attempt to create user at admin/people/create with a username that conflicts with existing ldap entry.
        Check "create corresponding ldap entry" on form.
     C. Success: On form submit, error should indicate ldap user exists.
     
   8.2 Test manual selection of ldap associate in admin/people/create form
-    A. Setup.  On admin/config/people/ldap/user, set Existing Backdrop User Account Conflict to "Don't associate"
+    A. Setup. On admin/config/people/ldap/user, set Existing Backdrop User Account Conflict to "Don't associate"
        On MANUAL BACKDROP ACCOUNT CREATION AND UPDATES, select "Show option on user create form".
     B. at admin/people/create select "Make this an ldap associated account".
     C. Success: in ldap user,
@@ -172,7 +172,7 @@ Test ldap entry provisioning workflow: User requests account -> email verificati
        in the database in the authmaps table, a record should exist with module=ldap_user and authname=<username tested>
     
   8.3 Test manual selection of ldap associate AND "Create corresponding LDAP Entry" in admin/people/create form
-    A. Setup.  On admin/config/people/ldap/user, set Existing Backdrop User Account Conflict to "Don't associate"
+    A. Setup. On admin/config/people/ldap/user, set Existing Backdrop User Account Conflict to "Don't associate"
        On MANUAL BACKDROP ACCOUNT CREATION AND UPDATES, select "Show option on user create form".
        Configure provisioning to ldap on admin/config/people/ldap/user
     B. Manually create user that is not in ldap already.

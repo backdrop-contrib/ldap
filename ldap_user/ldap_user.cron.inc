@@ -6,7 +6,7 @@
  */
 
 /**
- * Function to respond to ldap associated drupal accounts which no
+ * Function to respond to ldap associated backdrop accounts which no
  * longer have a related LDAP entry.
  *
  * @param LdapUserConf $ldap_user_conf
@@ -14,14 +14,14 @@
  * @return boolean FALSE on error or incompletion or TRUE otherwise
  */
 function _ldap_user_orphans($ldap_user_conf) {
-  if (!$ldap_user_conf->orphanedDrupalAcctBehavior ||
-    $ldap_user_conf->orphanedDrupalAcctBehavior == 'ldap_user_orphan_do_not_check') {
+  if (!$ldap_user_conf->orphanedBackdropAcctBehavior ||
+    $ldap_user_conf->orphanedBackdropAcctBehavior == 'ldap_user_orphan_do_not_check') {
     return TRUE;
   }
 
   /**
-   * query drupal accounts
-   *   - ldap associated drupal accounts
+   * query backdrop accounts
+   *   - ldap associated backdrop accounts
    *   - where (ldap_user_current_dn not null)
    *   - ordered by ldap_user_last_checked
    *   - order by uid asc (get oldest first)
@@ -48,7 +48,7 @@ function _ldap_user_orphans($ldap_user_conf) {
   $watchdogs_sids_missing_watchdogged = [];
   /**
    * First produce array of form:
-   *  $drupal_users[$sid][$puid_attr][$puid]['exists'] = bool
+   *  $backdrop_users[$sid][$puid_attr][$puid]['exists'] = bool
    *  signifying if corresponding LDAP Entry exists.
    */
   if (!(isset($result['user']) && count($result['user']) > 0)) {
@@ -76,7 +76,7 @@ function _ldap_user_orphans($ldap_user_conf) {
     $site_email = config_get('system.core', 'site_mail');
     $params = ['accounts' => $email_list];
     if ($site_email) {
-      drupal_mail(
+      backdrop_mail(
         'ldap_user',
         'orphaned_accounts',
         $site_email,
@@ -104,9 +104,9 @@ function _ldap_user_orphans($ldap_user_conf) {
  */
 function _ldap_user_orphan_process_batch($ldap_user_conf, $batch, $user_count, $uids, $ldap_servers, $watchdogs_sids_missing_watchdogged, $query, $email_list) {
   $filters = [];
-  $drupal_users = [];
+  $backdrop_users = [];
   /**
-   * 1. populate $drupal_users[$sid][$puid_attr][$puid]['exists']  = TRUE
+   * 1. populate $backdrop_users[$sid][$puid_attr][$puid]['exists']  = TRUE
    *
    * e.g.  first batch $i=0; $i<50; $i++
    *       2nd batch   $i=50; $i<100; $i++
@@ -131,8 +131,8 @@ function _ldap_user_orphan_process_batch($ldap_user_conf, $batch, $user_count, $
       else {
         $filters[$sid][$puid_attr][] = "($puid_attr=$puid)";
       }
-      $drupal_users[$sid][$puid_attr][$puid]['uid'] = $uid;
-      $drupal_users[$sid][$puid_attr][$puid]['exists'] = FALSE;
+      $backdrop_users[$sid][$puid_attr][$puid]['uid'] = $uid;
+      $backdrop_users[$sid][$puid_attr][$puid]['exists'] = FALSE;
     }
     else {
       // User with missing ldap data fields
@@ -140,7 +140,7 @@ function _ldap_user_orphan_process_batch($ldap_user_conf, $batch, $user_count, $
     }
   }
 
-  // 2. set $drupal_users[$sid][$puid_attr][$puid]['exists'] to FALSE
+  // 2. set $backdrop_users[$sid][$puid_attr][$puid]['exists'] to FALSE
   // if entry doesn't exist.
   foreach ($filters as $sid => $puid_attrs) {
     if (!isset($ldap_servers[$sid])) {
@@ -161,12 +161,12 @@ function _ldap_user_orphan_process_batch($ldap_user_conf, $batch, $user_count, $
       $ldap_entries = $ldap_servers[$sid]->searchAllBaseDns($ldap_filter, [$puid_attr]);
       if ($ldap_entries === FALSE) {
         // If query has error, don't remove ldap entries!
-        unset($drupal_users[$sid]);
+        unset($backdrop_users[$sid]);
         watchdog(
           'ldap_user',
           'ldap server %sid had error while querying to
-            deal with orphaned ldap user entries.  Please check that the ldap
-            server is configured correctly.  Query; %query',
+            deal with orphaned ldap user entries. Please check that the ldap
+            server is configured correctly. Query; %query',
           ['%sid' => $sid, '%query' => serialize($query)],
           WATCHDOG_ERROR);
         continue;
@@ -176,13 +176,13 @@ function _ldap_user_orphan_process_batch($ldap_user_conf, $batch, $user_count, $
 
       foreach ($ldap_entries as $i => $ldap_entry) {
         $puid = $ldap_servers[$sid]->userPuidFromLdapEntry($ldap_entry);
-        $drupal_users[$sid][$puid_attr][$puid]['exists'] = TRUE;
+        $backdrop_users[$sid][$puid_attr][$puid]['exists'] = TRUE;
       }
     }
   }
-  // 3. we now have $drupal_users[$sid][$puid_attr][$puid]['exists'] = bool.
+  // 3. we now have $backdrop_users[$sid][$puid_attr][$puid]['exists'] = bool.
   global $base_url;
-  foreach ($drupal_users as $sid => $puid_x_puid_attrs) {
+  foreach ($backdrop_users as $sid => $puid_x_puid_attrs) {
     foreach ($puid_x_puid_attrs as $puid_attr => $puids) {
       foreach ($puids as $puid => $user_data) {
 
@@ -193,16 +193,16 @@ function _ldap_user_orphan_process_batch($ldap_user_conf, $batch, $user_count, $
           $account->save();
           if (!$user_data['exists']) {
             /**
-             * $ldap_user_conf->orphanedDrupalAcctBehavior will either be
+             * $ldap_user_conf->orphanedBackdropAcctBehavior will either be
              *  'ldap_user_orphan_email' or one of the user module options:
              *     user_cancel_block, user_cancel_block_unpublish,
              *     user_cancel_reassign, user_cancel_delete
              */
-            if ($ldap_user_conf->orphanedDrupalAcctBehavior == 'ldap_user_orphan_email') {
+            if ($ldap_user_conf->orphanedBackdropAcctBehavior == 'ldap_user_orphan_email') {
               $email_list[] = $account->name . "," . $account->mail . "," . $base_url . "/user/" . $account->uid . "/edit";
             }
             else {
-              _user_cancel([], $account, $ldap_user_conf->orphanedDrupalAcctBehavior);
+              _user_cancel([], $account, $ldap_user_conf->orphanedBackdropAcctBehavior);
             }
           }
         }

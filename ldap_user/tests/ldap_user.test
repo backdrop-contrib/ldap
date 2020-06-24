@@ -4,7 +4,7 @@
  * @file
  *
  * @todo test for ldapUserConf->setSynchMapping()
- * @todo test for ldapUserConf->ldapAssociateDrupalAccount($drupal_username)
+ * @todo test for ldapUserConf->ldapAssociateBackdropAccount($backdrop_username)
  */
 
 module_load_include('php', 'ldap_test', 'LdapTestCase.class');
@@ -60,8 +60,8 @@ class LdapUserUnitTests extends LdapTestCase {
 
     $api_functions = [
       'ldap_user_conf' => [2, 0],
-      'ldap_user_synch_to_drupal' => [3, 1],
-      'ldap_user_provision_to_drupal' => [2, 1],
+      'ldap_user_synch_to_backdrop' => [3, 1],
+      'ldap_user_provision_to_backdrop' => [2, 1],
       'ldap_user_ldap_provision_semaphore' => [4, 2],
       'ldap_user_token_replace' => [3, 2],
       'ldap_user_token_tokenize_entry' => [5, 2],
@@ -76,7 +76,7 @@ class LdapUserUnitTests extends LdapTestCase {
          ' api function ' . $api_function_name . ' parameters and required parameters count unchanged.', $this->testId($api_function_name . ' unchanged'));
     }
 
-    $this->assertTrue(drupal_cron_run(), t('Cron can run with ldap user enabled.'), $this->testId('cron works'));
+    $this->assertTrue(backdrop_cron_run(), t('Cron can run with ldap user enabled.'), $this->testId('cron works'));
 
     // Test user token functions.
     $entity = new stdClass();
@@ -91,7 +91,7 @@ class LdapUserUnitTests extends LdapTestCase {
     $this->assertTrue($lname == $entity->lname[LANGUAGE_NONE][0]['value'], t('[field.lname] token worked on ldap_user_token_replace().'), $this->testId('tokens.property.field'));
     $house1 = ldap_user_token_replace('[field.house:1]', $account, $entity);
     $this->assertTrue($house1 == $entity->house[LANGUAGE_NONE][1]['value'], t('[field.house:1] token worked on ldap_user_token_replace().'), $this->testId('tokens.property.field.ordinal'));
-    // @todo need tests for :last and a multivalued attribute.  see http://drupal.org/node/1245736
+    // @todo need tests for :last and a multivalued attribute. see https://backdropcms.org/project/ldap#tokens
 
     $sids = ['activedirectory1'];
     $this->prepTestData('hogwarts', $sids, 'default');
@@ -101,7 +101,7 @@ class LdapUserUnitTests extends LdapTestCase {
     $this->assertTrue(is_object($ldap_user_conf), t('ldap_conf class instantiated'), $this->testId('construct ldapUserConf object'));
 
     $user_edit = [];
-    $ldap_user = ldap_servers_get_user_ldap_data('hpotter', $ldap_user_conf->drupalAcctProvisionServer, 'ldap_user_prov_to_drupal');
+    $ldap_user = ldap_servers_get_user_ldap_data('hpotter', $ldap_user_conf->backdropAcctProvisionServer, 'ldap_user_prov_to_backdrop');
 
     $desired_result = [
       'dn' => 'cn=hpotter,ou=people,dc=hogwarts,dc=edu',
@@ -115,10 +115,10 @@ class LdapUserUnitTests extends LdapTestCase {
       $this->assertTrue(count($array_diff) == 0, t('ldap_servers_get_user_ldap_data retrieved correct attributes and values'), $this->testId('ldap_servers_get_user_ldap_data'));
     }
     if (count($array_diff) != 0) {
-      debug('ldap_servers_get_user_ldap_data failed.  resulting ldap data array:'); debug($ldap_user); debug('desired result:'); debug($desired_result); debug('array_diff:'); debug($array_diff);
+      debug('ldap_servers_get_user_ldap_data failed. resulting ldap data array:'); debug($ldap_user); debug('desired result:'); debug($desired_result); debug('array_diff:'); debug($array_diff);
     }
-    $ldap_todrupal_prov_server = ldap_servers_get_servers($ldap_user_conf->drupalAcctProvisionServer, 'all', TRUE);
-    $ldap_user_conf->entryToUserEdit($ldap_user, $user_edit, $ldap_todrupal_prov_server);
+    $ldap_tobackdrop_prov_server = ldap_servers_get_servers($ldap_user_conf->backdropAcctProvisionServer, 'all', TRUE);
+    $ldap_user_conf->entryToUserEdit($ldap_user, $user_edit, $ldap_tobackdrop_prov_server);
 
     unset($user_edit['pass']);
     $desired_result = [
@@ -187,15 +187,15 @@ class LdapUserUnitTests extends LdapTestCase {
     // @todo need better diff, this will give false positives in most cases
     $this->assertTrue(count($array_diff) == 0, t('ldapUserConf::entryToUserEdit retrieved correct property, field, and data values.'), $this->testId('ldapUserConf::entryToUserEdit'));
     if (count($array_diff) != 0) {
-      debug('ldapUserConf::entryToUserEdit failed.  resulting user edit array:'); debug($user_edit); debug('desired result:'); debug($desired_result); debug('array_diff:'); debug($array_diff);
+      debug('ldapUserConf::entryToUserEdit failed. resulting user edit array:'); debug($user_edit); debug('desired result:'); debug($desired_result); debug('array_diff:'); debug($array_diff);
     }
 
     $is_synched_tests = [
-      LDAP_USER_EVENT_CREATE_DRUPAL_USER => [
+      LDAP_USER_EVENT_CREATE_BACKDROP_USER => [
         0 => ['[property.fake]', '[property.data]', '[property.uid]'],
         1 => ['[property.mail]', '[property.name]', '[field.ldap_user_puid]', '[field.ldap_user_puid_property]', '[field.ldap_user_puid_sid]', '[field.ldap_user_current_dn]'],
       ],
-      LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER => [
+      LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER => [
         0 => ['[property.fake]', '[property.data]', '[property.uid]', '[field.ldap_user_puid]', '[field.ldap_user_puid_property]', '[field.ldap_user_puid_sid]'],
         1 => ['[property.mail]', '[property.name]', '[field.ldap_user_current_dn]'],
       ],
@@ -206,11 +206,11 @@ class LdapUserUnitTests extends LdapTestCase {
     foreach ($is_synched_tests as $prov_event => $tests) {
       foreach ($tests as $boolean_result => $attribute_tokens) {
         foreach ($attribute_tokens as $attribute_token) {
-          $is_synched = $ldap_user_conf->isSynched($attribute_token, [$prov_event], LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER);
+          $is_synched = $ldap_user_conf->isSynched($attribute_token, [$prov_event], LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER);
           if ((int) $is_synched !== (int) $boolean_result) {
             $fail = TRUE;
             $debug[$attribute_token] = "isSynched($attribute_token, array($prov_event),
-              LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) returned $is_synched when it should have returned " . (int) $boolean_result;
+              LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) returned $is_synched when it should have returned " . (int) $boolean_result;
           }
         }
       }
@@ -221,34 +221,34 @@ class LdapUserUnitTests extends LdapTestCase {
       debug('ldapUserConf::isSynched failures:'); debug($debug);
     }
 
-    $this->assertTrue($ldap_user_conf->isDrupalAcctProvisionServer('activedirectory1'), t('isDrupalAcctProvisionServer works'), $this->testId('isDrupalAcctProvisionServer'));
+    $this->assertTrue($ldap_user_conf->isBackdropAcctProvisionServer('activedirectory1'), t('isBackdropAcctProvisionServer works'), $this->testId('isBackdropAcctProvisionServer'));
     $this->assertFalse($ldap_user_conf->isLdapEntryProvisionServer('activedirectory1'), t('isLdapEntryProvisionServer works'), $this->testId('isLdapEntryProvisionServer'));
 
     $ldap_user_required_attributes = $ldap_user_conf->getLdapUserRequiredAttributes(LDAP_USER_PROV_DIRECTION_ALL);
 
     $provision_enabled_truth = (boolean) (
-      $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE)
-      && $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE)
+      $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE)
+      && $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE)
       && !$ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY, LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE)
     );
     $this->assertTrue($provision_enabled_truth, t('provisionEnabled works'), $this->testId('provisionEnabled.1'));
 
     $provision_enabled_false =
-    ($ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY, LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE) ||
-    $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY, LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE)  ||
-    $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE));
+    ($ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY, LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE) ||
+    $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY, LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE)  ||
+    $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE));
     $this->assertFalse($provision_enabled_false, t('provisionEnabled works'), $this->testId('provisionEnabled.2'));
 
     $account = new stdClass();
     $account->name = 'hpotter';
-    $params = ['ldap_context' => 'ldap_user_prov_to_drupal', 'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER];
-    list($ldap_entry, $error) = $ldap_user_conf->drupalUserToLdapEntry($account, 'activedirectory1', $params);
+    $params = ['ldap_context' => 'ldap_user_prov_to_backdrop', 'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER];
+    list($ldap_entry, $error) = $ldap_user_conf->backdropUserToLdapEntry($account, 'activedirectory1', $params);
 
     $account = NULL;
     $user_edit = ['name' => 'hpotter'];
 
-    // Test method provisionDrupalAccount()
-    $hpotter = $ldap_user_conf->provisionDrupalAccount($account, $user_edit, NULL, TRUE);
+    // Test method provisionBackdropAccount()
+    $hpotter = $ldap_user_conf->provisionBackdropAccount($account, $user_edit, NULL, TRUE);
 
     $hpotter = user_load_by_name('hpotter');
 
@@ -270,7 +270,7 @@ class LdapUserUnitTests extends LdapTestCase {
       isset($hpotter->ldap_user_current_dn[LANGUAGE_NONE][0]['value']) &&
       $hpotter->ldap_user_current_dn[LANGUAGE_NONE][0]['value'] == 'cn=hpotter,ou=people,dc=hogwarts,dc=edu'
     );
-    $this->assertTrue($fields_set, t('user ldap_user_puid, ldap_user_puid_property, ldap_user_puid_sid, and  ldap_user_current_dn correctly populated for hpotter'), $this->testId('provisionDrupalAccount function test 3'));
+    $this->assertTrue($fields_set, t('user ldap_user_puid, ldap_user_puid_property, ldap_user_puid_sid, and  ldap_user_current_dn correctly populated for hpotter'), $this->testId('provisionBackdropAccount function test 3'));
 
     // @FIXME: Wrapper for failing test.
     if (is_array($hpotter->data['ldap_user'])) {
@@ -294,14 +294,14 @@ class LdapUserUnitTests extends LdapTestCase {
     $user_edit = NULL;
     $ldap_user_conf->ldapUserSynchMappings = [];
     $sid = 'activedirectory1';
-    $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER]['[property.mail]'] = [
+    $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER]['[property.mail]'] = [
       'sid' => $sid,
       'ldap_attr' => '[mail]',
       'user_attr' => '[property.mail]',
       'convert' => 0,
-      'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
-      'ldap_contexts' => ['ldap_user_insert_drupal_user', 'ldap_user_update_drupal_user', 'ldap_authentication_authenticate'],
-      'prov_events' => [LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+      'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
+      'ldap_contexts' => ['ldap_user_insert_backdrop_user', 'ldap_user_update_backdrop_user', 'ldap_authentication_authenticate'],
+      'prov_events' => [LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
       'name' => 'Property: Mail',
       'enabled' => TRUE,
       'config_module' => 'ldap_servers',
@@ -313,43 +313,43 @@ class LdapUserUnitTests extends LdapTestCase {
     $this->testFunctions->setFakeServerUserAttribute($sid, 'cn=hpotter,ou=people,dc=hogwarts,dc=edu', 'mail', 'hpotter@owlcarriers.com', 0);
     // Clear server cache.
     $ldap_server = ldap_servers_get_servers('activedirectory1', NULL, TRUE, TRUE);
-    $user = $ldap_user_conf->synchToDrupalAccount($account, $user_edit, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER, NULL, TRUE);
+    $user = $ldap_user_conf->synchToBackdropAccount($account, $user_edit, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER, NULL, TRUE);
 
     $hpotter = user_load_by_name('hpotter');
     $hpotter_uid = $hpotter->uid;
     $success = ($hpotter->mail == 'hpotter@owlcarriers.com');
 
-    $this->assertTrue($success, t('synchToDrupalAccount worked for property (mail) for hpotter'), $this->testId());
+    $this->assertTrue($success, t('synchToBackdropAccount worked for property (mail) for hpotter'), $this->testId());
     if (!$success) {
-      debug("hpotter mail after synchToDrupalAccount :" . $hpotter->mail);
+      debug("hpotter mail after synchToBackdropAccount :" . $hpotter->mail);
       $ldap_server = ldap_servers_get_servers($sid, NULL, TRUE, TRUE);
       debug('ldap_server'); debug($ldap_server);
     }
 
     /**
      * test for username change and provisioning with puid conflict
-     * hpotter drupal user already exists and has correct puid
+     * hpotter backdrop user already exists and has correct puid
      * change samaccountname value (puid field) of hpotter ldap entry and attempt to provision account with new username (hpotterbrawn)
-     * return should be old drupal account (same uid)
+     * return should be old backdrop account (same uid)
      */
 
     $this->testFunctions->setFakeServerUserAttribute('activedirectory1', 'cn=hpotter,ou=people,dc=hogwarts,dc=edu', 'samaccountname', 'hpotter-granger', 0);
     $account = NULL;
     $user_edit = ['name' => 'hpotter-granger'];
-    $hpottergranger = $ldap_user_conf->provisionDrupalAccount($account, $user_edit, NULL, TRUE);
+    $hpottergranger = $ldap_user_conf->provisionBackdropAccount($account, $user_edit, NULL, TRUE);
 
     $this->testFunctions->setFakeServerUserAttribute('activedirectory1', 'cn=hpotter,ou=people,dc=hogwarts,dc=edu', 'samaccountname', 'hpotter', 0);
     $pass = (is_object($hpottergranger) && is_object($hpotter) && $hpotter->uid == $hpottergranger->uid);
-    $this->assertTrue($pass, t('provisionDrupalAccount recognized PUID conflict and synched instead of creating a conflicted drupal account.'), $this->testId('provisionDrupalAccount function test with existing user with same puid'));
+    $this->assertTrue($pass, t('provisionBackdropAccount recognized PUID conflict and synched instead of creating a conflicted backdrop account.'), $this->testId('provisionBackdropAccount function test with existing user with same puid'));
     if (!$pass) {
       debug('hpotter'); debug($hpotter); debug('hpottergranger'); debug($hpottergranger);
     }
     $authmaps = ldap_user_user_get_authmaps('hpotter-granger');
     $pass = $authmaps['ldap_user'] == 'hpotter-granger';
-    $this->assertTrue($pass, t('provisionDrupalAccount recognized PUID conflict and fixed authmap.'), $this->testId());
+    $this->assertTrue($pass, t('provisionBackdropAccount recognized PUID conflict and fixed authmap.'), $this->testId());
 
     $pass = is_object($hpottergranger) && $hpottergranger->name == 'hpotter-granger';
-    $this->assertTrue($pass, t('provisionDrupalAccount recognized PUID conflict and fixed username.'), $this->testId());
+    $this->assertTrue($pass, t('provisionBackdropAccount recognized PUID conflict and fixed username.'), $this->testId());
 
     $user_edit = ['name' => 'hpotter'];
     $hpottergranger->name = 'hpotter';
@@ -357,30 +357,30 @@ class LdapUserUnitTests extends LdapTestCase {
     $hpotter->save();
 
     // Delete and recreate test account to make sure account is in correct state.
-    $ldap_user_conf->deleteDrupalAccount('hpotter');
-    $this->assertFalse(user_load($hpotter_uid, TRUE), t('deleteDrupalAccount deleted hpotter successfully'), $this->testId());
+    $ldap_user_conf->deleteBackdropAccount('hpotter');
+    $this->assertFalse(user_load($hpotter_uid, TRUE), t('deleteBackdropAccount deleted hpotter successfully'), $this->testId());
 
     $ldap_server = ldap_servers_get_servers('activedirectory1', 'enabled', TRUE, TRUE);
     $ldap_server->refreshFakeData();
     $account = NULL;
     $user_edit = ['name' => 'hpotter'];
-    $hpotter = $ldap_user_conf->provisionDrupalAccount($account, $user_edit, NULL, TRUE);
+    $hpotter = $ldap_user_conf->provisionBackdropAccount($account, $user_edit, NULL, TRUE);
 
   }
 
   /**
    *
    */
-  public function testProvisionToDrupal() {
+  public function testProvisionToBackdrop() {
     // TODO: Fix failing tests, excluding to make branch pass.
     return;
     /**
-     * test that $ldap_user_conf->synchToDrupalAccount() works for various contexts.
+     * test that $ldap_user_conf->synchToBackdropAccount() works for various contexts.
      * make sure changing when a given field/property is flagged for a particular context, everything works
      * tests one property (property.mail) and one field (field.field_lname) as well as username, puid
      */
 
-    // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    // Just to give warning if setup doesn't succeed. may want to take these out at some point.
     $setup_success = (
         module_exists('ldap_user') &&
         module_exists('ldap_servers') &&
@@ -390,7 +390,7 @@ class LdapUserUnitTests extends LdapTestCase {
 
     $sid = 'activedirectory1';
     $sids = [$sid];
-    $this->prepTestData('hogwarts', $sids, 'provisionToDrupal', 'default');
+    $this->prepTestData('hogwarts', $sids, 'provisionToBackdrop', 'default');
     $tests = [];
 
     $tests[] = [
@@ -406,8 +406,8 @@ class LdapUserUnitTests extends LdapTestCase {
         'ldap_attr' => '[SN]',
         'user_attr' => '[field.field_lname]',
         'convert' => 0,
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         'user_tokens' => '',
         'config_module' => 'ldap_user',
         'prov_module' => 'ldap_user',
@@ -428,8 +428,8 @@ class LdapUserUnitTests extends LdapTestCase {
         'ldap_attr' => '[givenName] [sn]',
         'user_attr' => '[field.field_display_name]',
         'convert' => 0,
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         'name' => 'Field: Display Name',
         'enabled' => TRUE,
         'config_module' => 'ldap_user',
@@ -448,12 +448,12 @@ class LdapUserUnitTests extends LdapTestCase {
       'mapping' => [
         'sid' => $sid,
         'name' => 'Field: Last Name',
-    // Testing of a constant mapped to a field.  that is everyone should have last name smith.
+    // Testing of a constant mapped to a field. that is everyone should have last name smith.
         'ldap_attr' => 'Smith',
         'user_attr' => '[field.field_lname]',
         'convert' => 0,
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         'user_tokens' => '',
         'config_module' => 'ldap_user',
         'prov_module' => 'ldap_user',
@@ -474,8 +474,8 @@ class LdapUserUnitTests extends LdapTestCase {
         'ldap_attr' => '[cn]@hogwarts.edu',
         'user_attr' => '[property.signature]',
         'convert' => 0,
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         'name' => 'Property: Signature',
         'enabled' => TRUE,
         'config_module' => 'ldap_servers',
@@ -495,8 +495,8 @@ class LdapUserUnitTests extends LdapTestCase {
         'ldap_attr' => '[mail]',
         'user_attr' => '[property.mail]',
         'convert' => 0,
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         'name' => 'Property: Mail',
         'enabled' => TRUE,
         'config_module' => 'ldap_servers',
@@ -517,8 +517,8 @@ class LdapUserUnitTests extends LdapTestCase {
     // Testing of a constant mapped to property.
         'user_attr' => '[property.status]',
         'convert' => 0,
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER],
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER],
         'name' => 'Property: Status',
         'enabled' => TRUE,
         'config_module' => 'ldap_servers',
@@ -531,9 +531,9 @@ class LdapUserUnitTests extends LdapTestCase {
     // @todo case sensitivity in tokens and user_attr in mappings
 
     $test_prov_events = [
-      LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER => [
-        LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER,
-        LDAP_USER_EVENT_CREATE_DRUPAL_USER,
+      LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER => [
+        LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER,
+        LDAP_USER_EVENT_CREATE_BACKDROP_USER,
       ],
 
       LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => [
@@ -542,7 +542,7 @@ class LdapUserUnitTests extends LdapTestCase {
       ],
     ];
 
-    $this->privileged_user = $this->drupalCreateUser([
+    $this->privileged_user = $this->backdropCreateUser([
       'administer site configuration',
       'administer users',
     ]);
@@ -559,7 +559,7 @@ class LdapUserUnitTests extends LdapTestCase {
         // 1. set fake ldap values for field and property in fake ldap server
         // and clear out mappings and set to provision account with test field and prop[0] on provision.
         $ldap_server = ldap_servers_get_servers('activedirectory1', 'enabled', TRUE);
-        $this->prepTestData('hogwarts', $sids, 'provisionToDrupal', 'default');
+        $this->prepTestData('hogwarts', $sids, 'provisionToBackdrop', 'default');
         $ldap_user_conf = ldap_user_conf('admin', TRUE);
         if ($property_name) {
           $token_attributes = [];
@@ -583,7 +583,7 @@ class LdapUserUnitTests extends LdapTestCase {
               'activedirectory1',
               'cn=hpotter,ou=people,dc=hogwarts,dc=edu',
               $attr_name,
-              $test['field_values'][0][drupal_strtolower($attr_name)],
+              $test['field_values'][0][backdrop_strtolower($attr_name)],
               0);
           }
           $field_token = '[field.' . $field_name . ']';
@@ -603,16 +603,16 @@ class LdapUserUnitTests extends LdapTestCase {
           user_delete($user_object->uid);
         }
 
-        // 3. create new user with provisionDrupalAccount.
+        // 3. create new user with provisionBackdropAccount.
         $account = NULL;
         $user_edit = ['name' => $username];
-        $result = $ldap_user_conf->provisionDrupalAccount($account, $user_edit, NULL, TRUE);
+        $result = $ldap_user_conf->provisionBackdropAccount($account, $user_edit, NULL, TRUE);
         list($user_object, $user_entity) = ldap_user_load_user_acct_and_entity($username);
         if ($property_name) {
           // If intended to synch.
           if (in_array($prov_event, $ldap_user_conf->ldapUserSynchMappings[$direction][$property_token]['prov_events'])) {
             $property_success = ($user_object->{$property_name} == $test['property_results'][0]);
-            $this->assertTrue($property_success, t("provisionDrupalAccount worked for property $property_name"), $this->testId(":provisionDrupalAccount.i=$j.prov_event=$prov_event"));
+            $this->assertTrue($property_success, t("provisionBackdropAccount worked for property $property_name"), $this->testId(":provisionBackdropAccount.i=$j.prov_event=$prov_event"));
             if (!$property_success) {
               debug('field fail,' . $property_name); debug($user_entity->{$property_name}); debug($test['property_results'][0]);
             }
@@ -624,21 +624,21 @@ class LdapUserUnitTests extends LdapTestCase {
           if (in_array($prov_event, $ldap_user_conf->ldapUserSynchMappings[$direction][$field_token]['prov_events'])) {
             $field_success = isset($user_entity->{$field_name}[LANGUAGE_NONE][0]['value']) &&
               $user_entity->{$field_name}[LANGUAGE_NONE][0]['value'] == $test['field_results'][0];
-            $this->assertTrue($field_success, t("provisionDrupalAccount worked for field $field_name"), $this->testId(":provisionDrupalAccount.i=$j.prov_event=$prov_event"));
+            $this->assertTrue($field_success, t("provisionBackdropAccount worked for field $field_name"), $this->testId(":provisionBackdropAccount.i=$j.prov_event=$prov_event"));
             if (!$field_success) {
               // debug($user_entity);
               debug('field fail,' . $field_name); debug($user_entity->{$field_name}); debug($test['field_results'][0]);
             }
           }
           else {
-            debug("field_name=$field_name not configured to provisionDrupalAccount on drupal user create for direction=$direction and prov_event=$prov_event");
+            debug("field_name=$field_name not configured to provisionBackdropAccount on backdrop user create for direction=$direction and prov_event=$prov_event");
           }
         }
         ldap_user_ldap_provision_semaphore(NULL, NULL, NULL, TRUE);
       }
 
       /**
-        * manually create drupal user with option of not ldap associated checked
+        * manually create backdrop user with option of not ldap associated checked
         */
 
       if ($hpotter = user_load_by_name('hpotter')) {
@@ -646,9 +646,9 @@ class LdapUserUnitTests extends LdapTestCase {
       }
       $this->assertFalse(user_load_by_name('hpotter'), t('hpotter removed before manual account creation test'), $this->testId('manual non ldap account created'));
 
-      $this->drupalLogout();
-      $this->drupalLogin($this->privileged_user);
-      $this->drupalGet('admin/people/create');
+      $this->backdropLogout();
+      $this->backdropLogin($this->privileged_user);
+      $this->backdropGet('admin/people/create');
       $edit = [
         'name' => 'hpotter',
         'mail' => 'hpotter@hogwarts.edu',
@@ -657,7 +657,7 @@ class LdapUserUnitTests extends LdapTestCase {
         'notify' => FALSE,
         'ldap_user_association' => LDAP_USER_MANUAL_ACCT_CONFLICT_NO_LDAP_ASSOCIATE,
       ];
-      $this->drupalPost('admin/people/create', $edit, t('Create new account'));
+      $this->backdropPost('admin/people/create', $edit, t('Create new account'));
 
       $hpotter = user_load_by_name('hpotter');
       $this->assertTrue($hpotter, t('hpotter created via ui form'), $this->testId('manual non ldap account created'));
@@ -707,7 +707,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
    */
   public function testProvisionToLdap() {
 
-    // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    // Just to give warning if setup doesn't succeed. may want to take these out at some point.
     $setup_success = (
         module_exists('ldap_user') &&
         module_exists('ldap_servers') &&
@@ -742,7 +742,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
 
       $pre_entry = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
       $user_acct->save();
-      $drupal_account = $user_acct;
+      $backdrop_account = $user_acct;
       $ldap_entry_post = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
 
       $ldap_entry_success = (
@@ -751,11 +751,11 @@ class LdapUserIntegrationTests extends LdapTestCase {
         $ldap_entry_post['displayname'][0] == 'Bercilak Hautdesert' &&
         $ldap_entry_post['sn'][0] == 'Hautdesert' &&
         $ldap_entry_post['guid'][0] == '151' &&
-        $ldap_entry_post['provisionsource'][0] == 'drupal.hogwarts.edu'
+        $ldap_entry_post['provisionsource'][0] == 'backdrop.hogwarts.edu'
       );
-      $this->assertTrue($ldap_entry_success, t("provision of ldap entry on user create succeeded for " . $username), $this->testId("test for provision to ldap on drupal acct create"));
+      $this->assertTrue($ldap_entry_success, t("provision of ldap entry on user create succeeded for " . $username), $this->testId("test for provision to ldap on backdrop acct create"));
       if (!$ldap_entry_success) {
-        debug('drupal_account'); debug($drupal_account);
+        debug('backdrop_account'); debug($backdrop_account);
         debug("desired_dn=$desired_dn, ldap_entry_post=");
         debug($ldap_entry_post);
         debug('ldap_user_conf'); debug($ldap_user_conf);
@@ -764,7 +764,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
       // Need to reset for simpletests.
       ldap_user_ldap_provision_semaphore(NULL, NULL, NULL, TRUE);
 
-      // Change lastname and first name (in drupal) and save user to test ldapSynch event handler
+      // Change lastname and first name (in backdrop) and save user to test ldapSynch event handler
       // confirm that appropriate attributes were changed in ldap entry.
       $ldap_entry_pre = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
       $user_acct_pre = user_load_by_name('bhautdeser');
@@ -789,14 +789,14 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $this->assertTrue($ldap_entry_success, t("synch to ldap entry on user save succeeded for " . $username), $this->testId());
       if (!$ldap_entry_success) {
         debug("dn=$desired_dn");
-        debug('drupal_account pre'); debug($user_acct_pre);
-        debug('drupal_account post'); debug($user_acct_post);
+        debug('backdrop_account pre'); debug($user_acct_pre);
+        debug('backdrop_account post'); debug($user_acct_post);
         debug('ldap_entry_pre'); debug($ldap_entry_pre);
         debug('ldap_entry_post'); debug($ldap_entry_post);
         debug('ldap_user_conf'); debug($ldap_user_conf);
       }
 
-      // Change username and first name (in drupal) and save user to test ldapSynch event handler
+      // Change username and first name (in backdrop) and save user to test ldapSynch event handler
       // confirm that appropriate attributes were changed in ldap entry.
       $ldap_entry_pre = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
       $user_acct_pre = user_load_by_name('bhautdeser');
@@ -821,8 +821,8 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $this->assertTrue($ldap_entry_success, t("synch to ldap entry on user save succeeded for " . $username), $this->testId());
       if (!$ldap_entry_success) {
         debug("dn=$desired_dn");
-        debug('drupal_account pre'); debug($user_acct_pre);
-        debug('drupal_account post'); debug($user_acct_post);
+        debug('backdrop_account pre'); debug($user_acct_pre);
+        debug('backdrop_account post'); debug($user_acct_post);
         debug('ldap_entry_pre'); debug($ldap_entry_pre);
         debug('ldap_entry_post'); debug($ldap_entry_post);
         debug('ldap_user_conf'); debug($ldap_user_conf);
@@ -831,7 +831,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
 
     /**
      * provisionToLdapEmailVerification
-     * use case where a user self creates and confirms a drupal account and
+     * use case where a user self creates and confirms a backdrop account and
      *  a corresponding ldap entry with password is created
      */
     $password_tests = [
@@ -849,8 +849,8 @@ class LdapUserIntegrationTests extends LdapTestCase {
       // This will create the proper ldap_user configuration from ldap_test/ldap_user.conf.inc.
       $this->prepTestData('hogwarts', $sids, 'provisionToLdap_' . $test_sid);
       $ldap_user_conf = ldap_user_conf('admin', TRUE);
-      // Turn off provisioning to drupal.
-      $ldap_user_conf->drupalAcctProvisionServer = 0;
+      // Turn off provisioning to backdrop.
+      $ldap_user_conf->backdropAcctProvisionServer = 0;
       $ldap_user_conf->ldapEntryProvisionServer = $test_sid;
       $ldap_user_conf->ldapEntryProvisionTriggers = [
         LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE,
@@ -878,7 +878,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
       // user_cancel_block_unpublish, user_cancel_reassign, user_cancel_delete.
       config_set('system.core', 'user_cancel_method', 'user_cancel_block');
       $username = 'sstephens';
-      $this->drupalLogout();
+      $this->backdropLogout();
       if ($sstephens = user_load_by_name($username)) {
         user_delete($sstephens->uid);
       }
@@ -887,7 +887,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
        * provisionToLdapEmailVerification test
        */
       // User register form.
-      $this->drupalGet('user/register');
+      $this->backdropGet('user/register');
       $edit = [
         'name' => $username,
         'mail' => $username . '@hogwarts.edu',
@@ -896,12 +896,12 @@ class LdapUserIntegrationTests extends LdapTestCase {
       // This will create last and first name fields.
       $this->createTestUserFields();
 
-      $this->drupalPost('user/register', $edit, t('Create new account'));
+      $this->backdropPost('user/register', $edit, t('Create new account'));
 
       $sstephens = user_load_by_name($username);
 
       // can't derive login url, must get it from outgoing email because timestamp in hash is not stored in user_mail_tokens()
-      $emails = $this->drupalGetMails();
+      $emails = $this->backdropGetMails();
       // Most recent email is the one of interest.
       $email_body = $emails[count($emails) - 1]['body'];
       $result = [];
@@ -909,13 +909,13 @@ class LdapUserIntegrationTests extends LdapTestCase {
       if (count($result) == 2) {
         $login_path = trim($result[1][0]);
         // User login form.
-        $this->drupalGet($login_path);
+        $this->backdropGet($login_path);
         $sstephens = user_load_by_name($username);
         $edit = [
           'pass[pass1]' => 'password',
           'pass[pass2]' => 'password',
         ];
-        $this->drupalPost($login_path, $edit, t('Save password & log in'));
+        $this->backdropPost($login_path, $edit, t('Save password & log in'));
         $sstephens = user_load_by_name($username);
 
         $edit = [
@@ -926,7 +926,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
           'field_lname[und][0][value]' => 'Stephens',
         ];
 
-        $this->drupalPost('user/' . $sstephens->uid . '/edit', $edit, t('Save'));
+        $this->backdropPost('user/' . $sstephens->uid . '/edit', $edit, t('Save'));
         $sstephens = user_load_by_name($username);
         // Clear cache.
         $servers = ldap_servers_get_servers(NULL, NULL, FALSE, TRUE);
@@ -946,7 +946,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
           $password_success &&
           $ldap_entry_post['cn'][0] == $username &&
           $ldap_entry_post['displayname'][0] == 'Samantha Stephens' &&
-          $ldap_entry_post['provisionsource'][0] == 'drupal.hogwarts.edu' &&
+          $ldap_entry_post['provisionsource'][0] == 'backdrop.hogwarts.edu' &&
           $ldap_entry_post['sn'][0] == 'Stephens' &&
           $ldap_entry_post['givenname'][0] == 'Samantha'
         );
@@ -966,13 +966,13 @@ class LdapUserIntegrationTests extends LdapTestCase {
        * @todo functional tests
        *
        * do a password reset of some sort
-       * try to add a drupal user that conflicts with an ldap user
+       * try to add a backdrop user that conflicts with an ldap user
        * try a binary fields such as a user profile image
        */
 
     }
 
-    // Test deletion of drupal entry on deletion of drupal user.
+    // Test deletion of backdrop entry on deletion of backdrop user.
     foreach (['activedirectory1', 'openldap1'] as $test_sid) {
       $test_id = $test_sid;
       // 1. setup.
@@ -983,7 +983,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
       if (!in_array(LDAP_USER_LDAP_ENTRY_DELETE_ON_USER_DELETE, $ldap_user_conf->ldapEntryProvisionTriggers)) {
         $ldap_user_conf->ldapEntryProvisionTriggers[] = LDAP_USER_LDAP_ENTRY_DELETE_ON_USER_DELETE;
       }
-      $ldap_user_conf->provisionsLdapEntriesFromDrupalUsers = TRUE;
+      $ldap_user_conf->provisionsLdapEntriesFromBackdropUsers = TRUE;
       $ldap_user_conf->save();
 
       $username = 'bhautdeser';
@@ -1006,18 +1006,18 @@ class LdapUserIntegrationTests extends LdapTestCase {
 
       $pre_entry = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
       $user_acct->save();
-      $drupal_account = $user_acct;
+      $backdrop_account = $user_acct;
       $ldap_entry_pre_delete = $servers[$test_sid]->dnExists($desired_dn, 'ldap_entry');
 
-      $ldap_entry = $ldap_user_conf->getProvisionRelatedLdapEntry($drupal_account);
+      $ldap_entry = $ldap_user_conf->getProvisionRelatedLdapEntry($backdrop_account);
 
       // 2. test.
-      user_delete($drupal_account->uid);
+      user_delete($backdrop_account->uid);
       $ldap_server = ldap_servers_get_servers($test_sid, 'all', TRUE, TRUE);
       $ldap_entry_post_delete = $ldap_server->dnExists($desired_dn, 'ldap_entry');
 
       $success = (!$ldap_entry_post_delete);
-      $this->assertTrue($success, t("ldap entry removed for $username on drupal user delete with deletion enabled."), $this->testId($test_id));
+      $this->assertTrue($success, t("ldap entry removed for $username on backdrop user delete with deletion enabled."), $this->testId($test_id));
 
       if (!$success) {
         debug(" desired_dn=$desired_dn test_sid=$test_sid, ldap entry post:"); debug($ldap_entry_post_delete);
@@ -1037,15 +1037,15 @@ class LdapUserIntegrationTests extends LdapTestCase {
    * user_cancel_block, user_cancel_block_unpublish,
    * user_cancel_reassign, user_cancel_delete
    *    - automatically generate 70 ldap users with cns hpotter1-hpotter300
-   *    - create 75 corresponding drupal uses that are ldap identified
+   *    - create 75 corresponding backdrop uses that are ldap identified
    *    - delete 10 of the ldap entries
    *    - run cron
-   *    - test for drupal accounts being dealt with correctly and or email sent.
+   *    - test for backdrop accounts being dealt with correctly and or email sent.
    */
-  public function testDrupalAccountsOrphaned() {
+  public function testBackdropAccountsOrphaned() {
     // TODO: Fix failing tests, excluding to make branch pass.
     return;
-    // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    // Just to give warning if setup doesn't succeed. may want to take these out at some point.
     $setup_success = (
         module_exists('ldap_user') &&
         module_exists('ldap_servers') &&
@@ -1054,30 +1054,30 @@ class LdapUserIntegrationTests extends LdapTestCase {
     $this->assertTrue($setup_success, ' ldap_user setup successful', $this->testId('orphaned entries tests'));
 
     $sids = ['activedirectory1'];
-    $this->prepTestData('hogwarts', $sids, 'provisionToDrupal', 'default');
+    $this->prepTestData('hogwarts', $sids, 'provisionToBackdrop', 'default');
 
     $ldap_user_conf = ldap_user_conf('admin');
-    $drupal_form = $ldap_user_conf->drupalForm();
-    $account_options = $drupal_form['basic_to_drupal']['orphanedDrupalAcctBehavior']['#options'];
+    $backdrop_form = $ldap_user_conf->backdropForm();
+    $account_options = $backdrop_form['basic_to_backdrop']['orphanedBackdropAcctBehavior']['#options'];
     $cn_to_account = [];
     $ldap_server = ldap_servers_get_servers('activedirectory1', NULL, TRUE, TRUE);
 
     foreach ($account_options as $account_option => $account_option_text) {
       $sids = ['activedirectory1'];
-      $this->prepTestData('hogwarts', $sids, 'provisionToDrupal', 'default');
-      $ldap_user_conf->orphanedDrupalAcctBehavior = $account_option;
+      $this->prepTestData('hogwarts', $sids, 'provisionToBackdrop', 'default');
+      $ldap_user_conf->orphanedBackdropAcctBehavior = $account_option;
       $ldap_user_conf->save();
       $test_id = "ldap_user.orphans.$account_option";
-      $test_text = "Test of orphaned Drupal account option: $account_option_text";
+      $test_text = "Test of orphaned Backdrop account option: $account_option_text";
       $success = FALSE;
 
-      // Create 70 drupal accounts (clone0 to clone69) based on corresponding ldap entries.
+      // Create 70 backdrop accounts (clone0 to clone69) based on corresponding ldap entries.
       $first_clone_username = 'clone0';
       $last_clone_username = 'clone' . (LDAP_TEST_USER_ORPHAN_CLONE_COUNT - 1);
       // 70.
       for ($i = 0; $i < LDAP_TEST_USER_ORPHAN_CLONE_COUNT; $i++) {
         $name = "clone" . $i;
-        $account = $this->createLdapIdentifiedDrupalAccount(
+        $account = $this->createLdapIdentifiedBackdropAccount(
           $ldap_user_conf,
           $name,
           'activedirectory1'
@@ -1098,13 +1098,13 @@ class LdapUserIntegrationTests extends LdapTestCase {
       for ($i = 0; $i < $delete; $i++) {
         $name = "clone" . $i;
         $account = $cn_to_account[$name];
-        // ?? is it possible the ldap delete hook is causing the drupal user to get populated with empty values?
+        // ?? is it possible the ldap delete hook is causing the backdrop user to get populated with empty values?
         $ldap_server->delete($account->ldap_user_current_dn[LANGUAGE_NONE][0]['value']);
       }
 
       $clone_first = user_load($clone_first_uid, TRUE);
       $clone_last = user_load($clone_last_uid, TRUE);
-      drupal_cron_run();
+      backdrop_cron_run();
       $clone_first = user_load($clone_first_uid, TRUE);
       $clone_last = user_load($clone_last_uid, TRUE);
       switch ($account_option) {
@@ -1132,11 +1132,11 @@ class LdapUserIntegrationTests extends LdapTestCase {
 
         case 'ldap_user_orphan_email':
           // Test is if email has 10 users and was sent.
-          $emails = $this->drupalGetMails();
+          $emails = $this->backdropGetMails();
           if (count($emails)) {
             // Most recent email is the one of interest.
             $email_body = $emails[count($emails) - 1]['body'];
-            $success = (strpos($email_body, "The following $delete Drupal users") !== FALSE);
+            $success = (strpos($email_body, "The following $delete Backdrop users") !== FALSE);
           }
           else {
             $success = FALSE;
@@ -1191,7 +1191,7 @@ class LdapUserIntegrationTests extends LdapTestCase {
 
       $this->assertTrue($success, $test_id, $test_text);
 
-      // Remove all drupal users except 1 for next test.
+      // Remove all backdrop users except 1 for next test.
       foreach ($cn_to_account as $cn => $account) {
         @user_delete($account->uid);
       }
@@ -1203,11 +1203,11 @@ class LdapUserIntegrationTests extends LdapTestCase {
   /**
    *
    */
-  public function createLdapIdentifiedDrupalAccount($ldap_user_conf, $name, $sid) {
+  public function createLdapIdentifiedBackdropAccount($ldap_user_conf, $name, $sid) {
 
     $account = NULL;
     $user_edit = ['name' => $name];
-    $user = $ldap_user_conf->provisionDrupalAccount($account, $user_edit, NULL, TRUE);
+    $user = $ldap_user_conf->provisionBackdropAccount($account, $user_edit, NULL, TRUE);
 
     return user_load($user->uid, TRUE);
   }
@@ -1249,11 +1249,11 @@ class LdapUserUITests extends LdapTestCase {
   }
 
   /**
-   * Make sure user admin interface works.  (its a beast)
+   * Make sure user admin interface works. (its a beast)
    */
   public function testUI() {
 
-    // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    // Just to give warning if setup doesn't succeed. may want to take these out at some point.
     $setup_success = (
         module_exists('ldap_user') &&
         module_exists('ldap_servers') &&
@@ -1262,18 +1262,18 @@ class LdapUserUITests extends LdapTestCase {
     $this->assertTrue($setup_success, ' ldap_user setup successful', $this->testId('user interface tests'));
 
     $sids = ['activedirectory1'];
-    $this->prepTestData('hogwarts', $sids, 'provisionToDrupal', 'default');
+    $this->prepTestData('hogwarts', $sids, 'provisionToBackdrop', 'default');
 
-    $this->privileged_user = $this->drupalCreateUser([
+    $this->privileged_user = $this->backdropCreateUser([
       'administer site configuration',
       'administer users',
     ]);
 
-    $this->drupalLogin($this->privileged_user);
+    $this->backdropLogin($this->privileged_user);
 
     $ldap_user_conf = ldap_user_conf();
 
-    $this->drupalGet('admin/config/people/ldap/user');
+    $this->backdropGet('admin/config/people/ldap/user');
 
     // Populate the field settings with new settings.
     $sid = 'activedirectory1';
@@ -1281,16 +1281,16 @@ class LdapUserUITests extends LdapTestCase {
     $edit_direct_map = [
 
       'manualAccountConflict' => LDAP_USER_MANUAL_ACCT_CONFLICT_LDAP_ASSOCIATE,
-      'drupalAcctProvisionServer' => $sid,
+      'backdropAcctProvisionServer' => $sid,
       'userConflictResolve' => LDAP_USER_CONFLICT_LOG,
       'acctCreation' => LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR_DEFAULT,
-      'orphanedDrupalAcctBehavior' => 'ldap_user_orphan_email',
+      'orphanedBackdropAcctBehavior' => 'ldap_user_orphan_email',
       'orphanedCheckQty' => '50',
       'ldapEntryProvisionServer' => $sid,
     ];
     $edit = $edit_direct_map + [
-      'drupalAcctProvisionTriggers[' . LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE . ']' => TRUE,
-      'drupalAcctProvisionTriggers[' . LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE . ']' => TRUE,
+      'backdropAcctProvisionTriggers[' . LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE . ']' => TRUE,
+      'backdropAcctProvisionTriggers[' . LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE . ']' => TRUE,
 
       '1__sm__ldap_attr__6' => '[sn]',
       '1__sm__convert__6' => FALSE,
@@ -1309,7 +1309,7 @@ class LdapUserUITests extends LdapTestCase {
       'ldapEntryProvisionTriggers[' . LDAP_USER_LDAP_ENTRY_DELETE_ON_USER_DELETE . ']' => TRUE,
 
       '2__sm__user_attr__0' => 'user_tokens',
-      '2__sm__user_tokens__0' => 'Drupal provisioned account for [property.uid]',
+      '2__sm__user_tokens__0' => 'Backdrop provisioned account for [property.uid]',
       '2__sm__convert__0' => FALSE,
       '2__sm__ldap_attr__0' => '[description]',
       '2__sm__4__3' => TRUE,
@@ -1330,7 +1330,7 @@ class LdapUserUITests extends LdapTestCase {
       '2__sm__4__2' => TRUE,
     ];
 
-    $this->drupalPost('admin/config/people/ldap/user', $edit, t('Save'));
+    $this->backdropPost('admin/config/people/ldap/user', $edit, t('Save'));
 
     $ldap_user_conf = ldap_user_conf(NULL, TRUE);
 
@@ -1339,9 +1339,9 @@ class LdapUserUITests extends LdapTestCase {
     }
 
     $this->assertTrue(
-      isset($ldap_user_conf->drupalAcctProvisionTriggers[LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE]) &&
-      isset($ldap_user_conf->drupalAcctProvisionTriggers[LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE]),
-       t('drupal provision triggers set correctly'), $this->testId('user interface tests'));
+      isset($ldap_user_conf->backdropAcctProvisionTriggers[LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE]) &&
+      isset($ldap_user_conf->backdropAcctProvisionTriggers[LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE]),
+       t('backdrop provision triggers set correctly'), $this->testId('user interface tests'));
 
     $this->assertTrue(
       isset($ldap_user_conf->ldapEntryProvisionTriggers[LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE]) &&
@@ -1351,23 +1351,23 @@ class LdapUserUITests extends LdapTestCase {
 
     $field_token = '[field.field_lname]';
     $field_lname_set_correctly = (
-      $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER][$field_token]['enabled'] == TRUE &&
+      $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER][$field_token]['enabled'] == TRUE &&
 
-      $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER][$field_token]['ldap_attr'] == '[sn]');
+      $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER][$field_token]['ldap_attr'] == '[sn]');
 
     $this->assertTrue($field_lname_set_correctly, t('Synch mapping for field.field_lname  field set correctly'), $this->testId('user interface tests'));
     if (!$field_lname_set_correctly) {
-      debug('ldap_user_conf->synchMapping[direction][field.field_lname]'); debug($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER]['field.field_lname']);
+      debug('ldap_user_conf->synchMapping[direction][field.field_lname]'); debug($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER]['field.field_lname']);
     }
 
     $field_token = '[field.field_fname]';
-    $field_fname_set_correctly = ($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER][$field_token]['enabled'] == TRUE &&
-      $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER][$field_token]['direction'] == 1 &&
-      $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER][$field_token]['ldap_attr'] == '[givenname]');
+    $field_fname_set_correctly = ($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER][$field_token]['enabled'] == TRUE &&
+      $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER][$field_token]['direction'] == 1 &&
+      $ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER][$field_token]['ldap_attr'] == '[givenname]');
 
     $this->assertTrue($field_fname_set_correctly, t('Synch mapping for field.field_lname  field set correctly'), $this->testId('user interface tests'));
     if (!$field_fname_set_correctly) {
-      debug('ldap_user_conf->synchMapping[direction][field.field_lname]'); debug($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER]['field.field_lname']);
+      debug('ldap_user_conf->synchMapping[direction][field.field_lname]'); debug($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER]['field.field_lname']);
     }
 
   }

@@ -13,13 +13,13 @@ require_once 'ldap_user.module';
 class LdapUserConf {
 
   /**
-   * Server providing Drupal account provisioning.
+   * Server providing Backdrop account provisioning.
    *
    * @var string
    *
    * @see LdapServer::sid
    */
-  public $drupalAcctProvisionServer = LDAP_USER_NO_SERVER_SID;
+  public $backdropAcctProvisionServer = LDAP_USER_NO_SERVER_SID;
 
   /**
    * Server providing LDAP entry provisioning.
@@ -36,20 +36,20 @@ class LdapUserConf {
    * @var array
    */
   public $provisionSidFromDirection = [
-    LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER => LDAP_USER_NO_SERVER_SID,
+    LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER => LDAP_USER_NO_SERVER_SID,
     LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => LDAP_USER_NO_SERVER_SID,
   ];
 
   /**
-   * Array of events that trigger provisioning of Drupal Accounts
+   * Array of events that trigger provisioning of Backdrop Accounts
    * Valid constants are:
-   *   LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE
-   *   LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE
-   *   LDAP_USER_DRUPAL_USER_PROV_ON_ALLOW_MANUAL_CREATE.
+   *   LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE
+   *   LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE
+   *   LDAP_USER_BACKDROP_USER_PROV_ON_ALLOW_MANUAL_CREATE.
    *
    * @var array
    */
-  public $drupalAcctProvisionTriggers = [LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE, LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE, LDAP_USER_DRUPAL_USER_PROV_ON_ALLOW_MANUAL_CREATE];
+  public $backdropAcctProvisionTriggers = [LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE, LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE, LDAP_USER_BACKDROP_USER_PROV_ON_ALLOW_MANUAL_CREATE];
 
   /**
    * Array of events that trigger provisioning of LDAP Entries
@@ -74,7 +74,7 @@ class LdapUserConf {
   /**
    * Whether to allow/disallow provisioning accounts that have the same email.
    * Depending on whether the "sharedemail" module is enabled, this variable
-   * will (by default) be set accordingly.  It can be overridden by an admin.
+   * will (by default) be set accordingly. It can be overridden by an admin.
    *
    * @var int
    *    LDAP_USER_ACCOUNTS_WITH_SAME_EMAIL_DISABLED (0)
@@ -83,10 +83,10 @@ class LdapUserConf {
   public $accountsWithSameEmail = LDAP_USER_ACCOUNTS_WITH_SAME_EMAIL_DISABLED;
 
   /**
-   * Drupal account creation model.
+   * Backdrop account creation model.
    *
    * @var int
-   *   LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR   /admin/config/people/accounts/settings do not affect "LDAP Associated" Drupal accounts.
+   *   LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR   /admin/config/people/accounts/settings do not affect "LDAP Associated" Backdrop accounts.
    *   LDAP_USER_ACCT_CREATION_USER_SETTINGS_FOR_LDAP  use Account creation settings at /admin/config/people/accounts/settings
    */
   public $acctCreation = LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR_DEFAULT;
@@ -99,11 +99,11 @@ class LdapUserConf {
   public $inDatabase = FALSE;
 
   /**
-   * What to do when an ldap provisioned username conflicts with existing drupal user?
+   * What to do when an ldap provisioned username conflicts with existing backdrop user?
    *
    * @var int
    *   LDAP_USER_CONFLICT_LOG - log the conflict
-   *   LDAP_USER_CONFLICT_RESOLVE - LDAP associate the existing drupal user
+   *   LDAP_USER_CONFLICT_RESOLVE - LDAP associate the existing backdrop user
    */
   public $manualAccountConflict = LDAP_USER_MANUAL_ACCT_CONFLICT_REJECT;
 
@@ -118,46 +118,46 @@ class LdapUserConf {
   /**
    * Array of field synch mappings provided by all modules (via hook_ldap_user_attrs_list_alter())
    * array of the form: array(
-   * LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER | LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => array(
+   * LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER | LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => array(
    *   <server_id> => array(
    *     'sid' => <server_id> (redundant)
    *     'ldap_attr' => e.g. [sn]
    *     'user_attr'  => e.g. [field.field_user_lname] (when this value is set to 'user_tokens', 'user_tokens' value is used.)
    *     'user_tokens' => e.g. [field.field_user_lname], [field.field_user_fname]
    *     'convert' => 1|0 boolean indicating need to covert from binary
-   *     'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER | LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY (redundant)
+   *     'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER | LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY (redundant)
    *     'config_module' => 'ldap_user'
    *     'prov_module' => 'ldap_user'
    *     'enabled' => 1|0 boolean
    *      prov_events' => array( of LDAP_USER_EVENT_* constants indicating during which synch actions field should be synched)
    *         - four permutations available
    *            to ldap:   LDAP_USER_EVENT_CREATE_LDAP_ENTRY,  LDAP_USER_EVENT_SYNCH_TO_LDAP_ENTRY,
-   *            to drupal: LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER
+   *            to backdrop: LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER
    *    )
    *  )
    */
   /**
-   * Array of field synching directions for each operation.  should include ldapUserSynchMappings.
+   * Array of field synching directions for each operation. should include ldapUserSynchMappings.
    */
   public $synchMapping = NULL;
   // Keyed on direction => property, ldap, or field token such as '[field.field_lname] with brackets in them.
   /**
    * Synch mappings configured in ldap user module (not in other modules)
    *   array of the form: array(
-   * LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER | LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => array(
+   * LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER | LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => array(
    * 'sid' => <server_id> (redundant)
    * 'ldap_attr' => e.g. [sn]
    * 'user_attr'  => e.g. [field.field_user_lname] (when this value is set to 'user_tokens', 'user_tokens' value is used.)
    * 'user_tokens' => e.g. [field.field_user_lname], [field.field_user_fname]
    * 'convert' => 1|0 boolean indicating need to covert from binary
-   * 'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER | LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY (redundant)
+   * 'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER | LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY (redundant)
    * 'config_module' => 'ldap_user'
    * 'prov_module' => 'ldap_user'
    * 'enabled' => 1|0 boolean
    * prov_events' => array( of LDAP_USER_EVENT_* constants indicating during which synch actions field should be synched)
    * - four permutations available
    * to ldap:   LDAP_USER_EVENT_CREATE_LDAP_ENTRY,  LDAP_USER_EVENT_SYNCH_TO_LDAP_ENTRY,
-   * to drupal: LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER
+   * to backdrop: LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER
    * )
    * )
    * )
@@ -167,17 +167,17 @@ class LdapUserConf {
    * Keyed on property, ldap, or field token such as '[field.field_lname] with brackets in them.
    */
   public $detailedWatchdog = FALSE;
-  public $provisionsDrupalAccountsFromLdap = FALSE;
-  public $provisionsLdapEntriesFromDrupalUsers = FALSE;
+  public $provisionsBackdropAccountsFromLdap = FALSE;
+  public $provisionsLdapEntriesFromBackdropUsers = FALSE;
 
   /**
-   * What should be done with ldap provisioned accounts that no longer have associated drupal accounts.
+   * What should be done with ldap provisioned accounts that no longer have associated backdrop accounts.
    */
-  public $orphanedDrupalAcctBehavior = 'ldap_user_orphan_email';
+  public $orphanedBackdropAcctBehavior = 'ldap_user_orphan_email';
   /**
    * Options are partially derived from user module account cancel options:.
    *
-   * 'ldap_user_orphan_do_not_check' => Do not check for orphaned Drupal accounts.)
+   * 'ldap_user_orphan_do_not_check' => Do not check for orphaned Backdrop accounts.)
    * 'ldap_user_orphan_email' => Perform no action, but email list of orphaned accounts. (All the other options will send email summaries also.)
    * 'user_cancel_block' => Disable the account and keep its content.
    * 'user_cancel_block_unpublish' => Disable the account and unpublish its content.
@@ -188,14 +188,14 @@ class LdapUserConf {
   public $orphanedCheckQty = 100;
 
   public $provisionsLdapEvents = [];
-  public $provisionsDrupalEvents = [];
+  public $provisionsBackdropEvents = [];
 
   public $saveable = [
-    'drupalAcctProvisionServer',
+    'backdropAcctProvisionServer',
     'ldapEntryProvisionServer',
-    'drupalAcctProvisionTriggers',
+    'backdropAcctProvisionTriggers',
     'ldapEntryProvisionTriggers',
-    'orphanedDrupalAcctBehavior',
+    'orphanedBackdropAcctBehavior',
     'orphanedCheckQty',
     'userConflictResolve',
     'accountsWithSameEmail',
@@ -211,7 +211,7 @@ class LdapUserConf {
   public function __construct() {
     $this->load();
 
-    $this->provisionSidFromDirection[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER] = $this->drupalAcctProvisionServer;
+    $this->provisionSidFromDirection[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER] = $this->backdropAcctProvisionServer;
     $this->provisionSidFromDirection[LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] = $this->ldapEntryProvisionServer;
 
     $this->provisionsLdapEvents = [
@@ -219,18 +219,18 @@ class LdapUserConf {
       LDAP_USER_EVENT_SYNCH_TO_LDAP_ENTRY => t('On Synch to LDAP Entry'),
     ];
 
-    $this->provisionsDrupalEvents = [
-      LDAP_USER_EVENT_CREATE_DRUPAL_USER => t('On Drupal User Creation'),
-      LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER => t('On Synch to Drupal User'),
+    $this->provisionsBackdropEvents = [
+      LDAP_USER_EVENT_CREATE_BACKDROP_USER => t('On Backdrop User Creation'),
+      LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER => t('On Synch to Backdrop User'),
     ];
 
-    $this->provisionsDrupalAccountsFromLdap = (
-      $this->drupalAcctProvisionServer &&
-      $this->drupalAcctProvisionServer &&
-      (count(array_filter(array_values($this->drupalAcctProvisionTriggers))) > 0)
+    $this->provisionsBackdropAccountsFromLdap = (
+      $this->backdropAcctProvisionServer &&
+      $this->backdropAcctProvisionServer &&
+      (count(array_filter(array_values($this->backdropAcctProvisionTriggers))) > 0)
     );
 
-    $this->provisionsLdapEntriesFromDrupalUsers = (
+    $this->provisionsLdapEntriesFromBackdropUsers = (
       $this->ldapEntryProvisionServer
       && $this->ldapEntryProvisionServer
       && (count(array_filter(array_values($this->ldapEntryProvisionTriggers))) > 0)
@@ -299,7 +299,7 @@ class LdapUserConf {
 
     $mappings = [];
     if ($direction == LDAP_USER_PROV_DIRECTION_ALL) {
-      $directions = [LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY];
+      $directions = [LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY];
     }
     else {
       $directions = [$direction];
@@ -322,11 +322,11 @@ class LdapUserConf {
   /**
    *
    */
-  public function isDrupalAcctProvisionServer($sid) {
-    if (!$sid || !$this->drupalAcctProvisionServer) {
+  public function isBackdropAcctProvisionServer($sid) {
+    if (!$sid || !$this->backdropAcctProvisionServer) {
       return FALSE;
     }
-    elseif ($this->drupalAcctProvisionServer == $sid) {
+    elseif ($this->backdropAcctProvisionServer == $sid) {
       return TRUE;
     }
     else {
@@ -360,7 +360,7 @@ class LdapUserConf {
 
     $attributes_map = [];
     $required_attributes = [];
-    if ($this->drupalAcctProvisionServer) {
+    if ($this->backdropAcctProvisionServer) {
       $prov_events = $this->ldapContextToProvEvents($ldap_context);
       $attributes_map = $this->getSynchMappings($direction, $prov_events);
       $required_attributes = [];
@@ -383,8 +383,8 @@ class LdapUserConf {
 
     switch ($ldap_context) {
 
-      case 'ldap_user_prov_to_drupal':
-        $result = [LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER, LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_LDAP_ASSOCIATE_DRUPAL_ACCT];
+      case 'ldap_user_prov_to_backdrop':
+        $result = [LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER, LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_LDAP_ASSOCIATE_BACKDROP_ACCT];
         break;
 
       case 'ldap_user_prov_to_ldap':
@@ -407,21 +407,21 @@ class LdapUserConf {
 
     switch ($ldap_context) {
 
-      case 'ldap_user_prov_to_drupal':
-        $result = LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER;
+      case 'ldap_user_prov_to_backdrop':
+        $result = LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER;
         break;
 
       case 'ldap_user_prov_to_ldap':
-      case 'ldap_user_delete_drupal_user':
+      case 'ldap_user_delete_backdrop_user':
         $result = LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY;
         break;
 
       // Provisioning is can hapen in both directions in most contexts.
-      case 'ldap_user_insert_drupal_user':
-      case 'ldap_user_update_drupal_user':
+      case 'ldap_user_insert_backdrop_user':
+      case 'ldap_user_update_backdrop_user':
       case 'ldap_authentication_authenticate':
-      case 'ldap_user_insert_drupal_user':
-      case 'ldap_user_disable_drupal_user':
+      case 'ldap_user_insert_backdrop_user':
+      case 'ldap_user_disable_backdrop_user':
         $result = LDAP_USER_PROV_DIRECTION_ALL;
         break;
 
@@ -453,7 +453,7 @@ class LdapUserConf {
     }
     else {
       $available_user_attrs = [];
-      foreach ([LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $direction) {
+      foreach ([LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $direction) {
         $sid = $this->provisionSidFromDirection[$direction];
         $available_user_attrs[$direction] = [];
         $ldap_server = ($sid) ? ldap_servers_get_servers($sid, NULL, TRUE) : FALSE;
@@ -464,7 +464,7 @@ class LdapUserConf {
           'direction' => $direction,
         ];
 
-        drupal_alter('ldap_user_attrs_list', $available_user_attrs[$direction], $params);
+        backdrop_alter('ldap_user_attrs_list', $available_user_attrs[$direction], $params);
       }
     }
     $this->synchMapping = $available_user_attrs;
@@ -477,16 +477,16 @@ class LdapUserConf {
    *   this is overall, not per field synching configuration.
    *
    * @param enum $direction
-   *   LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER or LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY.
+   *   LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER or LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY.
    *
    * @param enum $prov_event
-   *   LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER, LDAP_USER_EVENT_CREATE_DRUPAL_USER
+   *   LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER, LDAP_USER_EVENT_CREATE_BACKDROP_USER
    *   LDAP_USER_EVENT_SYNCH_TO_LDAP_ENTRY LDAP_USER_EVENT_CREATE_LDAP_ENTRY
-   *   LDAP_USER_EVENT_LDAP_ASSOCIATE_DRUPAL_ACCT
+   *   LDAP_USER_EVENT_LDAP_ASSOCIATE_BACKDROP_ACCT
    *   LDAP_USER_EVENT_ALL.
    *
    * @param enum $action
-   *   'synch', 'provision', 'delete_ldap_entry', 'delete_drupal_entry', 'cancel_drupal_entry'.
+   *   'synch', 'provision', 'delete_ldap_entry', 'delete_backdrop_entry', 'cancel_backdrop_entry'.
    *
    * @return bool
    */
@@ -503,12 +503,12 @@ class LdapUserConf {
       }
 
     }
-    elseif ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
-      if (!$this->drupalAcctProvisionServer) {
+    elseif ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
+      if (!$this->backdropAcctProvisionServer) {
         $result = FALSE;
       }
       else {
-        $result = in_array($provision_trigger, $this->drupalAcctProvisionTriggers);
+        $result = in_array($provision_trigger, $this->backdropAcctProvisionTriggers);
       }
     }
 
@@ -516,12 +516,12 @@ class LdapUserConf {
   }
 
   /**
-   * Given a drupal account, provision an ldap entry if none exists.  if one exists do nothing.
+   * Given a backdrop account, provision an ldap entry if none exists. if one exists do nothing.
    *
    * @param object $account
-   *   drupal account object with minimum of name property.
+   *   backdrop account object with minimum of name property.
    * @param array $ldap_user
-   *   as prepopulated ldap entry.  usually not provided.
+   *   as prepopulated ldap entry. usually not provided.
    *
    * @return array of form:
    *   array('status' => 'success', 'fail', or 'conflict'),
@@ -550,14 +550,14 @@ class LdapUserConf {
 
     if (is_object($account) && property_exists($account, 'uid') && $account->uid == 1) {
       $result['status'] = 'fail';
-      $result['error_description'] = 'can not provision drupal user 1';
+      $result['error_description'] = 'can not provision backdrop user 1';
       // Do not provision or synch user 1.
       return $result;
     }
 
     if ($account == FALSE || $account->uid == 0) {
       $result['status'] = 'fail';
-      $result['error_description'] = 'can not provision ldap user unless corresponding drupal account exists first.';
+      $result['error_description'] = 'can not provision ldap user unless corresponding backdrop account exists first.';
       return $result;
     }
 
@@ -576,9 +576,9 @@ class LdapUserConf {
       'include_count' => FALSE,
     ];
 
-    list($proposed_ldap_entry, $error) = $this->drupalUserToLdapEntry($account, $ldap_server, $params, $ldap_user);
+    list($proposed_ldap_entry, $error) = $this->backdropUserToLdapEntry($account, $ldap_server, $params, $ldap_user);
     $proposed_dn = (is_array($proposed_ldap_entry) && isset($proposed_ldap_entry['dn']) && $proposed_ldap_entry['dn']) ? $proposed_ldap_entry['dn'] : NULL;
-    $proposed_dn_lcase = drupal_strtolower($proposed_dn);
+    $proposed_dn_lcase = backdrop_strtolower($proposed_dn);
     $existing_ldap_entry = ($proposed_dn) ? $ldap_server->dnExists($proposed_dn, 'ldap_entry') : NULL;
 
     if ($error == LDAP_USER_PROV_RESULT_NO_PWD) {
@@ -607,14 +607,14 @@ class LdapUserConf {
       $result['ldap_server'] = $ldap_server;
     }
     else {
-      // Stick $proposed_ldap_entry in $ldap_entries array for drupal_alter call.
+      // Stick $proposed_ldap_entry in $ldap_entries array for backdrop_alter call.
       $ldap_entries = [$proposed_dn_lcase => $proposed_ldap_entry];
       $context = [
         'action' => 'add',
-        'corresponding_drupal_data' => [$proposed_dn_lcase => $account],
-        'corresponding_drupal_data_type' => 'user',
+        'corresponding_backdrop_data' => [$proposed_dn_lcase => $account],
+        'corresponding_backdrop_data_type' => 'user',
       ];
-      drupal_alter('ldap_entry_pre_provision', $ldap_entries, $ldap_server, $context);
+      backdrop_alter('ldap_entry_pre_provision', $ldap_entries, $ldap_server, $context);
       // Remove altered $proposed_ldap_entry from $ldap_entries array.
       $proposed_ldap_entry = $ldap_entries[$proposed_dn_lcase];
 
@@ -668,7 +668,7 @@ class LdapUserConf {
     if (!$test_query && isset($result['status'])) {
       if ($result['status'] == 'success') {
         if ($this->detailedWatchdog) {
-          watchdog('ldap_user', 'LDAP entry on server %sid created dn=%dn.  %description. username=%username, uid=%uid', $tokens, WATCHDOG_INFO);
+          watchdog('ldap_user', 'LDAP entry on server %sid created dn=%dn. %description. username=%username, uid=%uid', $tokens, WATCHDOG_INFO);
         }
       }
       elseif ($result['status'] == 'conflict') {
@@ -677,19 +677,19 @@ class LdapUserConf {
         }
       }
       elseif ($result['status'] == 'fail') {
-        watchdog('ldap_user', 'LDAP entry on server %sid not created because error.  %description. username=%username, uid=%uid', $tokens, WATCHDOG_ERROR);
+        watchdog('ldap_user', 'LDAP entry on server %sid not created because error. %description. username=%username, uid=%uid', $tokens, WATCHDOG_ERROR);
       }
     }
     return $result;
   }
 
   /**
-   * Given a drupal account, synch to related ldap entry.
+   * Given a backdrop account, synch to related ldap entry.
    *
-   * @param drupal user object $account
-   *   Drupal user object.
+   * @param backdrop user object $account
+   *   Backdrop user object.
    * @param array $user_edit
-   *   Edit array for user_save.  generally null unless user account is being created or modified in same synching.
+   *   Edit array for user_save. generally null unless user account is being created or modified in same synching.
    * @param array $ldap_user
    *   current ldap data of user. @see README.developers.txt for structure.
    *
@@ -717,7 +717,7 @@ class LdapUserConf {
         'include_count' => FALSE,
       ];
 
-      list($proposed_ldap_entry, $error) = $this->drupalUserToLdapEntry($account, $ldap_server, $params, $ldap_user);
+      list($proposed_ldap_entry, $error) = $this->backdropUserToLdapEntry($account, $ldap_server, $params, $ldap_user);
       if ($error != LDAP_USER_PROV_RESULT_NO_ERROR) {
         $result = FALSE;
       }
@@ -747,15 +747,15 @@ class LdapUserConf {
           ];
         }
         else {
-          // Stick $proposed_ldap_entry in $ldap_entries array for drupal_alter call.
-          $proposed_dn_lcase = drupal_strtolower($proposed_ldap_entry['dn']);
+          // Stick $proposed_ldap_entry in $ldap_entries array for backdrop_alter call.
+          $proposed_dn_lcase = backdrop_strtolower($proposed_ldap_entry['dn']);
           $ldap_entries = [$proposed_dn_lcase => $attributes];
           $context = [
             'action' => 'update',
-            'corresponding_drupal_data' => [$proposed_dn_lcase => $attributes],
-            'corresponding_drupal_data_type' => 'user',
+            'corresponding_backdrop_data' => [$proposed_dn_lcase => $attributes],
+            'corresponding_backdrop_data_type' => 'user',
           ];
-          drupal_alter('ldap_entry_pre_provision', $ldap_entries, $ldap_server, $context);
+          backdrop_alter('ldap_entry_pre_provision', $ldap_entries, $ldap_server, $context);
           // Remove altered $proposed_ldap_entry from $ldap_entries array.
           $attributes = $ldap_entries[$proposed_dn_lcase];
           $result = $ldap_server->modifyLdapEntry($proposed_ldap_entry['dn'], $attributes);
@@ -790,54 +790,54 @@ class LdapUserConf {
   }
 
   /**
-   * Given a drupal account, query ldap and get all user fields and create user account.
+   * Given a backdrop account, query ldap and get all user fields and create user account.
    *
    * @param array $account
-   *   drupal account array with minimum of name.
+   *   backdrop account array with minimum of name.
    * @param array $user_edit
-   *   drupal edit array in form user_save($account, $user_edit) would take,
-   *   generally empty unless overriding synchToDrupalAccount derived values.
+   *   backdrop edit array in form user_save($account, $user_edit) would take,
+   *   generally empty unless overriding synchToBackdropAccount derived values.
    * @param array $ldap_user
-   *   as user's ldap entry.  passed to avoid requerying ldap in cases where already present.
+   *   as user's ldap entry. passed to avoid requerying ldap in cases where already present.
    * @param bool $save
-   *   indicating if drupal user should be saved.  generally depends on where function is called from.
+   *   indicating if backdrop user should be saved. generally depends on where function is called from.
    *
    * @return bool|object
    *   Result of user_save() function is $save is true, otherwise return TRUE
    *   $user_edit data returned by reference
    */
-  public function synchToDrupalAccount($drupal_user, &$user_edit, $prov_event = LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER, $ldap_user = NULL, $save = FALSE) {
+  public function synchToBackdropAccount($backdrop_user, &$user_edit, $prov_event = LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER, $ldap_user = NULL, $save = FALSE) {
 
     $debug = [
-      'account' => $drupal_user,
+      'account' => $backdrop_user,
       'user_edit' => $user_edit,
       'ldap_user' => $ldap_user,
     ];
 
     if (
-        (!$ldap_user  && !isset($drupal_user->name)) ||
-        (!$drupal_user && $save) ||
+        (!$ldap_user  && !isset($backdrop_user->name)) ||
+        (!$backdrop_user && $save) ||
         ($ldap_user && !isset($ldap_user['sid']))
     ) {
       // Should throw watchdog error also.
       return FALSE;
     }
 
-    if (!$ldap_user && $this->drupalAcctProvisionServer) {
-      $ldap_user = ldap_servers_get_user_ldap_data($drupal_user->name, $this->drupalAcctProvisionServer, 'ldap_user_prov_to_drupal');
+    if (!$ldap_user && $this->backdropAcctProvisionServer) {
+      $ldap_user = ldap_servers_get_user_ldap_data($backdrop_user->name, $this->backdropAcctProvisionServer, 'ldap_user_prov_to_backdrop');
     }
 
     if (!$ldap_user) {
       return FALSE;
     }
 
-    if ($this->drupalAcctProvisionServer) {
-      $ldap_server = ldap_servers_get_servers($this->drupalAcctProvisionServer, NULL, TRUE);
-      $this->entryToUserEdit($ldap_user, $user_edit, $ldap_server, LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, [$prov_event]);
+    if ($this->backdropAcctProvisionServer) {
+      $ldap_server = ldap_servers_get_servers($this->backdropAcctProvisionServer, NULL, TRUE);
+      $this->entryToUserEdit($ldap_user, $user_edit, $ldap_server, LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, [$prov_event]);
     }
 
     if ($save) {
-      $account = user_load($drupal_user->uid);
+      $account = user_load($backdrop_user->uid);
       if (!empty($account->data)) {
         $user_edit['data'] = !empty($user_edit['data']) ? array_merge($account->data, $user_edit['data']) : $account->data;
       }
@@ -853,14 +853,14 @@ class LdapUserConf {
   }
 
   /**
-   * Given a drupal account, delete user account.
+   * Given a backdrop account, delete user account.
    *
    * @param string $username
-   *   drupal account name.
+   *   backdrop account name.
    *
-   * @return TRUE or FALSE.  FALSE indicates failed or action not enabled in ldap user configuration
+   * @return TRUE or FALSE. FALSE indicates failed or action not enabled in ldap user configuration
    */
-  public function deleteDrupalAccount($username) {
+  public function deleteBackdropAccount($username) {
     $user = user_load_by_name($username);
     if (is_object($user)) {
       user_delete($user->uid);
@@ -872,9 +872,9 @@ class LdapUserConf {
   }
 
   /**
-   * Given a drupal account, find the related ldap entry.
+   * Given a backdrop account, find the related ldap entry.
    *
-   * @param drupal user object $account
+   * @param backdrop user object $account
    *
    * @return FALSE or ldap entry
    */
@@ -895,7 +895,7 @@ class LdapUserConf {
       'function' => 'getProvisionRelatedLdapEntry',
       'include_count' => FALSE,
     ];
-    list($proposed_ldap_entry, $error) = $this->drupalUserToLdapEntry($account, $ldap_server, $params);
+    list($proposed_ldap_entry, $error) = $this->backdropUserToLdapEntry($account, $ldap_server, $params);
     if (!(is_array($proposed_ldap_entry) && isset($proposed_ldap_entry['dn']) && $proposed_ldap_entry['dn'])) {
       return FALSE;
     }
@@ -905,14 +905,14 @@ class LdapUserConf {
   }
 
   /**
-   * Given a drupal account, delete ldap entry that was provisioned based on it
+   * Given a backdrop account, delete ldap entry that was provisioned based on it
    *   normally this will be 0 or 1 entry, but the ldap_user_provisioned_ldap_entries
    *   field attached to the user entity track each ldap entry provisioned.
    *
    * @param object $account
-   *   drupal account.
+   *   backdrop account.
    *
-   * @return TRUE or FALSE.  FALSE indicates failed or action not enabled in ldap user configuration
+   * @return TRUE or FALSE. FALSE indicates failed or action not enabled in ldap user configuration
    */
   public function deleteProvisionedLdapEntries($account) {
     // Determine server that is associated with user.
@@ -948,7 +948,7 @@ class LdapUserConf {
    * Populate ldap entry array for provisioning.
    *
    * @param array $account
-   *   drupal account.
+   *   backdrop account.
    * @param \LdapServer $ldap_server
    * @param array $ldap_user
    *   ldap entry of user, returned by reference.
@@ -958,11 +958,11 @@ class LdapUserConf {
    *   'module' => module calling function, e.g. 'ldap_user'
    *   'function' => function calling function, e.g. 'provisionLdapEntry'
    *   'include_count' => should 'count' array key be included
-   *   'direction' => LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY || LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER.
+   *   'direction' => LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY || LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER.
    *
    * @return array(ldap entry, $result) in ldap extension array format.!THIS IS NOT THE ACTUAL LDAP ENTRY
    */
-  public function drupalUserToLdapEntry($account, $ldap_server, $params, $ldap_user_entry = NULL) {
+  public function backdropUserToLdapEntry($account, $ldap_server, $params, $ldap_user_entry = NULL) {
     $provision = (isset($params['function']) && $params['function'] == 'provisionLdapEntry');
     $result = LDAP_USER_PROV_RESULT_NO_ERROR;
     if (!$ldap_user_entry) {
@@ -973,7 +973,7 @@ class LdapUserConf {
       return [NULL, LDAP_USER_PROV_RESULT_BAD_PARAMS];
     }
     $watchdog_tokens = [
-      '%drupal_username' => $account->name,
+      '%backdrop_username' => $account->name,
     ];
     $include_count = (isset($params['include_count']) && $params['include_count']);
 
@@ -1021,27 +1021,27 @@ class LdapUserConf {
     }
 
     /**
-     * 4. call drupal_alter() to allow other modules to alter $ldap_user
+     * 4. call backdrop_alter() to allow other modules to alter $ldap_user
      */
     $params['account'] = $account;
-    drupal_alter('ldap_entry', $ldap_user_entry, $params);
+    backdrop_alter('ldap_entry', $ldap_user_entry, $params);
 
     return [$ldap_user_entry, $result];
 
   }
 
   /**
-   * Given a drupal account, query ldap and get all user fields and save user account
-   * (note: parameters are in odd order to match synchDrupalAccount handle)
+   * Given a backdrop account, query ldap and get all user fields and save user account
+   * (note: parameters are in odd order to match synchBackdropAccount handle)
    *
    * @param array $account
-   *   drupal account object or null.
+   *   backdrop account object or null.
    * @param array $user_edit
-   *   drupal edit array in form user_save($account, $user_edit) would take.
+   *   backdrop edit array in form user_save($account, $user_edit) would take.
    * @param array $ldap_user
-   *   as user's ldap entry.  passed to avoid requerying ldap in cases where already present.
+   *   as user's ldap entry. passed to avoid requerying ldap in cases where already present.
    * @param bool $save
-   *   indicating if drupal user should be saved.  generally depends on where function is called from and if the.
+   *   indicating if backdrop user should be saved. generally depends on where function is called from and if the.
    *
    * @return bool
    *   Resultof user_save() function is $save is true, otherwise return TRUE on
@@ -1049,7 +1049,7 @@ class LdapUserConf {
    *
    *   $user_edit data returned by reference
    */
-  public function provisionDrupalAccount($account = FALSE, &$user_edit, $ldap_user = NULL, $save = TRUE) {
+  public function provisionBackdropAccount($account = FALSE, &$user_edit, $ldap_user = NULL, $save = TRUE) {
 
     $watchdog_tokens = [];
     /**
@@ -1069,8 +1069,8 @@ class LdapUserConf {
 
     if (!$ldap_user) {
       $watchdog_tokens['%username'] = $user_edit['name'];
-      if ($this->drupalAcctProvisionServer) {
-        $ldap_user = ldap_servers_get_user_ldap_data($user_edit['name'], $this->drupalAcctProvisionServer, 'ldap_user_prov_to_drupal');
+      if ($this->backdropAcctProvisionServer) {
+        $ldap_user = ldap_servers_get_user_ldap_data($user_edit['name'], $this->backdropAcctProvisionServer, 'ldap_user_prov_to_backdrop');
       }
       if (!$ldap_user) {
         if ($this->detailedWatchdog) {
@@ -1085,33 +1085,33 @@ class LdapUserConf {
       $watchdog_tokens['%username'] = $user_edit['name'];
     }
     // When using the multi-domain last authentication option
-    // $ldap_server breaks beacause $this->drupalAcctProvisionServer is set on LDAP_USER_AUTH_SERVER_SID
+    // $ldap_server breaks beacause $this->backdropAcctProvisionServer is set on LDAP_USER_AUTH_SERVER_SID
     // So we need to check it's not the case before using ldap_servers_get_servers.
-    if ($this->drupalAcctProvisionServer && $this->drupalAcctProvisionServer != LDAP_USER_AUTH_SERVER_SID) {
+    if ($this->backdropAcctProvisionServer && $this->backdropAcctProvisionServer != LDAP_USER_AUTH_SERVER_SID) {
 
       /** @var \LdapServer $ldap_server */
       // $ldap_user['sid'].
-      $ldap_server = ldap_servers_get_servers($this->drupalAcctProvisionServer, 'enabled', TRUE);
+      $ldap_server = ldap_servers_get_servers($this->backdropAcctProvisionServer, 'enabled', TRUE);
 
       $params = [
         'account' => $account,
         'user_edit' => $user_edit,
-        'prov_event' => LDAP_USER_EVENT_CREATE_DRUPAL_USER,
+        'prov_event' => LDAP_USER_EVENT_CREATE_BACKDROP_USER,
         'module' => 'ldap_user',
-        'function' => 'provisionDrupalAccount',
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
+        'function' => 'provisionBackdropAccount',
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
       ];
 
-      drupal_alter('ldap_entry', $ldap_user, $params);
+      backdrop_alter('ldap_entry', $ldap_user, $params);
 
-      // Look for existing drupal account with same puid.  if so update username and attempt to synch in current context.
+      // Look for existing backdrop account with same puid. if so update username and attempt to synch in current context.
       $puid = $ldap_server->userPuidFromLdapEntry($ldap_user['attr']);
       $existing_account_from_puid = ($puid) ? $ldap_server->userUserEntityFromPuid($puid) : FALSE;
 
-      // Synch drupal account, since drupal account exists.
+      // Synch backdrop account, since backdrop account exists.
       if ($existing_account_from_puid) {
         // 1. correct username and authmap.
-        $this->entryToUserEdit($ldap_user, $user_edit, $ldap_server, LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, [LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER]);
+        $this->entryToUserEdit($ldap_user, $user_edit, $ldap_server, LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, [LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER]);
         if (!empty($existing_account_from_puid->data)) {
           $user_edit['data'] = !empty($user_edit['data']) ? array_merge($existing_account_from_puid->data, $user_edit['data']) : $existing_account_from_puid->data;
         }
@@ -1123,28 +1123,28 @@ class LdapUserConf {
         ldap_user_user_set_authmaps($account, ["authname_ldap_user" => $user_edit['name']]);
         // 2. attempt synch if appropriate for current context.
         if ($account) {
-          $account = $this->synchToDrupalAccount($account, $user_edit, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER, $ldap_user, TRUE);
+          $account = $this->synchToBackdropAccount($account, $user_edit, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER, $ldap_user, TRUE);
         }
         return $account;
       }
-      // Create drupal account.
+      // Create backdrop account.
       else {
-        $this->entryToUserEdit($ldap_user, $user_edit, $ldap_server, LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, [LDAP_USER_EVENT_CREATE_DRUPAL_USER]);
+        $this->entryToUserEdit($ldap_user, $user_edit, $ldap_server, LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, [LDAP_USER_EVENT_CREATE_BACKDROP_USER]);
         if ($save) {
-          $watchdog_tokens = ['%drupal_username' => $user_edit['name']];
+          $watchdog_tokens = ['%backdrop_username' => $user_edit['name']];
           if (empty($user_edit['name'])) {
-            drupal_set_message(t('User account creation failed because of invalid, empty derived Drupal username.'), 'error');
+            backdrop_set_message(t('User account creation failed because of invalid, empty derived Backdrop username.'), 'error');
             watchdog('ldap_user',
-              'Failed to create Drupal account %drupal_username because drupal username could not be derived.',
+              'Failed to create Backdrop account %backdrop_username because backdrop username could not be derived.',
               $watchdog_tokens,
               WATCHDOG_ERROR
             );
             return FALSE;
           }
           if (!isset($user_edit['mail']) || !$user_edit['mail']) {
-            drupal_set_message(t('User account creation failed because of invalid, empty derived email address.'), 'error');
+            backdrop_set_message(t('User account creation failed because of invalid, empty derived email address.'), 'error');
             watchdog('ldap_user',
-              'Failed to create Drupal account %drupal_username because email address could not be derived by LDAP User module',
+              'Failed to create Backdrop account %backdrop_username because email address could not be derived by LDAP User module',
               $watchdog_tokens,
               WATCHDOG_ERROR
             );
@@ -1153,19 +1153,19 @@ class LdapUserConf {
           if (($this->accountsWithSameEmail == LDAP_USER_ACCOUNTS_WITH_SAME_EMAIL_DISABLED) && ($account_with_same_email = user_load_by_mail($user_edit['mail']))) {
             $watchdog_tokens['%email'] = $user_edit['mail'];
             $watchdog_tokens['%duplicate_name'] = $account_with_same_email->name;
-            watchdog('ldap_user', 'LDAP user %drupal_username has email address
-              (%email) conflict with a drupal user %duplicate_name', $watchdog_tokens, WATCHDOG_ERROR);
-            drupal_set_message(t('Another user already exists in the system with the same email address. You should contact the system administrator in order to solve this conflict.'), 'error');
+            watchdog('ldap_user', 'LDAP user %backdrop_username has email address
+              (%email) conflict with a backdrop user %duplicate_name', $watchdog_tokens, WATCHDOG_ERROR);
+            backdrop_set_message(t('Another user already exists in the system with the same email address. You should contact the system administrator in order to solve this conflict.'), 'error');
             return FALSE;
           }
           $account = entity_create('user', $user_edit);
           $account->save();
           if (!$account) {
-            drupal_set_message(t('User account creation failed because of system problems.'), 'error');
+            backdrop_set_message(t('User account creation failed because of system problems.'), 'error');
           }
           else {
             ldap_user_user_set_authmaps($account, ['authname_ldap_user' => $account->name]);
-            ldap_user_ldap_provision_semaphore('drupal_created', 'set', $account->name);
+            ldap_user_ldap_provision_semaphore('backdrop_created', 'set', $account->name);
           }
           return $account;
         }
@@ -1175,26 +1175,26 @@ class LdapUserConf {
   }
 
   /**
-   * Set ldap associations of a drupal account by altering user fields.
+   * Set ldap associations of a backdrop account by altering user fields.
    *
-   * @param string $drupal_username
+   * @param string $backdrop_username
    *
    * @return bool
    *   TRUE on success, FALSE on error or failure because of invalid user or ldap accounts
    */
-  public function ldapAssociateDrupalAccount($drupal_username) {
+  public function ldapAssociateBackdropAccount($backdrop_username) {
 
-    if ($this->drupalAcctProvisionServer) {
-      $prov_events = [LDAP_USER_EVENT_LDAP_ASSOCIATE_DRUPAL_ACCT];
+    if ($this->backdropAcctProvisionServer) {
+      $prov_events = [LDAP_USER_EVENT_LDAP_ASSOCIATE_BACKDROP_ACCT];
       // $ldap_user['sid'].
-      $ldap_server = ldap_servers_get_servers($this->drupalAcctProvisionServer, 'enabled', TRUE);
-      $account = user_load_by_name($drupal_username);
-      $ldap_user = ldap_servers_get_user_ldap_data($drupal_username, $this->drupalAcctProvisionServer, 'ldap_user_prov_to_drupal');
+      $ldap_server = ldap_servers_get_servers($this->backdropAcctProvisionServer, 'enabled', TRUE);
+      $account = user_load_by_name($backdrop_username);
+      $ldap_user = ldap_servers_get_user_ldap_data($backdrop_username, $this->backdropAcctProvisionServer, 'ldap_user_prov_to_backdrop');
       if (!$account) {
         watchdog(
           'ldap_user',
-          'Failed to LDAP associate drupal account %drupal_username because account not found',
-          ['%drupal_username' => $drupal_username],
+          'Failed to LDAP associate backdrop account %backdrop_username because account not found',
+          ['%backdrop_username' => $backdrop_username],
           WATCHDOG_ERROR
         );
         return FALSE;
@@ -1202,8 +1202,8 @@ class LdapUserConf {
       elseif (!$ldap_user) {
         watchdog(
           'ldap_user',
-          'Failed to LDAP associate drupal account %drupal_username because corresponding LDAP entry not found',
-          ['%drupal_username' => $drupal_username],
+          'Failed to LDAP associate backdrop account %backdrop_username because corresponding LDAP entry not found',
+          ['%backdrop_username' => $backdrop_username],
           WATCHDOG_ERROR
         );
         return FALSE;
@@ -1248,7 +1248,7 @@ class LdapUserConf {
    * @param int $direction
    * @param array $prov_events
    */
-  public function entryToUserEdit($ldap_user, &$edit, $ldap_server, $direction = LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, $prov_events = NULL) {
+  public function entryToUserEdit($ldap_user, &$edit, $ldap_server, $direction = LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, $prov_events = NULL) {
 
     // Need array of user fields and which direction and when they should be synched.
     if (!$prov_events) {
@@ -1262,17 +1262,17 @@ class LdapUserConf {
       }
     }
 
-    $drupal_username = $ldap_server->userUsernameFromLdapEntry($ldap_user['attr']);
+    $backdrop_username = $ldap_server->userUsernameFromLdapEntry($ldap_user['attr']);
 
-    if ($this->isSynched('[property.name]', $prov_events, $direction) && !isset($edit['name']) && $drupal_username) {
-      $edit['name'] = $drupal_username;
+    if ($this->isSynched('[property.name]', $prov_events, $direction) && !isset($edit['name']) && $backdrop_username) {
+      $edit['name'] = $backdrop_username;
     }
 
-    if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER && in_array(LDAP_USER_EVENT_CREATE_DRUPAL_USER, $prov_events)) {
+    if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER && in_array(LDAP_USER_EVENT_CREATE_BACKDROP_USER, $prov_events)) {
       $edit['mail'] = isset($edit['mail']) ? $edit['mail'] : $ldap_user['mail'];
       if (!isset($edit['pass'])) {
         $edit['pass'] = user_password(20);
-        watchdog('ldap_user', '20 character random password generated for the %username account that has been created.', ['%username' => $drupal_username], WATCHDOG_INFO);
+        watchdog('ldap_user', '20 character random password generated for the %username account that has been created.', ['%username' => $backdrop_username], WATCHDOG_INFO);
       }
       $edit['init'] = isset($edit['init']) ? $edit['init'] : $edit['mail'];
       $edit['status'] = isset($edit['status']) ? $edit['status'] : 1;
@@ -1289,7 +1289,7 @@ class LdapUserConf {
      * Make sure the user account has the latest ldap_user settings
      * when syncing the profile.
      */
-    if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER && in_array(LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER, $prov_events)) {
+    if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER && in_array(LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER, $prov_events)) {
       $edit['data']['ldap_user']['init'] = [
         'sid'  => $ldap_user['sid'],
         'dn'   => $ldap_user['dn'],
@@ -1298,9 +1298,9 @@ class LdapUserConf {
     }
 
     if ($this->isSynched('[property.picture]', $prov_events, $direction)) {
-      $picture = $ldap_server->userPictureFromLdapEntry($ldap_user['attr'], $drupal_username);
+      $picture = $ldap_server->userPictureFromLdapEntry($ldap_user['attr'], $backdrop_username);
       if ($picture) {
-        if (in_array(LDAP_USER_EVENT_CREATE_DRUPAL_USER, $prov_events)) {
+        if (in_array(LDAP_USER_EVENT_CREATE_BACKDROP_USER, $prov_events)) {
           $edit['picture'] = $picture->fid;
         }
         else {
@@ -1378,7 +1378,7 @@ class LdapUserConf {
     }
 
     // Allow other modules to have a say.
-    drupal_alter('ldap_user_edit_user', $edit, $ldap_user, $ldap_server, $prov_events);
+    backdrop_alter('ldap_user_edit_user', $edit, $ldap_user, $ldap_server, $prov_events);
     // don't let empty 'name' value pass for user.
     if (isset($edit['name']) && $edit['name'] == '') {
       unset($edit['name']);
@@ -1392,10 +1392,10 @@ class LdapUserConf {
    * @param string $attr_token
    *   e.g. [property.mail], [field.ldap_user_puid_property].
    * @param array $prov_events
-   *   e.g. array(LDAP_USER_EVENT_CREATE_DRUPAL_USER).  typically array with 1
+   *   e.g. array(LDAP_USER_EVENT_CREATE_BACKDROP_USER). typically array with 1
    *   element.
    * @param scalar $direction
-   *   LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER or
+   *   LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER or
    *   LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY.
    *
    * @return bool

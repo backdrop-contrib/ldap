@@ -16,12 +16,12 @@ class LdapUserConfAdmin extends LdapUserConf {
    * Basic settings.
    */
 
-  protected $drupalAcctProvisionServerDescription;
-  protected $drupalAcctProvisionServerOptions = [];
+  protected $backdropAcctProvisionServerDescription;
+  protected $backdropAcctProvisionServerOptions = [];
   protected $ldapEntryProvisionServerOptions = [];
 
-  protected $drupalAccountProvisionEventsDescription;
-  protected $drupalAccountProvisionEventsOptions = [];
+  protected $backdropAccountProvisionEventsDescription;
+  protected $backdropAccountProvisionEventsOptions = [];
 
   protected $ldapEntryProvisionTriggersDescription;
   protected $ldapEntryProvisionTriggersOptions = [];
@@ -29,7 +29,7 @@ class LdapUserConfAdmin extends LdapUserConf {
   protected $synchFormRow = 0;
 
   /**
-   * 3. Drupal Account Provisioning and Syncing.
+   * 3. Backdrop Account Provisioning and Syncing.
    */
 
   public $userConflictResolveDescription;
@@ -83,14 +83,14 @@ class LdapUserConfAdmin extends LdapUserConf {
     $this->setTranslatableProperties();
 
     if ($servers = ldap_servers_get_servers(NULL, 'enabled')) {
-      $this->drupalAcctProvisionServerOptions[LDAP_USER_AUTH_SERVER_SID] = t('Use server which performed the authentication. Useful for multi-domain environments.');
+      $this->backdropAcctProvisionServerOptions[LDAP_USER_AUTH_SERVER_SID] = t('Use server which performed the authentication. Useful for multi-domain environments.');
       foreach ($servers as $sid => $ldap_server) {
         $enabled = ($ldap_server->status) ? 'Enabled' : 'Disabled';
-        $this->drupalAcctProvisionServerOptions[$sid] = $ldap_server->name . ' (' . $ldap_server->address . ') Status: ' . $enabled;
+        $this->backdropAcctProvisionServerOptions[$sid] = $ldap_server->name . ' (' . $ldap_server->address . ') Status: ' . $enabled;
         $this->ldapEntryProvisionServerOptions[$sid] = $ldap_server->name . ' (' . $ldap_server->address . ') Status: ' . $enabled;
       }
     }
-    $this->drupalAcctProvisionServerOptions['none'] = t('None');
+    $this->backdropAcctProvisionServerOptions['none'] = t('None');
     $this->ldapEntryProvisionServerOptions['none'] = t('None');
 
   }
@@ -98,10 +98,10 @@ class LdapUserConfAdmin extends LdapUserConf {
   /**
    * Generate admin form for ldapUserConf object.
    *
-   * @return array $form as drupal form api form array
+   * @return array $form as backdrop form api form array
    */
-  public function drupalForm() {
-    if (count($this->drupalAcctProvisionServerOptions) == 0) {
+  public function backdropForm() {
+    if (count($this->backdropAcctProvisionServerOptions) == 0) {
       $message = ldap_servers_no_enabled_servers_msg('configure LDAP User');
       $form['intro'] = [
         '#type' => 'item',
@@ -117,69 +117,69 @@ class LdapUserConfAdmin extends LdapUserConf {
       '#markup' => t('<h1>LDAP User Settings</h1>'),
     ];
 
-    $form['manual_drupal_account_editing'] = [
+    $form['manual_backdrop_account_editing'] = [
       '#type' => 'fieldset',
-      '#title' => t('Manual Drupal Account Creation and Updates'),
+      '#title' => t('Manual Backdrop Account Creation and Updates'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     ];
 
-    $form['manual_drupal_account_editing']['manualAccountConflict'] = [
+    $form['manual_backdrop_account_editing']['manualAccountConflict'] = [
       '#type' => 'radios',
       '#options' => $this->manualAccountConflictOptions,
-      '#title' => t('How to resolve LDAP conflicts with manually  created Drupal accounts.'),
+      '#title' => t('How to resolve LDAP conflicts with manually created Backdrop accounts.'),
       '#description' => t('This applies only to accounts created manually through admin/people/create
         for which an LDAP entry can be found on the LDAP server selected in "LDAP Servers Providing Provisioning Data"'),
       '#default_value' => $this->manualAccountConflict,
     ];
 
-    $form['basic_to_drupal'] = [
+    $form['basic_to_backdrop'] = [
       '#type' => 'fieldset',
-      '#title' => t('Basic Provisioning to Drupal Account Settings'),
+      '#title' => t('Basic Provisioning to Backdrop Account Settings'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     ];
 
-    $default_value = ($this->drupalAcctProvisionServer) ? $this->drupalAcctProvisionServer : 'none';
-    $form['basic_to_drupal']['drupalAcctProvisionServer'] = [
+    $default_value = ($this->backdropAcctProvisionServer) ? $this->backdropAcctProvisionServer : 'none';
+    $form['basic_to_backdrop']['backdropAcctProvisionServer'] = [
       '#type' => 'radios',
       '#title' => t('LDAP Servers Providing Provisioning Data'),
       '#required' => 1,
       '#default_value' => $default_value,
-      '#options' => $this->drupalAcctProvisionServerOptions,
-      '#description' => $this->drupalAcctProvisionServerDescription,
+      '#options' => $this->backdropAcctProvisionServerOptions,
+      '#description' => $this->backdropAcctProvisionServerDescription,
       '#states' => [
         'enabled' => [
-          ':input[name=drupalAcctProvisionTriggers]' => ['value' => LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE],
+          ':input[name=backdropAcctProvisionTriggers]' => ['value' => LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE],
         ],
       ],
     ];
 
-    $form['basic_to_drupal']['drupalAcctProvisionTriggers'] = [
+    $form['basic_to_backdrop']['backdropAcctProvisionTriggers'] = [
       '#type' => 'checkboxes',
-      '#title' => t('Drupal Account Provisioning Events'),
+      '#title' => t('Backdrop Account Provisioning Events'),
       '#required' => FALSE,
-      '#default_value' => $this->drupalAcctProvisionTriggers,
-      '#options' => $this->drupalAccountProvisionEventsOptions,
-      '#description' => $this->drupalAccountProvisionEventsDescription,
+      '#default_value' => $this->backdropAcctProvisionTriggers,
+      '#options' => $this->backdropAccountProvisionEventsOptions,
+      '#description' => $this->backdropAccountProvisionEventsDescription,
     ];
 
-    $form['basic_to_drupal']['disableAdminPasswordField'] = [
+    $form['basic_to_backdrop']['disableAdminPasswordField'] = [
       '#type' => 'checkbox',
-      '#title' => t('Disable the password fields at /admin/create/people since the password is going to be randomly generated anyway. This is useful if you are synching data to Drupal from LDAP, and not bringing the user password from LDAP.'),
+      '#title' => t('Disable the password fields at /admin/create/people since the password is going to be randomly generated anyway. This is useful if you are synching data to Backdrop from LDAP, and not bringing the user password from LDAP.'),
       '#default_value' => $this->disableAdminPasswordField,
     ];
 
-    $form['basic_to_drupal']['userConflictResolve'] = [
+    $form['basic_to_backdrop']['userConflictResolve'] = [
       '#type' => 'radios',
-      '#title' => t('Existing Drupal User Account Conflict'),
+      '#title' => t('Existing Backdrop User Account Conflict'),
       '#required' => 1,
       '#default_value' => $this->userConflictResolve,
       '#options' => $this->userConflictOptions,
       '#description' => t($this->userConflictResolveDescription),
     ];
 
-    $form['basic_to_drupal']['accountsWithSameEmail'] = [
+    $form['basic_to_backdrop']['accountsWithSameEmail'] = [
       '#type' => 'radios',
       '#title' => t('Existing Account with Same Email Address'),
       '#default_value' => $this->accountsWithSameEmail,
@@ -188,9 +188,9 @@ class LdapUserConfAdmin extends LdapUserConf {
       '#disabled' => (module_exists('sharedemail') === FALSE),
     ];
 
-    $form['basic_to_drupal']['acctCreation'] = [
+    $form['basic_to_backdrop']['acctCreation'] = [
       '#type' => 'radios',
-      '#title' => t('Application of Drupal Account settings to LDAP Authenticated Users'),
+      '#title' => t('Application of Backdrop Account settings to LDAP Authenticated Users'),
       '#required' => 1,
       '#default_value' => $this->acctCreation,
       '#options' => $this->acctCreationOptions,
@@ -198,7 +198,7 @@ class LdapUserConfAdmin extends LdapUserConf {
     ];
 
     $account_options = [];
-    $account_options['ldap_user_orphan_do_not_check'] = t('Do not check for orphaned Drupal accounts.');
+    $account_options['ldap_user_orphan_do_not_check'] = t('Do not check for orphaned Backdrop accounts.');
     $account_options['ldap_user_orphan_email'] = t('Perform no action, but email list of orphaned accounts. (All the other options will send email summaries also.)');
     foreach (user_cancel_methods() as $option_name => $option) {
       $account_options[$option_name] = $option['#title'];
@@ -209,17 +209,17 @@ class LdapUserConfAdmin extends LdapUserConf {
     unset($account_options['user_cancel_reassign']);
     unset($account_options['user_cancel_delete']);
 
-    $form['basic_to_drupal']['orphanedDrupalAcctBehavior'] = [
+    $form['basic_to_backdrop']['orphanedBackdropAcctBehavior'] = [
       '#type' => 'radios',
-      '#title' => t('Action to perform on Drupal account that no longer have a
+      '#title' => t('Action to perform on Backdrop account that no longer have a
         corresponding LDAP entry'),
       '#required' => 0,
-      '#default_value' => $this->orphanedDrupalAcctBehavior,
+      '#default_value' => $this->orphanedBackdropAcctBehavior,
       '#options' => $account_options,
-      '#description' => t($this->orphanedDrupalAcctBehaviorDescription),
+      '#description' => t($this->orphanedBackdropAcctBehaviorDescription),
     ];
 
-    $form['basic_to_drupal']['orphanedCheckQty'] = [
+    $form['basic_to_backdrop']['orphanedCheckQty'] = [
       '#type' => 'textfield',
       '#size' => 10,
       '#title' => t('Number of users to check each cron run.'),
@@ -254,32 +254,32 @@ class LdapUserConfAdmin extends LdapUserConf {
       '#description' => $this->ldapEntryProvisionTriggersDescription,
     ];
 
-    $form['basic_to_drupal']['server_mapping_preamble'] = [
+    $form['basic_to_backdrop']['server_mapping_preamble'] = [
       '#type' => 'markup',
       '#markup' => t('
-The relationship between a Drupal user and an LDAP entry is defined within the LDAP server configurations.
+The relationship between a Backdrop user and an LDAP entry is defined within the LDAP server configurations.
 
 
 The mappings below are for user fields, properties, and profile2 data that are not automatically mapped elsewhere.
 Mappings such as username or email address that are configured elsewhere are shown at the top for clarity.
 When more than one ldap server is enabled for provisioning data (or simply more than one configuration for the same ldap server),
-mappings need to be setup for each server.  If no tables are listed below, you have not enabled any provisioning servers at
+mappings need to be setup for each server. If no tables are listed below, you have not enabled any provisioning servers at
 the top of this form.
 '),
     ];
 
-    foreach ([LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $direction) {
+    foreach ([LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $direction) {
       $sid = $this->provisionSidFromDirection[$direction];
       $ldap_server = ($sid) ? ldap_servers_get_servers($sid, NULL, TRUE) : FALSE;
       $ldap_server_selected = (boolean) $ldap_server;
 
-      if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
-        $parent_fieldset = 'basic_to_drupal';
-        $description = t('Provisioning from LDAP to Drupal Mappings:');
+      if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
+        $parent_fieldset = 'basic_to_backdrop';
+        $description = t('Provisioning from LDAP to Backdrop Mappings:');
       }
       elseif ($direction == LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY) {
         $parent_fieldset = 'basic_to_ldap';
-        $description = t('Provisioning from Drupal to LDAP Mappings:');
+        $description = t('Provisioning from Backdrop to LDAP Mappings:');
       }
 
       $form[$parent_fieldset]['mappings__' . $direction] = [
@@ -295,27 +295,27 @@ the top of this form.
       ];
 
       $password_notes = '<h3>' . t('Password Tokens') . '</h3><ul>' .
-      '<li>' . t('Pwd: Random -- Uses a random Drupal generated password') . '</li>' .
+      '<li>' . t('Pwd: Random -- Uses a random Backdrop generated password') . '</li>' .
       '<li>' . t('Pwd: User or Random -- Uses password supplied on user forms.
   If none available uses random password.') . '</li></ul>' .
       '<h3>' . t('Password Concerns') . '</h3>' .
       '<ul>' .
       '<li>' . t('Provisioning passwords to LDAP means passwords must meet the LDAP\'s
-password requirements.  Password Policy module can be used to add requirements.') . '</li>' .
+password requirements. Password Policy module can be used to add requirements.') . '</li>' .
       '<li>' . t('Some LDAPs require a user to reset their password if it has been changed
-by someone other that user.  Consider this when provisioning LDAP passwords.') . '</li>' .
+by someone other that user. Consider this when provisioning LDAP passwords.') . '</li>' .
       '</ul></p>';
 
-      $source_drupal_token_notes = <<<EOT
-<p>Examples in form: Source Drupal User token => Target LDAP Token (notes)</p>
+      $source_backdrop_token_notes = <<<EOT
+<p>Examples in form: Source Backdrop User token => Target LDAP Token (notes)</p>
 <ul>
-<li>Source Drupal User token => Target LDAP Token</li>
+<li>Source Backdrop User token => Target LDAP Token</li>
 <li>cn=[property.name],ou=test,dc=ad,dc=mycollege,dc=edu => [dn] (example of token and constants)</li>
 <li>top => [objectclass:0] (example of constants mapped to multivalued attribute)</li>
 <li>person => [objectclass:1] (example of constants mapped to multivalued attribute)</li>
 <li>organizationalPerson => [objectclass:2] (example of constants mapped to multivalued attribute)</li>
 <li>user => [objectclass:3] (example of constants mapped to multivalued attribute)</li>
-<li>Drupal Provisioned LDAP Account => [description] (example of constant)</li>
+<li>Backdrop Provisioned LDAP Account => [description] (example of constant)</li>
 <li>[field.field_lname] => [sn]</li>
 
 </ul>
@@ -333,28 +333,28 @@ EOT;
             '#markup' => $password_notes,
           ],
         ];
-        $form[$parent_fieldset]['source_drupal_token_notes'] = [
+        $form[$parent_fieldset]['source_backdrop_token_notes'] = [
           '#type' => 'fieldset',
-          '#title' => t('Source Drupal User Tokens and Corresponding Target LDAP Tokens'),
+          '#title' => t('Source Backdrop User Tokens and Corresponding Target LDAP Tokens'),
           '#collapsible' => TRUE,
           '#collapsed' => TRUE,
           'directions' => [
             '#type' => 'markup',
-            '#markup' => $source_drupal_token_notes,
+            '#markup' => $source_backdrop_token_notes,
           ],
         ];
       }
       $this->addServerMappingFields($form, $direction);
     }
 
-    foreach (['orphanedCheckQty', 'orphanedDrupalAcctBehavior', 'acctCreation', 'userConflictResolve', 'accountsWithSameEmail', 'drupalAcctProvisionTriggers', 'mappings__' . LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER] as $input_name) {
-      $form['basic_to_drupal'][$input_name]['#states']['invisible'] =
+    foreach (['orphanedCheckQty', 'orphanedBackdropAcctBehavior', 'acctCreation', 'userConflictResolve', 'accountsWithSameEmail', 'backdropAcctProvisionTriggers', 'mappings__' . LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER] as $input_name) {
+      $form['basic_to_backdrop'][$input_name]['#states']['invisible'] =
         [
-          ':input[name=drupalAcctProvisionServer]' => ['value' => 'none'],
+          ':input[name=backdropAcctProvisionServer]' => ['value' => 'none'],
         ];
     }
 
-    foreach (['ldapEntryProvisionTriggers', 'password_notes', 'source_drupal_token_notes', 'mappings__' . LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $input_name) {
+    foreach (['ldapEntryProvisionTriggers', 'password_notes', 'source_backdrop_token_notes', 'mappings__' . LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $input_name) {
       $form['basic_to_ldap'][$input_name]['#states']['invisible'] =
         [
           ':input[name=ldapEntryProvisionServer]' => ['value' => 'none'],
@@ -377,7 +377,7 @@ EOT;
     $ldap_server = ldap_servers_get_servers($sid, NULL, TRUE);
     if ($ldap_server && empty($ldap_server->unique_persistent_attr)
       && $orphan_handling != 'ldap_user_orphan_do_not_check') {
-      drupal_set_message(t('You\'ve configured the orphan check but are missing the required persistent user ID property.'), 'error');
+      backdrop_set_message(t('You\'ve configured the orphan check but are missing the required persistent user ID property.'), 'error');
     }
   }
 
@@ -385,30 +385,30 @@ EOT;
    * Validate submitted form.
    *
    * @param array $values
-   *   as $form_state['values'] from drupal form api.
+   *   as $form_state['values'] from backdrop form api.
    * @param array $storage
-   *   as $form_state['storage'] from drupal form api.
+   *   as $form_state['storage'] from backdrop form api.
    *
    * @return array in form array($errors, $warnings)to be thrown by form api
    */
-  public function drupalFormValidate($values, $storage) {
-    $this->populateFromDrupalForm($values, $storage);
+  public function backdropFormValidate($values, $storage) {
+    $this->populateFromBackdropForm($values, $storage);
     list($errors, $warnings) = $this->validate($values);
 
-    $this->checkPuidOrphans($values['drupalAcctProvisionServer'], $values['orphanedDrupalAcctBehavior']);
+    $this->checkPuidOrphans($values['backdropAcctProvisionServer'], $values['orphanedBackdropAcctBehavior']);
 
     // Since failed mapping rows in form, don't populate ->ldapUserSynchMappings, need to validate these from values.
     foreach ($values as $field => $value) {
       $parts = explode('__', $field);
-      // Since synch mapping fields are in n-tuples, process entire n-tuple at once (on field == configurable_to_drupal)
-      if (count($parts) != 4 || $parts[1] !== 'sm' || $parts[2] != 'configurable_to_drupal') {
+      // Since synch mapping fields are in n-tuples, process entire n-tuple at once (on field == configurable_to_backdrop)
+      if (count($parts) != 4 || $parts[1] !== 'sm' || $parts[2] != 'configurable_to_backdrop') {
         continue;
       }
       list($direction, $discard, $column_name, $i) = $parts;
       $action = $storage['synch_mapping_fields'][$direction][$i]['action'];
       $tokens = [];
       $row_mappings = [];
-      foreach (['remove', 'configurable_to_drupal', 'configurable_to_ldap', 'convert', 'direction', 'ldap_attr', 'user_attr', 'user_tokens'] as $column_name) {
+      foreach (['remove', 'configurable_to_backdrop', 'configurable_to_ldap', 'convert', 'direction', 'ldap_attr', 'user_attr', 'user_tokens'] as $column_name) {
         $input_name = join('__', ['sm', $column_name, $i]);
         $row_mappings[$column_name] = isset($values[$input_name]) ? $values[$input_name] : NULL;
       }
@@ -422,9 +422,9 @@ EOT;
           $input_name = join('__', ['sm', 'direction', $i]);
           $errors[$input_name] = t('No mapping direction given in !row_descriptor', $tokens);
         }
-        if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER && $row_mappings['user_attr'] == 'user_tokens') {
+        if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER && $row_mappings['user_attr'] == 'user_tokens') {
           $input_name = join('__', ['sm', 'user_attr', $i]);
-          $errors[$input_name] = t('User tokens not allowed when mapping to Drupal user.  Location: !row_descriptor', $tokens);
+          $errors[$input_name] = t('User tokens not allowed when mapping to Backdrop user. Location: !row_descriptor', $tokens);
         }
         if (!$row_mappings['ldap_attr']) {
           $input_name = join('__', ['sm', 'ldap_attr', $i]);
@@ -444,7 +444,7 @@ EOT;
    * Validate object, not form.
    *
    * @param array $values
-   *   as $form_state['values'] from drupal form api.
+   *   as $form_state['values'] from backdrop form api.
    *
    * @return array in form array($errors, $warnings)to be thrown by form api
    *
@@ -455,14 +455,14 @@ EOT;
     $warnings = [];
     $tokens = [];
 
-    $has_drupal_acct_prov_servers = (boolean) ($this->drupalAcctProvisionServer);
-    $has_drupal_acct_prov_settings_options = (count(array_filter($this->drupalAcctProvisionTriggers)) > 0);
+    $has_backdrop_acct_prov_servers = (boolean) ($this->backdropAcctProvisionServer);
+    $has_backdrop_acct_prov_settings_options = (count(array_filter($this->backdropAcctProvisionTriggers)) > 0);
 
-    if (!$has_drupal_acct_prov_servers && $has_drupal_acct_prov_settings_options) {
-      $warnings['drupalAcctProvisionServer'] = t('No Servers are enabled to provide provisioning to Drupal, but Drupal Account Provisioning Options are selected.', $tokens);
+    if (!$has_backdrop_acct_prov_servers && $has_backdrop_acct_prov_settings_options) {
+      $warnings['backdropAcctProvisionServer'] = t('No Servers are enabled to provide provisioning to Backdrop, but Backdrop Account Provisioning Options are selected.', $tokens);
     }
-    if ($has_drupal_acct_prov_servers && !$has_drupal_acct_prov_settings_options) {
-      $warnings['drupalAcctProvisionTriggers'] = t('Servers are enabled to provide provisioning to Drupal, but no Drupal Account Provisioning Options are selected.  This will result in no synching happening.', $tokens);
+    if ($has_backdrop_acct_prov_servers && !$has_backdrop_acct_prov_settings_options) {
+      $warnings['backdropAcctProvisionTriggers'] = t('Servers are enabled to provide provisioning to Backdrop, but no Backdrop Account Provisioning Options are selected. This will result in no synching happening.', $tokens);
     }
 
     $has_ldap_prov_servers = (boolean) ($this->ldapEntryProvisionServer);
@@ -471,7 +471,7 @@ EOT;
       $warnings['ldapEntryProvisionServer'] = t('No Servers are enabled to provide provisioning to ldap, but LDAP Entry Options are selected.', $tokens);
     }
     if ($has_ldap_prov_servers && !$has_ldap_prov_settings_options) {
-      $warnings['ldapEntryProvisionTriggers'] = t('Servers are enabled to provide provisioning to ldap, but no LDAP Entry Options are selected.  This will result in no synching happening.', $tokens);
+      $warnings['ldapEntryProvisionTriggers'] = t('Servers are enabled to provide provisioning to ldap, but no LDAP Entry Options are selected. This will result in no synching happening.', $tokens);
     }
 
     if (isset($this->ldapUserSynchMappings)) {
@@ -480,11 +480,11 @@ EOT;
         $map_index = [];
         // Format ['%sid' => $sid].
         $tokens = [];
-        $to_drupal_user_mappings_exist = FALSE;
+        $to_backdrop_user_mappings_exist = FALSE;
         $to_ldap_entries_mappings_exist = FALSE;
 
         foreach ($mappings as $target_attr => $mapping) {
-          if ($mapping['direction'] == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
+          if ($mapping['direction'] == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
             $attr_value = $mapping['user_attr'];
             $attr_name = 'user_attr';
           }
@@ -511,9 +511,9 @@ EOT;
           $ldap_attribute_maps_in_token = [];
           ldap_servers_token_extract_attributes($ldap_attribute_maps_in_token, $mapping['ldap_attr']);
 
-          if ($mapping['direction'] == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
+          if ($mapping['direction'] == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
             $row_id = $map_index[$mapping['user_attr']];
-            $to_drupal_user_mappings_exist = TRUE;
+            $to_backdrop_user_mappings_exist = TRUE;
           }
           if ($mapping['direction'] == LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY) {
             $row_id = $map_index[$mapping['ldap_attr']];
@@ -546,7 +546,7 @@ EOT;
       }
       if ($to_ldap_entries_mappings_exist && !isset($mappings['[dn]'])) {
         $errors['mappings__' . $synch_direction] = t('Mapping rows exist for provisioning to ldap, but no ldap attribute is targetted for [dn].
-          One row must map to [dn].  This row will have a user token like cn=[property.name],ou=users,dc=ldap,dc=mycompany,dc=com');
+          One row must map to [dn]. This row will have a user token like cn=[property.name],ou=users,dc=ldap,dc=mycompany,dc=com');
       }
     }
     return [$errors, $warnings];
@@ -556,17 +556,17 @@ EOT;
    * Populate object with data from form values.
    *
    * @param array $values
-   *   as $form_state['values'] from drupal form api.
+   *   as $form_state['values'] from backdrop form api.
    * @param array $storage
-   *   as $form_state['storage'] from drupal form api.
+   *   as $form_state['storage'] from backdrop form api.
    */
-  protected function populateFromDrupalForm($values, $storage) {
-    $this->drupalAcctProvisionServer = ($values['drupalAcctProvisionServer'] == 'none') ? 0 : $values['drupalAcctProvisionServer'];
+  protected function populateFromBackdropForm($values, $storage) {
+    $this->backdropAcctProvisionServer = ($values['backdropAcctProvisionServer'] == 'none') ? 0 : $values['backdropAcctProvisionServer'];
     $this->ldapEntryProvisionServer = ($values['ldapEntryProvisionServer'] == 'none') ? 0 : $values['ldapEntryProvisionServer'];
 
-    $this->drupalAcctProvisionTriggers = $values['drupalAcctProvisionTriggers'];
+    $this->backdropAcctProvisionTriggers = $values['backdropAcctProvisionTriggers'];
     $this->ldapEntryProvisionTriggers = $values['ldapEntryProvisionTriggers'];
-    $this->orphanedDrupalAcctBehavior = $values['orphanedDrupalAcctBehavior'];
+    $this->orphanedBackdropAcctBehavior = $values['orphanedBackdropAcctBehavior'];
     $this->orphanedCheckQty = $values['orphanedCheckQty'];
 
     $this->manualAccountConflict = $values['manualAccountConflict'];
@@ -583,9 +583,9 @@ EOT;
    * Extract synch mappings array from mapping table in admin form.
    *
    * @param array $values
-   *   as $form_state['values'] from drupal form api.
+   *   as $form_state['values'] from backdrop form api.
    * @param array $storage
-   *   as $form_state['storage'] from drupal form api
+   *   as $form_state['storage'] from backdrop form api
    *
    *   $values input names in form:
    *   1__sm__configurable__5,
@@ -598,7 +598,7 @@ EOT;
    *   1__sm__1__5,
    *   1__sm__2__5,
    *   ...where
-   *   -- first arg is direction, eg 1 or 2 LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER or LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY
+   *   -- first arg is direction, eg 1 or 2 LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER or LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY
    *   -- second arg is discarded ('sm')
    *   -- third part is field, e.g. user_attr
    *   -- fourth is the row in the configuration form, e.g. 5
@@ -624,7 +624,7 @@ EOT;
       $action = $storage['synch_mapping_fields'][$direction][$i]['action'];
 
       $row_mappings = [];
-      foreach (['remove', 'configurable_to_drupal', 'configurable_to_ldap', 'convert', 'ldap_attr', 'user_attr', 'user_tokens'] as $column_name) {
+      foreach (['remove', 'configurable_to_backdrop', 'configurable_to_ldap', 'convert', 'ldap_attr', 'user_attr', 'user_tokens'] as $column_name) {
         $input_name = join('__', [$direction, 'sm', $column_name, $i]);
         $row_mappings[$column_name] = isset($values[$input_name]) ? $values[$input_name] : NULL;
       }
@@ -633,8 +633,8 @@ EOT;
         continue;
       }
 
-      $key = ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) ? $row_mappings['user_attr'] : $row_mappings['ldap_attr'];
-      if ($row_mappings['configurable_to_drupal'] && $row_mappings['ldap_attr'] && $row_mappings['user_attr']) {
+      $key = ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) ? $row_mappings['user_attr'] : $row_mappings['ldap_attr'];
+      if ($row_mappings['configurable_to_backdrop'] && $row_mappings['ldap_attr'] && $row_mappings['user_attr']) {
         $mappings[$direction][$key] = [
           'ldap_attr' => $row_mappings['ldap_attr'],
           'user_attr' => $row_mappings['user_attr'],
@@ -646,7 +646,7 @@ EOT;
           'enabled' => 1,
         ];
 
-        $synchEvents = ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) ? $this->provisionsDrupalEvents : $this->provisionsLdapEvents;
+        $synchEvents = ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) ? $this->provisionsBackdropEvents : $this->provisionsLdapEvents;
         foreach ($synchEvents as $prov_event => $discard) {
           $input_name = join('__', [$direction, 'sm', $prov_event, $i]);
           if (isset($values[$input_name]) && $values[$input_name]) {
@@ -663,22 +663,22 @@ EOT;
    * Method to respond to successfully validated form submit.
    *
    * @param array $values
-   *   as $form_state['values'] from drupal form api.
+   *   as $form_state['values'] from backdrop form api.
    * @param array $storage
-   *   as $form_state['storage'] from drupal form api.
+   *   as $form_state['storage'] from backdrop form api.
    *
    * @return by reference to $form array
    */
-  public function drupalFormSubmit($values, $storage) {
+  public function backdropFormSubmit($values, $storage) {
 
-    $this->populateFromDrupalForm($values, $storage);
+    $this->populateFromBackdropForm($values, $storage);
 
     try {
       $save_result = $this->save();
     }
     catch (Exception $e) {
       $this->errorName = 'Save Error';
-      $this->errorMsg = t('Failed to save object.  Your form data was not saved.');
+      $this->errorMsg = t('Failed to save object. Your form data was not saved.');
       $this->hasError = TRUE;
     }
 
@@ -687,9 +687,9 @@ EOT;
   /**
    * Add existing mappings to ldap user provisioning mapping admin form table.
    *
-   * @param drupal form array $form
+   * @param backdrop form array $form
    * @param enum $direction
-   *   LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER or LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY.
+   *   LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER or LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY.
    *
    * @return by reference to $form array
    */
@@ -699,7 +699,7 @@ EOT;
       return;
     }
 
-    $text = ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) ? 'target' : 'source';
+    $text = ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) ? 'target' : 'source';
     $user_attr_options = ['0' => t('Select') . ' ' . $text];
 
     if (!empty($this->synchMapping[$direction])) {
@@ -708,7 +708,7 @@ EOT;
           continue;
         }
         if (
-          (isset($mapping['configurable_to_drupal']) && $mapping['configurable_to_drupal'] && $direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER)
+          (isset($mapping['configurable_to_backdrop']) && $mapping['configurable_to_backdrop'] && $direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER)
           ||
           (isset($mapping['configurable_to_ldap']) && $mapping['configurable_to_ldap']  && $direction == LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY)
           ) {
@@ -757,15 +757,15 @@ EOT;
   /**
    * Add mapping form row to ldap user provisioning mapping admin form table.
    *
-   * @param drupal form array $form
+   * @param backdrop form array $form
    * @param string $action
    *   is 'add', 'update', or 'nonconfigurable'.
    * @param enum $direction
-   *   LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER or LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY.
+   *   LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER or LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY.
    * @param array $mapping
    *   is current setting for updates or nonconfigurable items.
    * @param array $user_attr_options
-   *   of drupal user target options.
+   *   of backdrop user target options.
    * @param int $row
    *   is current row in table.
    *
@@ -789,7 +789,7 @@ EOT;
     $form[$id] = [
       '#id' => $id,
       '#row' => $row,
-      '#col' => ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) ? 2 : 3,
+      '#col' => ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) ? 2 : 3,
       '#type' => 'checkbox',
       '#default_value' => isset($mapping['convert']) ? $mapping['convert'] : '',
       '#disabled' => ($action == 'nonconfigurable'),
@@ -797,7 +797,7 @@ EOT;
     ];
 
     $id = $id_prefix . 'sm__ldap_attr__' . $row;
-    $col = ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) ? 1 : 4;
+    $col = ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) ? 1 : 4;
     if ($action == 'nonconfigurable') {
       $form[$id] = [
         '#id' => $id,
@@ -822,7 +822,7 @@ EOT;
     }
 
     $user_attr_input_id = $id_prefix . 'sm__user_attr__' . $row;
-    $col = ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) ? 3 : 1;
+    $col = ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) ? 3 : 1;
     if ($action == 'nonconfigurable') {
       $form[$user_attr_input_id] = [
         '#id' => $user_attr_input_id,
@@ -868,7 +868,7 @@ EOT;
       'direction' => $direction,
     ];
 
-    $id = $id_prefix . 'sm__configurable_to_drupal__' . $row;
+    $id = $id_prefix . 'sm__configurable_to_backdrop__' . $row;
     $form[$id] = [
       '#id' => $id,
       '#type' => 'hidden',
@@ -876,7 +876,7 @@ EOT;
     ];
 
     $col = ($direction == LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY) ? 5 : 4;
-    $synchEvents = ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) ? $this->provisionsDrupalEvents : $this->provisionsLdapEvents;
+    $synchEvents = ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) ? $this->provisionsBackdropEvents : $this->provisionsLdapEvents;
 
     foreach ($synchEvents as $prov_event => $prov_event_name) {
       $col++;
@@ -906,8 +906,8 @@ EOT;
   private function isMappingConfigurable($mapping = NULL, $module = 'ldap_user') {
     $configurable = (
       (
-        (!isset($mapping['configurable_to_drupal']) && !isset($mapping['configurable_to_ldap'])) ||
-        (isset($mapping['configurable_to_drupal']) && $mapping['configurable_to_drupal']) ||
+        (!isset($mapping['configurable_to_backdrop']) && !isset($mapping['configurable_to_ldap'])) ||
+        (isset($mapping['configurable_to_backdrop']) && $mapping['configurable_to_backdrop']) ||
         (isset($mapping['configurable_to_ldap']) && $mapping['configurable_to_ldap'])
       )
       &&
@@ -935,8 +935,8 @@ EOT;
       if ($prov_event == LDAP_USER_EVENT_CREATE_LDAP_ENTRY || $prov_event == LDAP_USER_EVENT_SYNCH_TO_LDAP_ENTRY) {
         $configurable = (boolean) (!isset($mapping['configurable_to_ldap']) || $mapping['configurable_to_ldap']);
       }
-      elseif ($prov_event == LDAP_USER_EVENT_CREATE_DRUPAL_USER || $prov_event == LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER) {
-        $configurable = (boolean) (!isset($mapping['configurable_to_drupal']) || $mapping['configurable_to_drupal']);
+      elseif ($prov_event == LDAP_USER_EVENT_CREATE_BACKDROP_USER || $prov_event == LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER) {
+        $configurable = (boolean) (!isset($mapping['configurable_to_backdrop']) || $mapping['configurable_to_backdrop']);
       }
     }
     else {
@@ -951,54 +951,54 @@ EOT;
    */
   protected function setTranslatableProperties() {
 
-    $values['drupalAcctProvisionServerDescription'] = t('Check ONE LDAP server configuration to use
-      in provisioning Drupal users and their user fields.');
+    $values['backdropAcctProvisionServerDescription'] = t('Check ONE LDAP server configuration to use
+      in provisioning Backdrop users and their user fields.');
     $values['ldapEntryProvisionServerDescription'] = t('Check ONE LDAP server configuration to create ldap entries on.');
 
-    $values['drupalAccountProvisionEventsDescription'] = t('Which user fields and properties are synched on create or synch is determined in the
-      "Provisioning from LDAP to Drupal mappings" table below in the right two columns. If you are synching only from LDAP to Drupal, and not 
-      retrieving the user password from LDAP into their Drupal account, a 20 character random password will be generated automatically for
-      the user\'s Drupal account since Drupal requires a password for the "users" table. Check the watchdog at /admin/reports/dblog to
+    $values['backdropAccountProvisionEventsDescription'] = t('Which user fields and properties are synched on create or synch is determined in the
+      "Provisioning from LDAP to Backdrop mappings" table below in the right two columns. If you are synching only from LDAP to Backdrop, and not
+      retrieving the user password from LDAP into their Backdrop account, a 20 character random password will be generated automatically for
+      the user\'s Backdrop account since Backdrop requires a password for the "users" table. Check the watchdog at /admin/reports/dblog to
       confirm that a random password was generated when the user account was created.');
 
-    $values['drupalAccountProvisionEventsOptions'] = [
-      LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE => t('Create or Synch to Drupal user on successful authentication with LDAP
+    $values['backdropAccountProvisionEventsOptions'] = [
+      LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE => t('Create or Synch to Backdrop user on successful authentication with LDAP
         credentials. (Requires LDAP Authentication module).'),
-      LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE => t('Create or Synch to Drupal user anytime a Drupal user account
+      LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE => t('Create or Synch to Backdrop user anytime a Backdrop user account
         is created or updated. Requires a server with binding method of "Service Account Bind" or "Anonymous Bind".'),
     ];
 
     $values['ldapEntryProvisionTriggersDescription'] = t('Which LDAP attributes are synched on create or synch is determined in the
-      "Provisioning from Drupal to LDAP mappings" table below in the right two columns.');
+      "Provisioning from Backdrop to LDAP mappings" table below in the right two columns.');
 
     $values['ldapEntryProvisionTriggersOptions'] = [
-      LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE => t('Create or Synch to LDAP entry when a Drupal account is created or updated.
+      LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE => t('Create or Synch to LDAP entry when a Backdrop account is created or updated.
         Only applied to accounts with a status of approved.'),
       LDAP_USER_LDAP_ENTRY_PROV_ON_AUTHENTICATE => t('Create or Synch to LDAP entry when a user authenticates.'),
-      LDAP_USER_LDAP_ENTRY_DELETE_ON_USER_DELETE => t('Delete LDAP entry when the corresponding Drupal Account is deleted.  This only applies when the LDAP entry was provisioned by Drupal by the LDAP User module.'),
-      LDAP_USER_DRUPAL_USER_PROV_ON_ALLOW_MANUAL_CREATE => t('Provide option on admin/people/create to create corresponding LDAP Entry.'),
+      LDAP_USER_LDAP_ENTRY_DELETE_ON_USER_DELETE => t('Delete LDAP entry when the corresponding Backdrop Account is deleted. This only applies when the LDAP entry was provisioned by Backdrop by the LDAP User module.'),
+      LDAP_USER_BACKDROP_USER_PROV_ON_ALLOW_MANUAL_CREATE => t('Provide option on admin/people/create to create corresponding LDAP Entry.'),
 
     ];
 
-    $values['orphanedDrupalAcctBehaviorDescription'] = t('It is highly recommended to use the "Perform no action, but email list of orphaned accounts" for some time before considering switching to "Disable the account" options.');
+    $values['orphanedBackdropAcctBehaviorDescription'] = t('It is highly recommended to use the "Perform no action, but email list of orphaned accounts" for some time before considering switching to "Disable the account" options.');
 
     $values['manualAccountConflictOptions'] = [
-      LDAP_USER_MANUAL_ACCT_CONFLICT_REJECT => t('Reject manual creation of Drupal accounts that conflict with LDAP Accounts. This only applies to accounts created on user logon;  Account conflicts can still be generated by manually creating users that conflict with ldap users and these users will have their data synched with LDAP data.'),
-      LDAP_USER_MANUAL_ACCT_CONFLICT_LDAP_ASSOCIATE => t('Associate manually created Drupal accounts with related LDAP Account if one exists.'),
+      LDAP_USER_MANUAL_ACCT_CONFLICT_REJECT => t('Reject manual creation of Backdrop accounts that conflict with LDAP Accounts. This only applies to accounts created on user logon; Account conflicts can still be generated by manually creating users that conflict with ldap users and these users will have their data synched with LDAP data.'),
+      LDAP_USER_MANUAL_ACCT_CONFLICT_LDAP_ASSOCIATE => t('Associate manually created Backdrop accounts with related LDAP Account if one exists.'),
       LDAP_USER_MANUAL_ACCT_CONFLICT_SHOW_OPTION_ON_FORM => t('Show option on user create form to determine how account conflict is resolved.'),
     ];
 
     /**
-    *  Drupal Account Provisioning and Synching
+    *  Backdrop Account Provisioning and Synching
     */
-    $values['userConflictResolveDescription'] = t('What should be done if a local Drupal or other external
+    $values['userConflictResolveDescription'] = t('What should be done if a local Backdrop or other external
       user account already exists with the same login name.');
     $values['userConflictOptions'] = [
-      LDAP_USER_CONFLICT_LOG => t('Don\'t associate Drupal account with LDAP.  Require user to use Drupal password. Log the conflict'),
-      LDAP_USER_CONFLICT_RESOLVE => t('Associate Drupal account with the LDAP entry.  This option
+      LDAP_USER_CONFLICT_LOG => t('Don\'t associate Backdrop account with LDAP. Require user to use Backdrop password. Log the conflict'),
+      LDAP_USER_CONFLICT_RESOLVE => t('Associate Backdrop account with the LDAP entry. This option
       is useful for creating accounts and assigning roles before an LDAP user authenticates.'),
     ];
-    $values['accountsWithSameEmailDescription'] = t('Allows provisioning a Drupal user account from LDAP regardless of whether another Drupal user account has the same email address. This setting depends on the "sharedemail" contrib module being enabled. ');
+    $values['accountsWithSameEmailDescription'] = t('Allows provisioning a Backdrop user account from LDAP regardless of whether another Backdrop user account has the same email address. This setting depends on the "sharedemail" contrib module being enabled. ');
     if (!module_exists('sharedemail')) {
       $values['accountsWithSameEmailDescription'] .= t('The module is not currently enabled; you must install/enable it if you want to use this setting.');
     }
@@ -1008,9 +1008,9 @@ EOT;
     ];
     $values['acctCreationOptions'] = [
       LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR => t('Account creation settings at
-        /admin/config/people/accounts/settings do not affect "LDAP Associated" Drupal accounts.'),
+        /admin/config/people/accounts/settings do not affect "LDAP Associated" Backdrop accounts.'),
       LDAP_USER_ACCT_CREATION_USER_SETTINGS_FOR_LDAP => t('Account creation policy
-         at /admin/config/people/accounts/settings applies to both Drupal and LDAP Authenticated users.
+         at /admin/config/people/accounts/settings applies to both Backdrop and LDAP Authenticated users.
          "Visitors" option automatically creates and account when they successfully LDAP authenticate.
          "Admin" and "Admin with approval" do not allow user to authenticate until the account is approved.'),
 

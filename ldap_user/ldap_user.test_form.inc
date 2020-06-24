@@ -19,21 +19,21 @@
  */
 function ldap_user_test_form($form, &$form_state, $op = NULL) {
 
-  $username = @$_SESSION['ldap_user_test_form']['testing_drupal_username'];
+  $username = @$_SESSION['ldap_user_test_form']['testing_backdrop_username'];
 
   $form['#prefix'] = t('<h1>Test LDAP User Configuration</h1>');
 
-  $form['#prefix'] .= t('This form simply tests an LDAP User configuration against an individual ldap or drupal user.
-    It makes no changes to the drupal or ldap user.');
+  $form['#prefix'] .= t('This form simply tests an LDAP User configuration against an individual ldap or backdrop user.
+    It makes no changes to the backdrop or ldap user.');
 
-  $form['testing_drupal_username'] = [
+  $form['testing_backdrop_username'] = [
     '#type' => 'textfield',
-    '#title' => t('Testing Drupal Username'),
+    '#title' => t('Testing Backdrop Username'),
     '#default_value' => $username,
     '#required' => 1,
     '#size' => 30,
     '#maxlength' => 255,
-    '#description' => t('This is optional and used for testing this server\'s configuration against an actual username.  The user need not exist in Drupal and testing will not affect the user\'s LDAP or Drupal Account.'),
+    '#description' => t('This is optional and used for testing this server\'s configuration against an actual username. The user need not exist in Backdrop and testing will not affect the user\'s LDAP or Backdrop Account.'),
   ];
 
   $form['test_mode'] = [
@@ -42,8 +42,8 @@ function ldap_user_test_form($form, &$form_state, $op = NULL) {
     '#required' => 0,
     '#default_value' => isset($_SESSION['ldap_user_test_form']['test_mode']) ? $_SESSION['ldap_user_test_form']['test_mode'] : 'query',
     '#options' => [
-      'query' => t('Test Query.  Will not alter anything in drupal or LDAP'),
-      'execute' => t('Execute Action.  Will perform provisioning configured for events below.  If this is selected only one action should be selected below'),
+      'query' => t('Test Query. Will not alter anything in backdrop or LDAP'),
+      'execute' => t('Execute Action. Will perform provisioning configured for events below. If this is selected only one action should be selected below'),
     ],
   ];
 
@@ -88,7 +88,7 @@ function ldap_user_test_form_validate($form, &$form_state) {
  */
 function ldap_user_test_form_submit($form, &$form_state) {
 
-  $username = $form_state['values']['testing_drupal_username'];
+  $username = $form_state['values']['testing_backdrop_username'];
   $selected_actions = $form_state['values']['action'];
 
   if ($username && count($selected_actions) > 0) {
@@ -107,9 +107,9 @@ function ldap_user_test_form_submit($form, &$form_state) {
     $ldap_user_conf = ldap_user_conf();
     $test_servers = [];
     $user_ldap_entry = FALSE;
-    if ($ldap_user_conf->drupalAcctProvisionServer) {
-      $test_servers[LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER] = $ldap_user_conf->drupalAcctProvisionServer;
-      $user_ldap_entry = ldap_servers_get_user_ldap_data($username, $ldap_user_conf->drupalAcctProvisionServer);
+    if ($ldap_user_conf->backdropAcctProvisionServer) {
+      $test_servers[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER] = $ldap_user_conf->backdropAcctProvisionServer;
+      $user_ldap_entry = ldap_servers_get_user_ldap_data($username, $ldap_user_conf->backdropAcctProvisionServer);
     }
     if ($ldap_user_conf->ldapEntryProvisionServer) {
       $test_servers[LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] = $ldap_user_conf->ldapEntryProvisionServer;
@@ -128,7 +128,7 @@ function ldap_user_test_form_submit($form, &$form_state) {
       $authmaps = db_query("SELECT aid, uid, module, authname FROM {ldap_authmap} WHERE uid = :uid", [':uid' => $user_object->uid])->fetchAllAssoc('aid', PDO::FETCH_ASSOC);
     }
     else {
-      $authmaps = 'No authmaps available.  Authmaps only shown if user account exists beforehand';
+      $authmaps = 'No authmaps available. Authmaps only shown if user account exists beforehand';
       // Need for testing.
       $user_object = new stdClass();
       $user_object->name = $username;
@@ -142,11 +142,11 @@ function ldap_user_test_form_submit($form, &$form_state) {
 
     foreach (array_filter($selected_actions) as $i => $synch_trigger) {
       $synch_trigger_description = $synch_trigger_options[$synch_trigger];
-      foreach ([LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $direction) {
+      foreach ([LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $direction) {
         if ($ldap_user_conf->provisionEnabled($direction, $synch_trigger)) {
-          if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
-            $discard = $ldap_user_conf->provisionDrupalAccount(NULL, $user_edit, NULL, $save);
-            $results['provisionDrupalAccount method results']["context = $synch_trigger_description"]['proposed'] = $user_edit;
+          if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
+            $discard = $ldap_user_conf->provisionBackdropAccount(NULL, $user_edit, NULL, $save);
+            $results['provisionBackdropAccount method results']["context = $synch_trigger_description"]['proposed'] = $user_edit;
           }
           else {
             $provision_result = $ldap_user_conf->provisionLdapEntry($user_object, NULL, $test_query);
@@ -154,8 +154,8 @@ function ldap_user_test_form_submit($form, &$form_state) {
           }
         }
         else {
-          if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
-            $results['provisionDrupalAccount method results']["context = $synch_trigger_description"] = 'Not enabled.';
+          if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
+            $results['provisionBackdropAccount method results']["context = $synch_trigger_description"] = 'Not enabled.';
           }
           else {
             $results['provisionLdapEntry method results']["context = $synch_trigger_description"] = 'Not enabled.';
@@ -166,11 +166,11 @@ function ldap_user_test_form_submit($form, &$form_state) {
     // Do all synchs second, in case logic of form changes to allow executing mulitple events.
     foreach (array_filter($selected_actions) as $i => $synch_trigger) {
       $synch_trigger_description = $synch_trigger_options[$synch_trigger];
-      foreach ([LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $direction) {
+      foreach ([LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY] as $direction) {
         if ($ldap_user_conf->provisionEnabled($direction, $synch_trigger)) {
-          if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
-            $discard = $ldap_user_conf->synchToDrupalAccount(NULL, $user_edit, NULL, $test_query);
-            $results['synchToDrupalAccount method results']["context = $synch_trigger_description"]['proposed'] = $user_edit;
+          if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
+            $discard = $ldap_user_conf->synchToBackdropAccount(NULL, $user_edit, NULL, $test_query);
+            $results['synchToBackdropAccount method results']["context = $synch_trigger_description"]['proposed'] = $user_edit;
           }
           // To ldap.
           else {
@@ -179,8 +179,8 @@ function ldap_user_test_form_submit($form, &$form_state) {
           }
         }
         else {
-          if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
-            $results['synchToDrupalAccount method results']["context = $synch_trigger_description"] = 'Not enabled.';
+          if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
+            $results['synchToBackdropAccount method results']["context = $synch_trigger_description"] = 'Not enabled.';
           }
           // To ldap.
           else {
@@ -194,13 +194,13 @@ function ldap_user_test_form_submit($form, &$form_state) {
       dpm($results);
     }
     else {
-      drupal_set_message(t('This form will not display results unless the devel module is enabled.'), 'warning');
+      backdrop_set_message(t('This form will not display results unless the devel module is enabled.'), 'warning');
     }
   }
 
   $_SESSION['ldap_user_test_form']['action'] = $form_state['values']['action'];
   $_SESSION['ldap_user_test_form']['test_mode'] = $form_state['values']['test_mode'];
-  $_SESSION['ldap_user_test_form']['testing_drupal_username'] = $username;
+  $_SESSION['ldap_user_test_form']['testing_backdrop_username'] = $username;
 
   $form_state['redirect'] = LDAP_USER_TEST_FORM_PATH;
 

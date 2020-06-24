@@ -1,5 +1,5 @@
 name = LDAP User Module
-description = Module for ldap identified users.  User may be associated via ldap authentication, ldap authorization, or from account provisioning.  Configures synching of ldap entries to drupal user properties, fields and the opposite direction.
+description = Module for LDAP identified users. User may be associated via LDAP authentication, LDAP authorization, or from account provisioning. Configures synching of LDAP entries to Backdrop user properties, fields and the opposite direction.
 package = LDAP
 dependencies[] = ldap_servers
 dependencies[] = number

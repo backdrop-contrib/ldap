@@ -22,14 +22,14 @@ function ldap_user_requirements($phase) {
       $requirements['ldap_user']['value'] = NULL;
 
       $requirements['ldap_user']['description'] = t('Fields are added to the
-        Drupal User entity for LDAP User module functionality.  These fields should
-        have been created in LDAP User update 7203. The following userfields are missing:') .
+        Backdrop User entity for LDAP User module functionality. These fields should
+        have been created during installation. The following userfields are missing:') .
         theme('item_list', [
           'items' => $missing_fields,
           'type' => 'ul',
           'title' => NULL,
         ]) .
-        t('Rerun update 7203 to correct this; it will not write over destroy existing fields.');
+        t('Reinstall to correct this; it will not write over destroy existing fields.');
     }
   }
 
@@ -146,7 +146,7 @@ function ldap_user_schema() {
 }
 
 /**
- * See http://api.drupal.org/api/drupal/modules%21field%21field.module/group/field/7.
+ * See https://api.backdropcms.org/api/backdrop/core%21modules%21field%21field.module/group/field/1.
  */
 function ldap_user_user_entity_fields() {
 
@@ -169,7 +169,7 @@ function ldap_user_user_entity_fields() {
     'field_name' => $field_name,
     'entity_type' => 'user',
     'bundle' => 'user',
-    'label' => 'LDAP Server ID that puid was derived from.  NULL if puid is independent of server configuration instance.',
+    'label' => 'LDAP Server ID that puid was derived from. NULL if puid is independent of server configuration instance.',
     'description' => 'This field should not be edited.',
     'required' => 0,
     'default_value' => [],
@@ -214,7 +214,7 @@ function ldap_user_user_entity_fields() {
     'field_name' => $field_name,
     'entity_type' => 'user',
     'bundle' => 'user',
-    'label' => 'Value of user\'s permanent unique id.  This should never change for a given ldap identified user.',
+    'label' => 'Value of user\'s permanent unique id. This should never change for a given ldap identified user.',
     'description' => 'This field should not be edited.',
     'required' => 0,
     'default_value' => [],
@@ -349,7 +349,7 @@ function ldap_user_user_entity_fields() {
     'field_name' => $field_name,
     'entity_type' => 'user',
     'bundle' => 'user',
-    'label' => 'LDAP Entries that have been provisioned from this Drupal user.',
+    'label' => 'LDAP Entries that have been provisioned from this Backdrop user.',
     'description' => 'This field should not be edited.',
     'required' => 0,
     'default_value' => NULL,
@@ -394,7 +394,7 @@ function ldap_user_user_entity_fields() {
     'field_name' => $field_name,
     'entity_type' => 'user',
     'bundle' => 'user',
-    'label' => 'Unix timestamp of when Drupal user was compard to ldap entry.  This could be for purposes of synching, deleteing drupal account, etc.',
+    'label' => 'Unix timestamp of when Backdrop user was compard to ldap entry. This could be for purposes of synching, deleteing Backdrop account, etc.',
     'description' => 'This field should not be edited.',
     'required' => 0,
     'default_value' => NULL,

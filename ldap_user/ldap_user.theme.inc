@@ -19,17 +19,17 @@ function theme_ldap_user_conf_form($variables) {
       list($direction, $discard, $column_name, $i) = $parts;
       $row = $element['#row'];
       $col = $element['#col'];
-      $tables[$direction]['rows'][$row][$col] = ['data' => drupal_render($form[$key]), 'class' => ['module'], 'colspan' => 1];
+      $tables[$direction]['rows'][$row][$col] = ['data' => backdrop_render($form[$key]), 'class' => ['module'], 'colspan' => 1];
     }
   }
 
-  $output = drupal_render_children($form);
+  $output = backdrop_render_children($form);
   $ldap_user_conf_admin = ldap_user_conf('admin');
 
   foreach ($tables as $direction => $table) {
-    if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
+    if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
 
-      $direction_text = 'todrupal';
+      $direction_text = 'tobackdrop';
 
       $header = [
         [
@@ -38,19 +38,19 @@ function theme_ldap_user_conf_form($variables) {
           'class' => 'mixedcase',
         ],
         [
-          'data' => t('Source LDAP Tokens. (See http://drupal.org/node/1245736) ') ,
+          'data' => t('Source LDAP Tokens. (See https://backdropcms.org/project/ldap#tokens) ') ,
           'class' => 'mixedcase',
           'rowspan' => 1,
           'colspan' => 2,
         ],
         [
-          'data' => t('Target Drupal Attribute'),
+          'data' => t('Target Backdrop Attribute'),
           'rowspan' => 1,
           'class' => 'mixedcase',
         ],
         [
-          'data' => t('When Should Attribute Be Synchronized to Drupal?'),
-          'colspan' => count($ldap_user_conf_admin->provisionsDrupalEvents),
+          'data' => t('When Should Attribute Be Synchronized to Backdrop?'),
+          'colspan' => count($ldap_user_conf_admin->provisionsBackdropEvents),
           'rowspan' => 1,
           'class' => 'mixedcase',
         ],
@@ -80,7 +80,7 @@ function theme_ldap_user_conf_form($variables) {
         ],
       ];
 
-      foreach ($ldap_user_conf_admin->provisionsDrupalEvents as $col_id => $col_name) {
+      foreach ($ldap_user_conf_admin->provisionsBackdropEvents as $col_id => $col_name) {
         $second_header[] = ['data' => $col_name, 'header' => TRUE, 'class' => 'mixedcase'];
       }
     }
@@ -96,7 +96,7 @@ function theme_ldap_user_conf_form($variables) {
           'class' => 'mixedcase',
         ],
         [
-          'data' => t('Source Drupal User Attribute') ,
+          'data' => t('Source Backdrop User Attribute') ,
           'class' => 'mixedcase',
           'rowspan' => 1,
           'colspan' => 3,
@@ -125,7 +125,7 @@ function theme_ldap_user_conf_form($variables) {
           'class' => 'mixedcase',
         ],
         [
-          'data' => t('Source Drupal User tokens such as: "[property.name]", "[field.field_fname] [field.field_lname]". Constants such as "from_drupal" or "18" should not be enclosed in []'),
+          'data' => t('Source Backdrop User tokens such as: "[property.name]", "[field.field_fname] [field.field_lname]". Constants such as "from_backdrop" or "18" should not be enclosed in []'),
           'header' => TRUE,
           'class' => 'mixedcase',
         ],

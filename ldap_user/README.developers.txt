@@ -99,7 +99,7 @@ LDAP User Data Structures in Backdrop User Object
 
 
 ==========================================
-hooks relating ldap_user entities and drupal user entities
+hooks relating ldap_user entities and backdrop user entities
 ==========================================
 
 - hook_user_create, hook_user_update, hook_user_delete should look for ldap_user entity with matching uid and deal with ldap_user entity appropriately.
