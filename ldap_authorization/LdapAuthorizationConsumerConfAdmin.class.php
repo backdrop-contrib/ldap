@@ -430,21 +430,21 @@ Representations of groups derived from LDAP might initially look like:
       'sid' => [
         'schema' => [
           'type' => 'varchar',
-          'length' => 20,
+          'length' => 50,
           'not null' => TRUE,
         ],
       ],
       'consumer_type' => [
         'schema' => [
           'type' => 'varchar',
-          'length' => 20,
+          'length' => 50,
           'not null' => TRUE,
         ],
       ],
       'consumer_module' => [
         'schema' => [
           'type' => 'varchar',
-          'length' => 30,
+          'length' => 60,
           'not null' => TRUE,
         ],
       ],
