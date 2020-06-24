@@ -27,11 +27,11 @@ function ldap_servers_test_form($form, &$form_state, $op = NULL, $sid = NULL) {
 
   $ldap_server = ldap_servers_get_servers($sid, 'all', TRUE);
 
-  drupal_set_title(t('Test LDAP Server Configuration: !server', ['!server' => $ldap_server->name]));
+  backdrop_set_title(t('Test LDAP Server Configuration: !server', ['!server' => $ldap_server->name]));
 
   $form['#prefix'] = t('This form tests an LDAP configuration to see if
-    it can bind and basic user and group functions.  It also shows token examples
-    and a sample user.  The only data this function will modify is the test LDAP group, which will be deleted and added');
+    it can bind and basic user and group functions. It also shows token examples
+    and a sample user. The only data this function will modify is the test LDAP group, which will be deleted and added');
 
   $variables = [
     'ldap_server' => $ldap_server,
@@ -56,22 +56,22 @@ function ldap_servers_test_form($form, &$form_state, $op = NULL, $sid = NULL) {
     '#description' => t('Leave empty to test with currently stored password.'),
   ];
 
-  $form['testing_drupal_username'] = [
+  $form['testing_backdrop_username'] = [
     '#type' => 'textfield',
-    '#title' => t('Testing Drupal Username'),
-    '#default_value' => $ldap_server->testingDrupalUsername,
+    '#title' => t('Testing Backdrop Username'),
+    '#default_value' => $ldap_server->testingBackdropUsername,
     '#size' => 30,
     '#maxlength' => 255,
-    '#description' => t('This is optional and used for testing this server\'s configuration against an actual username.  The user need not exist in Drupal and testing will not affect the user\'s LDAP or Drupal Account.'),
+    '#description' => t('This is optional and used for testing this server\'s configuration against an actual username. The user need not exist in Backdrop and testing will not affect the user\'s LDAP or Backdrop Account.'),
   ];
 
-  $form['testingDrupalUserDn'] = [
+  $form['testingBackdropUserDn'] = [
     '#type' => 'textfield',
-    '#title' => t('Testing Drupal DN'),
-    '#default_value' => $ldap_server->testingDrupalUserDn,
+    '#title' => t('Testing Backdrop DN'),
+    '#default_value' => $ldap_server->testingBackdropUserDn,
     '#size' => 120,
     '#maxlength' => 255,
-    '#description' => t('This is optional and used for testing this server\'s configuration against an actual username.  The user need not exist in Drupal and testing will not affect the user\'s LDAP or Drupal Account.'),
+    '#description' => t('This is optional and used for testing this server\'s configuration against an actual username. The user need not exist in Backdrop and testing will not affect the user\'s LDAP or Backdrop Account.'),
   ];
 
   $form['grp_test_grp_dn'] = [
@@ -99,9 +99,9 @@ function ldap_servers_test_form($form, &$form_state, $op = NULL, $sid = NULL) {
   ];
 
   if ($ldap_server->bind_method == LDAP_SERVERS_BIND_METHOD_ANON_USER) {
-    $form['testing_drupal_userpw'] = [
+    $form['testing_backdrop_userpw'] = [
       '#type' => 'password',
-      '#title' => t('Testing Drupal User Password'),
+      '#title' => t('Testing Backdrop User Password'),
       '#size' => 30,
       '#maxlength' => 255,
       '#description' => t('This is optional and used for testing this server\'s configuration against the username above.'),
@@ -140,11 +140,11 @@ function ldap_servers_test_form($form, &$form_state, $op = NULL, $sid = NULL) {
     if (function_exists('dpm') && !empty($test_data['username'])) {
       $user_name = $test_data['username'];
       if ($user = user_load_by_name($user_name)) {
-        dpm("Corresponding Drupal user object for: $user_name");
+        dpm("Corresponding Backdrop user object for: $user_name");
         dpm($user);
         if (function_exists('entity_load_single')) {
           $user_entity = entity_load_single('user', $user->uid);
-          dpm("Drupal user entity for: $user_name");
+          dpm("Backdrop user entity for: $user_name");
           dpm($user_entity);
         }
         if (isset($test_data['group_entry'][0])) {
@@ -211,7 +211,7 @@ function ldap_servers_test_form_submit($form, &$form_state) {
 
   if ($ldap_server->bind_method == LDAP_SERVERS_BIND_METHOD_SERVICE_ACCT) {
     $results_tables['basic'][] = [
-      t('Testing method: Binding with DN for non-anonymous search (%bind_dn).  Using password ',
+      t('Testing method: Binding with DN for non-anonymous search (%bind_dn). Using password ',
       ['%bind_dn' => $ldap_server->binddn]) . ' ' . $bindpw_type,
     ];
   }
@@ -291,7 +291,7 @@ function ldap_servers_test_form_submit($form, &$form_state) {
   list($has_errors, $more_results) = ldap_servers_test_binding_credentials($ldap_server, $bindpw, $results_tables);
   $results = array_merge($results, $more_results);
   if ($ldap_server->bind_method == LDAP_SERVERS_BIND_METHOD_ANON_USER) {
-    list($has_errors, $more_results, $ldap_user) = ldap_servers_test_user_mapping($values['testing_drupal_username'], $ldap_server);
+    list($has_errors, $more_results, $ldap_user) = ldap_servers_test_user_mapping($values['testing_backdrop_username'], $ldap_server);
     $results = array_merge($results, $more_results);
     if (!$has_errors) {
       $mapping[] = "dn = " . $ldap_user['dn'];
@@ -303,10 +303,10 @@ function ldap_servers_test_form_submit($form, &$form_state) {
       $results_tables['basic'][] = [theme_item_list(['items' => $mapping, 'title' => t('Attributes available to anonymous search', ['%bind_dn' => $ldap_server->binddn]), 'type' => 'ul', 'attributes' => []])];
     }
     $results_tables['basic'][] = [
-      t('Testing method: Binding with DN (%bind_dn).  Using supplied password ',
+      t('Testing method: Binding with DN (%bind_dn). Using supplied password ',
       ['%bind_dn' => $ldap_user['dn']]),
     ];
-    $result = $ldap_server->bind($ldap_user['dn'], $values['testing_drupal_userpw'], FALSE);
+    $result = $ldap_server->bind($ldap_user['dn'], $values['testing_backdrop_userpw'], FALSE);
     if ($result == LDAP_SUCCESS) {
       $results_tables['basic'][] = [t('Successfully bound to server'), 'PASS'];
     }
@@ -322,7 +322,7 @@ function ldap_servers_test_form_submit($form, &$form_state) {
     if (is_array($result)) {
       $group_entry = ldap_get_entries($ldap_server->connection, $result);
     }
-    $user = isset($values['testing_drupal_username']) ? $values['testing_drupal_username'] : NULL;
+    $user = isset($values['testing_backdrop_username']) ? $values['testing_backdrop_username'] : NULL;
 
     // FALSE.
     foreach ([FALSE, TRUE] as $nested) {
@@ -380,14 +380,14 @@ function ldap_servers_test_form_submit($form, &$form_state) {
 
   }
 
-  list($has_errors, $more_results, $ldap_user) = ldap_servers_test_user_mapping($values['testing_drupal_username'], $ldap_server);
+  list($has_errors, $more_results, $ldap_user) = ldap_servers_test_user_mapping($values['testing_backdrop_username'], $ldap_server);
 
   $tokens = ($ldap_user && isset($ldap_user['attr'])) ? ldap_servers_token_tokenize_entry($ldap_user['attr'], 'all') : [];
   foreach ($tokens as $key => $value) {
     $results_tables['tokens'][] = [$key, ldap_servers_string_binary_check($value)];
   }
   $form_state['ldap_server_test_data'] = [
-    'username' => $values['testing_drupal_username'],
+    'username' => $values['testing_backdrop_username'],
     'results_tables' => $results_tables,
   ];
 
@@ -412,7 +412,7 @@ function ldap_servers_test_binding_credentials(&$ldap_server, $bindpw, &$results
   $ldap_result = $ldap_server->connect();
   if ($ldap_result != LDAP_SUCCESS) {
     $results_tables['basic'][] = [
-      t('Failed to connect to LDAP server.  See watchdog error logs for details.') .
+      t('Failed to connect to LDAP server. See watchdog error logs for details.') .
       $ldap_server->errorMsg('ldap'),
     ];
     $errors = TRUE;
@@ -434,14 +434,14 @@ function ldap_servers_test_binding_credentials(&$ldap_server, $bindpw, &$results
 /**
  *
  */
-function ldap_servers_test_user_mapping($drupal_username, &$ldap_server, $ldap_context = NULL) {
+function ldap_servers_test_user_mapping($backdrop_username, &$ldap_server, $ldap_context = NULL) {
 
-  $ldap_user = $ldap_server->userUserNameToExistingLdapEntry($drupal_username, $ldap_context);
+  $ldap_user = $ldap_server->userUserNameToExistingLdapEntry($backdrop_username, $ldap_context);
   $errors = FALSE;
   if (!$ldap_user) {
     $results[] = t('Failed to find test user %username by searching on  %user_attr = %username.',
       [
-        '%username' => $drupal_username,
+        '%username' => $backdrop_username,
         '%user_attr' => $ldap_server->user_attr,
       ]
       )
@@ -450,7 +450,7 @@ function ldap_servers_test_user_mapping($drupal_username, &$ldap_server, $ldap_c
   }
   else {
     $results[] = t('Found test user %username by searching on  %user_attr = %username.',
-      ['%username' => $drupal_username, '%user_attr' => $ldap_server->user_attr]);
+      ['%username' => $backdrop_username, '%user_attr' => $ldap_server->user_attr]);
   }
   return [$errors, $results, $ldap_user];
 }

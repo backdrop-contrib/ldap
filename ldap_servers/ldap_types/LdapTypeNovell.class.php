@@ -11,7 +11,7 @@ ldap_servers_module_load_include('php', 'ldap_servers', 'ldap_types/LdapTypeAbst
  */
 class LdapTypeNovell extends LdapTypeAbstract {
 
-  public $documentation = 'http://www.novell.com/documentation/edir873/index.html?page=/documentation/edir873/edir873/data/h0000007.html';
+  public $documentation = 'https://www.novell.com/documentation/edir873/index.html?page=/documentation/edir873/edir873/data/h0000007.html';
   public $name = 'Novell eDirectory LDAP';
   public $typeId = 'Novell';
   public $description = 'Novell eDirectory LDAP';

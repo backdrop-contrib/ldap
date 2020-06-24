@@ -27,7 +27,7 @@ function ldap_user_modify($dn, $attributes, $ldap_server) {
 function ldap_password_modify($userdn, $new_password, $ldap_server) {
 
   $new_password = "\"" . $new_password . "\"";
-  $len = drupal_strlen($new_password);
+  $len = backdrop_strlen($new_password);
   $new_pass = NULL;
   for ($i = 0; $i < $len; $i++) {
     $new_pass .= "{$new_password{$i}}\000";
@@ -48,7 +48,7 @@ function ldap_password_modify($userdn, $new_password, $ldap_server) {
 
 /**
  * Converts a password to the format that Active Directory supports (for the
- * purpose of changing or setting).  Note that AD needs the field to be called
+ * purpose of changing or setting). Note that AD needs the field to be called
  * unicodePwd (as opposed to userPassword)
  *
  * @param string $password
@@ -74,7 +74,7 @@ function ldap_servers_convert_password_for_active_directory_unicodePwd($password
  *  as the ldap spec allows for any old character to be escaped and ldap
  *  implementations may not follow the spec.
  *
- *  Http://www.ietf.org/rfc/rfc2253.txt.
+ *  https://www.ietf.org/rfc/rfc2253.txt.
  */
 function ldap_baddn($dn, $dn_name) {
   $result = [];
@@ -97,7 +97,7 @@ function ldap_baddn($dn, $dn_name) {
  *  as the ldap spec allows for any old character to be escaped and ldap
  *  implementations may not follow the spec.
  *
- *  Http://www.ietf.org/rfc/rfc2253.txt.
+ *  https://www.ietf.org/rfc/rfc2253.txt.
  */
 function ldap_badattr($attr, $attr_name) {
   $result = [];
@@ -137,7 +137,7 @@ function ldap_servers_attributes_needed($sid, $ldap_context = 'all', $reset = TR
       'sid' => $sid,
       'ldap_context' => $ldap_context,
     ];
-    drupal_alter('ldap_attributes_needed', $attributes[$static_cache_id], $params);
+    backdrop_alter('ldap_attributes_needed', $attributes[$static_cache_id], $params);
   }
   $return = $attributes[$static_cache_id];
 
@@ -146,7 +146,7 @@ function ldap_servers_attributes_needed($sid, $ldap_context = 'all', $reset = TR
 
 /**
  * Function to massage (change case, escape, unescape) ldap attribute names
- * and values.  The primary purpose of this is to articulate and ensure
+ * and values. The primary purpose of this is to articulate and ensure
  * consistency across ldap modules.
  *
  * @param mixed $value
@@ -212,11 +212,11 @@ function ldap_server_massage_text($value, $value_type, $context) {
       case LDAP_SERVER_MASSAGE_STORE_ARRAY:
       case LDAP_SERVER_MASSAGE_STORE_PROPERTY:
         if ($scalar) {
-          $value = drupal_strtolower($value);
+          $value = backdrop_strtolower($value);
         }
         elseif (is_array($value)) {
           foreach ($value as $i => $val) {
-            $value[$i] = drupal_strtolower($val);
+            $value[$i] = backdrop_strtolower($val);
           }
         }
         else {

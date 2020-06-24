@@ -73,7 +73,7 @@ function ldap_authorization_generate_users() {
     $account = entity_create('user', array());
     $account->is_new = TRUE;
     $account->name = "user" . $i;
-    $account->data = ['ldap_authorizations' => ['og_group' => 7, 'drupal_role' => 8]];
+    $account->data = ['ldap_authorizations' => ['og_group' => 7, 'backdrop_role' => 8]];
 
     $account->save();
     $user_response = $account;

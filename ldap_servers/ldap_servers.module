@@ -19,7 +19,7 @@ define('LDAP_SERVERS_MENU_BASE_PATH', 'admin/config/people/ldap');
 define('LDAP_SERVERS_INDEX_BASE_PATH', 'admin/config/people/ldap/servers');
 // For argument offsets.
 define('LDAP_SERVERS_MENU_BASE_PATH_PARTS', 4);
-define('LDAP_SERVERS_DRUPAL_HELP_URL', 'http://drupal.org/node/997082');
+define('LDAP_SERVERS_BACKDROP_HELP_URL', 'https://backdropcms.org/project/ldap');
 
 define('LDAP_SERVERS_TOKEN_PRE', '[');
 define('LDAP_SERVERS_TOKEN_POST', ']');
@@ -156,7 +156,7 @@ module_load_include('inc', 'ldap_servers', 'ldap_servers.tokens');
  */
 function ldap_servers_init() {
   if (strpos(current_path(), 'admin/config/people/ldap') === 0) {
-    drupal_add_css(drupal_get_path('module', 'ldap_servers') . '/ldap_servers.admin.css', 'module');
+    backdrop_add_css(backdrop_get_path('module', 'ldap_servers') . '/ldap_servers.admin.css', 'module');
   }
 }
 
@@ -176,7 +176,7 @@ function ldap_servers_menu() {
   $items['admin/config/people/ldap'] = [
     'title' => 'LDAP Configuration',
     'description' => 'LDAP authentication, authorization, provisioning, etc.',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_servers_settings'],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_servers.settings.inc',
@@ -204,7 +204,7 @@ function ldap_servers_menu() {
 
   $items['admin/config/people/ldap/servers/add'] = [
     'title' => 'Add LDAP Server Configuration',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_servers_admin_form', 'add'],
     'type' => MENU_LOCAL_TASK + MENU_CONTEXT_INLINE,
     'weight' => 3,
@@ -214,7 +214,7 @@ function ldap_servers_menu() {
 
   $items['admin/config/people/ldap/servers/edit/%'] = [
     'title' => 'Edit LDAP Server Configuration',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_servers_admin_form', 'edit', $menu_offset + 2],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_servers.admin.inc',
@@ -222,7 +222,7 @@ function ldap_servers_menu() {
 
   $items['admin/config/people/ldap/servers/test/%'] = [
     'title' => 'Test LDAP Server Configuration',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_servers_test_form', $menu_offset + 1, $menu_offset + 2],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_servers.test_form.inc',
@@ -230,7 +230,7 @@ function ldap_servers_menu() {
 
   $items['admin/config/people/ldap/servers/delete/%'] = [
     'title' => 'Delete LDAP Server',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_servers_admin_delete', $menu_offset + 1, $menu_offset + 2],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_servers.admin.inc',
@@ -238,7 +238,7 @@ function ldap_servers_menu() {
 
   $items['admin/config/people/ldap/servers/enable/%'] = [
     'title' => 'Enable LDAP Server',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_servers_admin_enable_disable', $menu_offset + 1, $menu_offset + 2],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_servers.admin.inc',
@@ -246,7 +246,7 @@ function ldap_servers_menu() {
 
   $items['admin/config/people/ldap/servers/disable/%'] = [
     'title' => 'Enable LDAP Server',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_servers_admin_enable_disable', $menu_offset + 1, $menu_offset + 2],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_servers.admin.inc',
@@ -303,8 +303,8 @@ function ldap_servers_cron() {
  */
 function ldap_server_find_key($key, $array) {
   $keys = array_combine(array_change_key_case($array), $array);
-  if (isset($keys[drupal_strtolower($key)])) {
-    return $keys[drupal_strtolower($key)];
+  if (isset($keys[backdrop_strtolower($key)])) {
+    return $keys[backdrop_strtolower($key)];
   }
   else {
     return FALSE;
@@ -374,10 +374,10 @@ function ldap_servers_ldap_user_attrs_list_alter(&$available_user_attrs, &$param
 
   $server_edit_path = 'admin/config/people/ldap/servers/edit/' . $ldap_server->sid;
 
-  if ($direction == LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER) {
+  if ($direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER) {
 
     /** these 4 user fields indentify where in ldap and which ldap server they are associated with.
-     * they are required for a Drupal account to be "ldap associated" regardless of if any other
+     * they are required for a Backdrop account to be "ldap associated" regardless of if any other
      * fields/properties are provisioned or synched
     */
 
@@ -395,27 +395,27 @@ function ldap_servers_ldap_user_attrs_list_alter(&$available_user_attrs, &$param
 
       $available_user_attrs['[field.ldap_user_puid_sid]'] = [
         'name' => t('Field: sid providing PUID'),
-        'configurable_to_drupal' => 0,
+        'configurable_to_backdrop' => 0,
         'configurable_to_ldap' => 1,
         'source' => t('!sid', $tokens),
         'notes' => 'not configurable',
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
         'enabled' => TRUE,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER],
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER],
         'config_module' => 'ldap_servers',
         'prov_module' => 'ldap_user',
       ] + $available_user_attrs['[field.ldap_user_puid_sid]'];
 
       $available_user_attrs['[field.ldap_user_puid]'] = [
         'name' => t('Field: PUID', $tokens),
-        'configurable_to_drupal' => 0,
+        'configurable_to_backdrop' => 0,
         'configurable_to_ldap' => 1,
         'source' => '[' . $ldap_server->unique_persistent_attr . ']',
         'notes' => 'configure at ' . $server_edit_path,
         'convert' => $ldap_server->unique_persistent_attr_binary,
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
         'enabled' => TRUE,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER],
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER],
         'config_module' => 'ldap_servers',
         'prov_module' => 'ldap_user',
       ] + $available_user_attrs['[field.ldap_user_puid]'];
@@ -423,13 +423,13 @@ function ldap_servers_ldap_user_attrs_list_alter(&$available_user_attrs, &$param
       $available_user_attrs['[field.ldap_user_puid_property]'] =
       [
         'name' => t('Field: PUID Attribute', $tokens),
-        'configurable_to_drupal' => 0,
+        'configurable_to_backdrop' => 0,
         'configurable_to_ldap' => 1,
         'source' => $ldap_server->unique_persistent_attr ,
         'notes' => 'configure at ' . $server_edit_path,
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
         'enabled' => TRUE,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER],
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER],
         'config_module' => 'ldap_servers',
         'prov_module' => 'ldap_user',
       ] + $available_user_attrs['[field.ldap_user_puid_property]'];
@@ -442,27 +442,27 @@ function ldap_servers_ldap_user_attrs_list_alter(&$available_user_attrs, &$param
     $available_user_attrs[$token] =
     [
       'name' => t('Field: Most Recent DN', $tokens),
-      'configurable_to_drupal' => 0,
+      'configurable_to_backdrop' => 0,
       'configurable_to_ldap' => 0,
       'source' => '[dn]',
       'notes' => 'not configurable',
-      'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
+      'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
       'enabled' => TRUE,
-      'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+      'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
       'config_module' => 'ldap_servers',
       'prov_module' => 'ldap_user',
     ] + $available_user_attrs[$token];
 
-    if ($ldap_user_conf->provisionsDrupalAccountsFromLdap) {
+    if ($ldap_user_conf->provisionsBackdropAccountsFromLdap) {
       if (!isset($available_user_attrs['[property.name]']) || !is_array($available_user_attrs['[property.name]'])) {
         $available_user_attrs['[property.name]'] = [];
       }
       $available_user_attrs['[property.name]'] = [
         'name' => 'Property: Username',
         'source' => '[' . $ldap_server->user_attr . ']',
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
         'enabled' => TRUE,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         'config_module' => 'ldap_servers',
         'prov_module' => 'ldap_user',
       ] + $available_user_attrs['[property.name]'];
@@ -473,9 +473,9 @@ function ldap_servers_ldap_user_attrs_list_alter(&$available_user_attrs, &$param
       $available_user_attrs['[property.mail]'] = [
         'name' => 'Property: Email',
         'source' => ($ldap_server->mail_template) ? $ldap_server->mail_template : '[' . $ldap_server->mail_attr . ']',
-        'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
+        'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
         'enabled' => TRUE,
-        'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+        'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         'config_module' => 'ldap_servers',
         'prov_module' => 'ldap_user',
       ] + $available_user_attrs['[property.mail]'];
@@ -487,9 +487,9 @@ function ldap_servers_ldap_user_attrs_list_alter(&$available_user_attrs, &$param
         $available_user_attrs['[property.picture]'] = [
           'name' => 'Property: Picture',
           'source' => '[' . $ldap_server->picture_attr . ']',
-          'direction' => LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER,
+          'direction' => LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER,
           'enabled' => TRUE,
-          'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+          'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
           'config_module' => 'ldap_servers',
           'prov_module' => 'ldap_user',
         ] + $available_user_attrs['[property.picture]'];
@@ -508,14 +508,14 @@ function ldap_servers_flush_server_cache() {
 
 /**
  * Function to replace module_load_include such that when
- * something is not included, drupal will exit instead
+ * something is not included, backdrop will exit instead
  * of attempting something half baked.
  */
 function ldap_servers_module_load_include($type, $module, $name = NULL) {
   $result = module_load_include($type, $module, $name);
   if ($result === FALSE) {
     print "Failed to load file $name.$type in module $module";
-    drupal_exit();
+    backdrop_exit();
   }
 }
 
@@ -526,7 +526,7 @@ function ldap_servers_module_load_include($type, $module, $name = NULL) {
  * @param string $type
  *   All', 'enabled'.
  * @param bool $flatten
- *   signifies if array or single object returned.  Only works if sid is specified.
+ *   signifies if array or single object returned. Only works if sid is specified.
  * @param bool $reset
  *   do not use cached or static result.
  *
@@ -589,7 +589,7 @@ function _ldap_servers_get_simpletest_servers($sid, $type = NULL, $flatten, $res
 
   $servers = [];
 
-  // Two flavors of mock servers exist.  ultimately v2 will be used in all simpletests.
+  // Two flavors of mock servers exist. ultimately v2 will be used in all simpletests.
   if (config_get('ldap_servers.settings', 'ldap_servers_simpletest') == 2) {
     ldap_servers_module_load_include('php', 'ldap_test', 'LdapServerTest.class');
     $servers['all'] = LdapServerTest::getLdapServerObjects(NULL, 'all', FALSE);
@@ -693,45 +693,45 @@ function ldap_servers_binary($value) {
 }
 
 /**
- * @todo needs caching element.  several modules could potentially call this in
+ * @todo needs caching element. several modules could potentially call this in
  *   the same page request.
  *
- * @param object $drupal_user
- *   is drupal $user object.
+ * @param object $backdrop_user
+ *   is backdrop $user object.
  * @param string $sid
  *   is a server id.
  * @param mixed $ldap_context
  *
  * @return bool
  */
-function ldap_servers_get_user_ldap_data($drupal_user, $sid = NULL, $ldap_context = NULL) {
-  if (is_object($drupal_user) && property_exists($drupal_user, 'uid') &&
-      function_exists('ldap_user_get_authname') && ($authname = ldap_user_get_authname($drupal_user))) {
-    $drupal_username = $authname;
+function ldap_servers_get_user_ldap_data($backdrop_user, $sid = NULL, $ldap_context = NULL) {
+  if (is_object($backdrop_user) && property_exists($backdrop_user, 'uid') &&
+      function_exists('ldap_user_get_authname') && ($authname = ldap_user_get_authname($backdrop_user))) {
+    $backdrop_username = $authname;
   }
   else {
-    $drupal_username = (is_object($drupal_user)) ? $drupal_user->name : $drupal_user;
+    $backdrop_username = (is_object($backdrop_user)) ? $backdrop_user->name : $backdrop_user;
   }
-  // Sometimes we have username instead of a drupal user object
+  // Sometimes we have username instead of a backdrop user object
   // For example, when using LDAP user test form (admin/config/people/ldap/user/test)
-  // But we can still load the user by using $drupal_username  if $drupal_user is not an object.
-  if (!(is_object($drupal_user))) {
-    $user_object = user_load_by_name($drupal_username);
+  // But we can still load the user by using $backdrop_username  if $backdrop_user is not an object.
+  if (!(is_object($backdrop_user))) {
+    $user_object = user_load_by_name($backdrop_username);
     if (is_object($user_object) && property_exists($user_object, 'uid')) {
-      $drupal_user = $user_object;
+      $backdrop_user = $user_object;
     }
   }
   // If no explicit $sid, find most appropriate one.
   if (module_exists('ldap_user') && (!$sid || $sid == LDAP_USER_AUTH_SERVER_SID)) {
-    if (property_exists($drupal_user, 'ldap_user_puid_sid') &&
-        !empty($drupal_user->ldap_user_puid_sid[LANGUAGE_NONE][0]['value'])
+    if (property_exists($backdrop_user, 'ldap_user_puid_sid') &&
+        !empty($backdrop_user->ldap_user_puid_sid[LANGUAGE_NONE][0]['value'])
       ) {
-      $sid = $drupal_user->ldap_user_puid_sid[LANGUAGE_NONE][0]['value'];
+      $sid = $backdrop_user->ldap_user_puid_sid[LANGUAGE_NONE][0]['value'];
     }
     else {
       $ldap_user_conf = ldap_user_conf();
-      ldap_user_reset_provision_server($ldap_user_conf, $drupal_user);
-      $sid = $ldap_user_conf->drupalAcctProvisionServer;
+      ldap_user_reset_provision_server($ldap_user_conf, $backdrop_user);
+      $sid = $ldap_user_conf->backdropAcctProvisionServer;
     }
   }
   elseif (!$sid) {
@@ -749,7 +749,7 @@ function ldap_servers_get_user_ldap_data($drupal_user, $sid = NULL, $ldap_contex
     return FALSE;
   }
 
-  $ldap_user = $ldap_server->userUserNameToExistingLdapEntry($drupal_username, $ldap_context);
+  $ldap_user = $ldap_server->userUserNameToExistingLdapEntry($backdrop_username, $ldap_context);
 
   if ($ldap_user) {
     $ldap_user['sid'] = $sid;
@@ -764,11 +764,11 @@ function ldap_servers_get_user_ldap_data($drupal_user, $sid = NULL, $ldap_contex
 /**
  * @param array|null $attribute
  * @param string $conversion
- *   as type of conversion to do @see ldap_servers_convert_attribute().  e.g. base64_encode, bin2hex, msguid, md5.
+ *   as type of conversion to do @see ldap_servers_convert_attribute(). e.g. base64_encode, bin2hex, msguid, md5.
  * @param array $values
  *   in form array(<ordinal> => <value> | NULL) where NULL indicates value is needed for provisioning or other operations.
  *
- * @return array $attribute_map with converted values.  If nothing passed in create empty array in proper structure.
+ * @return array $attribute_map with converted values. If nothing passed in create empty array in proper structure.
  *   array('values' => array(
  *      0 => 'john',
  *      1 => 'johnny'
@@ -898,7 +898,7 @@ function ldap_servers_help($path, $arg) {
       $servers_help .= '<dt>' . t('ENCRYPTION') . '</dt>';
       $servers_help .= '<dd>' . t('With encryption enabled, passwords will be stored in encrypted form. This is two way encryption because the actual password needs to used to bind to LDAP. So it offers minimal defense if someone gets in the filespace. It mainly helps avoid the accidental discovery of a clear text password.') . '</dd>';
       $servers_help .= '<dt>' . t('LOG DETAILED LDAP ACTIONS') . '</dt>';
-      $servers_help .= '<dd>' . t('Enables LDAP logging to the Drupal Watchdog system') . '</dd>';
+      $servers_help .= '<dd>' . t('Enables LDAP logging to the Backdrop Watchdog system') . '</dd>';
       $servers_help .= '</dl>';
       $servers_help .= '<h3>' . t('Configuration - Servers (List)') . '</h3>';
       $servers_help .= '<dl>';
@@ -925,7 +925,7 @@ function ldap_servers_help($path, $arg) {
       $servers_help .= '<dd>' . t('Clear existing password from database -') . ' </dd>';
       $servers_help .= '</dl>';
       $servers_help .= '<dl>';
-      $servers_help .= '<dt>' . t('LDAP USER TO DRUPAL USER RELATIONSHIP') . '</dt>';
+      $servers_help .= '<dt>' . t('LDAP USER TO BACKDROP USER RELATIONSHIP') . '</dt>';
       $servers_help .= '<dd>' . t('Base DNs for LDAP Users, Groups, and Other Entries -') . ' </dd>';
       $servers_help .= '<dd>' . t('AuthName Attribute -') . ' </dd>';
       $servers_help .= '<dd>' . t('AccountName Attribute -') . ' </dd>';
@@ -934,8 +934,8 @@ function ldap_servers_help($path, $arg) {
       $servers_help .= '<dd>' . t('Persistant and Unique User ID Attribute -') . ' </dd>';
       $servers_help .= '<dd>' . t('Does PUID hold a binary value? -') . ' </dd>';
       $servers_help .= '<dd>' . t('Expression for User DN -') . ' </dd>';
-      $servers_help .= '<dd>' . t('PHP to Transform Drupal Login Username to LDAP UserName Attribute -') . ' </dd>';
-      $servers_help .= '<dd>' . t('Testing Drupal Username -') . ' </dd>';
+      $servers_help .= '<dd>' . t('PHP to Transform Backdrop Login Username to LDAP UserName Attribute -') . ' </dd>';
+      $servers_help .= '<dd>' . t('Testing Backdrop Username -') . ' </dd>';
       $servers_help .= '<dd>' . t('DN of Testing Username -') . ' </dd>';
       $servers_help .= '</dl>';
       return $servers_help;
@@ -952,7 +952,7 @@ function ldap_servers_help($path, $arg) {
  */
 function ldap_servers_ldap_servers_types() {
 
-  $path = drupal_get_path('module', 'ldap_servers') . '/ldap_types';
+  $path = backdrop_get_path('module', 'ldap_servers') . '/ldap_types';
 
   $types['default'] = [
     'class' => t('LdapTypeDefault'),
@@ -984,7 +984,7 @@ function ldap_servers_ldap_servers_types() {
     'name' => 'Apple Open Directory',
   ];
 
-  drupal_alter('ldap_servers_ldap_types', $types);
+  backdrop_alter('ldap_servers_ldap_types', $types);
   return $types;
 
 }
@@ -1023,11 +1023,11 @@ function ldap_servers_get_first_rdn_value_from_dn($dn, $rdn) {
   // Escapes attribute values, need to be unescaped later.
   $pairs = ldap_explode_dn($dn, 0);
   $count = array_shift($pairs);
-  $rdn = drupal_strtolower($rdn);
+  $rdn = backdrop_strtolower($rdn);
   $rdn_value = FALSE;
   foreach ($pairs as $p) {
     $pair = explode('=', $p);
-    if (drupal_strtolower(trim($pair[0])) == $rdn) {
+    if (backdrop_strtolower(trim($pair[0])) == $rdn) {
       $rdn_value = ldap_pear_unescape_dn_value(trim($pair[1]));
       break;
     }
@@ -1049,11 +1049,11 @@ function ldap_servers_get_all_rdn_values_from_dn($dn, $rdn) {
   // Escapes attribute values, need to be unescaped later.
   $pairs = ldap_explode_dn($dn, 0);
   $count = array_shift($pairs);
-  $rdn = drupal_strtolower($rdn);
+  $rdn = backdrop_strtolower($rdn);
   $rdn_values = [];
   foreach ($pairs as $p) {
     $pair = explode('=', $p);
-    if (drupal_strtolower(trim($pair[0])) == $rdn) {
+    if (backdrop_strtolower(trim($pair[0])) == $rdn) {
       $rdn_values[] = ldap_pear_unescape_dn_value(trim($pair[1]));
     }
   }
@@ -1119,7 +1119,7 @@ function ldap_servers_no_enabled_servers_msg($action) {
     $message = t('At least one ldap server must configured and <em>enabled</em> before') .
       $action . '. ' . t('Please go to') . ' ' . l('admin/config/people/ldap/servers', 'admin/config/people/ldap/servers') . ' to configure an LDAP server';
 
-    drupal_set_message($message, 'warning');
+    backdrop_set_message($message, 'warning');
     return $message;
   }
 }

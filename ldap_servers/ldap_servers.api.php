@@ -9,14 +9,14 @@
  * Allows other modules to periodically affect an ldap associated user
  * or its corresponding ldap entry.
  *
- * When cron runs a batch of ldap associated drupal accounts
- * will be looked at and marked as tested.  over the course
+ * When cron runs a batch of ldap associated backdrop accounts
+ * will be looked at and marked as tested. Over the course
  * of time all ldap related users will be looked at.
  *
  * Each module implementing this hook is responsible for
- * altering ldap entries and drupal user objects; simply
+ * altering ldap entries and backdrop user objects; simply
  * altering the variables will have no affect on the actual
- * ldap entry or drupal user
+ * ldap entry or backdrop user
  */
 function hook_ldap_servers_user_cron(&$users) {
 
@@ -56,14 +56,14 @@ function hook_ldap_servers_user_cron_needed() {
  *   with the following key/values:
  *   'action' => add|modify|delete
  *
- *   'corresponding_drupal_data' => if ldap entries have corresponding drupal objects, such
- *     as ldap user entries and drupal user objects; ldap groups and drupal roles; etc
+ *   'corresponding_backdrop_data' => if ldap entries have corresponding backdrop objects, such
+ *     as ldap user entries and backdrop user objects; ldap groups and backdrop roles; etc
  *     this will be array keyed on lowercase dn with values of objects, e.g. :
  *     [
- *      'cn=jkool,ou=guest accounts,dc=ad,dc=myuniversity,dc=edu' => drupal user object1,
- *      'cn=jfun,ou=guest accounts,dc=ad,dc=myuniversity,dc=edu  => drupal user object2,
+ *      'cn=jkool,ou=guest accounts,dc=ad,dc=myuniversity,dc=edu' => backdrop user object1,
+ *      'cn=jfun,ou=guest accounts,dc=ad,dc=myuniversity,dc=edu  => backdrop user object2,
  *     ]
- *    'corresponding_drupal_data_type' => 'user', 'role', etc.
+ *    'corresponding_backdrop_data_type' => 'user', 'role', etc.
  */
 function hook_ldap_entry_pre_provision_alter(&$ldap_entries, $ldap_server, $context) {
 
@@ -100,7 +100,7 @@ function hook_ldap_entry_post_provision(&$ldap_entries, $ldap_server, $context) 
  *
  * @param array $params
  *   context array with some or all of the following key/values
- *   'sid' => drupal account object,
+ *   'sid' => backdrop account object,
  *   'ldap_context' => ,
  *   'direction' =>.
  */
@@ -139,7 +139,7 @@ function hook_ldap_attributes_needed_alter(&$attributes, $params) {
  *   see README.developers.txt for structure.
  * @param array $params
  *   context array with some or all of the following key/values
- *   'account' => drupal account object,
+ *   'account' => backdrop account object,
  *   'ldap_context' => ,
  *   'module' =>  module calling alter, e.g. 'ldap_user',
  *   'function' => function calling alter, e.g. 'provisionLdapEntry'.
@@ -159,21 +159,21 @@ function hook_ldap_server_search_results_alter(&$entries, $ldap_query_params) {
 }
 
 /**
- * Allows other modules to transform the Drupal login username to an LDAP
+ * Allows other modules to transform the Backdrop login username to an LDAP
  * UserName attribute.
  * Invoked in LdapServer::userUsernameToLdapNameTransform()
  *
  * @param $ldap_username
  *   The ldap username that will be used for the AuthName attribute
- * @param $drupal_username
- *   The Drupal user name
+ * @param $backdrop_username
+ *   The Backdrop user name
  * @param $context
  *   An array of additional contextual information
  *   - ldap_server: The LDAP server that is invoking the hook
  */
-function hook_user_ldap_servers_username_to_ldapname_alter(&$ldap_username, $drupal_username, $context) {
+function hook_user_ldap_servers_username_to_ldapname_alter(&$ldap_username, $backdrop_username, $context) {
   // Alter the name only if it has not been altered already, ie php eval code.
-  if ($ldap_username == $drupal_username) {
+  if ($ldap_username == $backdrop_username) {
     $authname = ldap_user_get_authname($ldap_username);
     if (!empty($authname)) {
       $ldap_username = $authname;

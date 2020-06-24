@@ -54,14 +54,14 @@ function drush_ldap_servers_set_password($ldap_sid = NULL) {
     // Retrieves the password from the --password option set in the drush command.
     $ldap_server->bindpw = drush_get_option('password');
     if (!isset($ldap_server->bindpw)) {
-      return drupal_set_message(dt('No password was provided for @ldap_sid. A password has not been set.', ['@ldap_sid' => $ldap_sid]));
+      return backdrop_set_message(dt('No password was provided for @ldap_sid. A password has not been set.', ['@ldap_sid' => $ldap_sid]));
     }
     // Save the server configuration with the password.
     $ldap_server->save('edit');
     // Notify of success.
-    return drupal_set_message(dt('Password for @ldap_sid has been set.', ['@ldap_sid' => $ldap_sid]));
+    return backdrop_set_message(dt('Password for @ldap_sid has been set.', ['@ldap_sid' => $ldap_sid]));
   }
   // Provided server ID does not match any of the existing server IDs.
-  return drush_set_error(dt('@ldap_sid does not match the server ID of any configured servers.  Use the "Machine name for this server configuration." found on the edit screen for that server.',
+  return drush_set_error(dt('@ldap_sid does not match the server ID of any configured servers. Use the "Machine name for this server configuration." found on the edit screen for that server.',
     ['@ldap_sid' => $ldap_sid]));
 }

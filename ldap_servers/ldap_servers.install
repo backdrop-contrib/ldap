@@ -47,12 +47,11 @@ function ldap_servers_requirements($phase) {
     $requirements['ldap_servers']['title'] = t('LDAP Integration LDAP Auth to LDAP Servers Upgrade Concern');
     $requirements['ldap_servers']['severity'] = REQUIREMENT_WARNING;
     $requirements['ldap_servers']['value'] = NULL;
-    $requirements['ldap_servers']['description'] = t('Upgrade from Drupal 6 LDAP Auth to Drupal 7
-      LDAP Servers is not automatic.  LDAP Servers will need to be configured by hand.
-      See http://drupal.org/node/1023016. This message will go away when the ldapauth database table is removed.');
+    $requirements['ldap_servers']['description'] = t('LDAP Servers will need to be configured by hand.
+      This message will go away when the ldapauth database table is removed.');
   }
   // Check that ldapauth not installed.
-  // Check enabled LDAP servers are configured and Drupal can connect to them.
+  // Check enabled LDAP servers are configured and Backdrop can connect to them.
   if ($phase == 'runtime') {
     $requirements['ldap_servers_enabled'] = [
       'title' => $t('LDAP Server status'),

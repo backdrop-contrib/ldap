@@ -156,7 +156,7 @@ class LdapServersTestCase extends LdapTestCase {
     $ldap_module_uninstall_sequence = ['ldap_authentication', 'ldap_test', 'ldap_user', 'ldap_group', 'ldap_servers'];
     // Disable dependent modules.
     module_disable($ldap_module_uninstall_sequence);
-    drupal_uninstall_modules($ldap_module_uninstall_sequence);
+    backdrop_uninstall_modules($ldap_module_uninstall_sequence);
     module_enable($modules, TRUE);
     foreach ($install_tables as $table) {
       $this->assertTrue(db_table_exists($table), $table . ' table creates', $group);
@@ -164,21 +164,21 @@ class LdapServersTestCase extends LdapTestCase {
     $var_created = $this->assertTrue(TRUE, 'ldap_servers_encryption variable initialized', $group);
     $key = $config->get('ldap_servers_encrypt_key');
     if ($key === NULL) {
-      $key = drupal_get_hash_salt();
+      $key = backdrop_get_hash_salt();
     }
     $var_created = $this->assertTrue($key, 'ldap_servers_encrypt_key variable initialized', $group);
 
     // Disable dependent modules.
     module_disable($modules, TRUE);
     // Unistall dependent modules.
-    drupal_uninstall_modules($modules, TRUE);
+    backdrop_uninstall_modules($modules, TRUE);
     foreach ($install_tables as $table) {
       $this->assertFalse(db_table_exists($table), $table . ' table removed', $group);
     }
     $var_created = $this->assertFalse($config->get('ldap_servers_encryption'), 'ldap_servers_encryption variable removed', $group);
     $var_created = $this->assertFalse($config->get('ldap_servers_encrypt_key'), 'ldap_servers_encrypt_key variable removed', $group);
 
-    // Test tokens, see http://drupal.org/node/1245736
+    // Test tokens, see https://drupal.org/node/1245736
     $ldap_entry = [
       'dn' => 'cn=hpotter,ou=people,dc=hogwarts,dc=edu',
       'mail' => [0 => 'hpotter@hogwarts.edu', 'count' => 1],
@@ -249,16 +249,16 @@ class LdapServersTestCase extends LdapTestCase {
       $ldap_simpletest_initial = $config->get('ldap_servers_simpletest');
       // Need to be out of fake server mode to test ui.
       config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
-      $this->privileged_user = $this->drupalCreateUser([
+      $this->privileged_user = $this->backdropCreateUser([
         'administer site configuration',
         'access administration pages',
         'administer modules',
         'flush caches',
       ]);
-      $this->drupalLogin($this->privileged_user);
+      $this->backdropLogin($this->privileged_user);
       module_enable(['ldap_servers'], TRUE);
       // Clear cache, otherwise the config pages is not present.
-      $this->drupalPost('admin/config/development/performance', array(), t('Clear all caches'));
+      $this->backdropPost('admin/config/development/performance', array(), t('Clear all caches'));
 
       $sid = 'server1';
       $server_data = [];
@@ -280,10 +280,10 @@ class LdapServersTestCase extends LdapTestCase {
         'unique_persistent_attr' => ['dn', 'uniqueregistryid'],
         'unique_persistent_attr_binary' => [1, 1, 1, 1],
         'user_dn_expression' => ['cn=%cn,%basedn', 'cn=%username,%basedn'],
-        'ldap_to_drupal_user' => ['code', 'different code'],
+        'ldap_to_backdrop_user' => ['code', 'different code'],
 
-        'testing_drupal_username' => ['hpotter', 'hpotter'],
-        'testing_drupal_user_dn' => ['cn=hpotter,ou=people,dc=hogwarts,dc=edu', 'cn=hpotter,ou=people,dc=hogwarts,dc=edu'],
+        'testing_backdrop_username' => ['hpotter', 'hpotter'],
+        'testing_backdrop_user_dn' => ['cn=hpotter,ou=people,dc=hogwarts,dc=edu', 'cn=hpotter,ou=people,dc=hogwarts,dc=edu'],
 
         'grp_unused' => [FALSE, FALSE],
         'grp_object_cat' => ['group', 'group'],
@@ -314,17 +314,17 @@ class LdapServersTestCase extends LdapTestCase {
       ];
 
       if (!module_exists('php')) {
-        unset($server_data[$sid]['ldap_to_drupal_user']);
+        unset($server_data[$sid]['ldap_to_backdrop_user']);
       }
 
       /** add server conf test **/
-      $this->drupalGet('admin/config/people/ldap/servers/add');
+      $this->backdropGet('admin/config/people/ldap/servers/add');
 
       $edit = [];
       foreach ($server_data['server1'] as $input_name => $input_values) {
         $edit[$input_name] = $input_values[0];
       }
-      $this->drupalPost('admin/config/people/ldap/servers/add', $edit, t('Add'));
+      $this->backdropPost('admin/config/people/ldap/servers/add', $edit, t('Add'));
       $field_to_prop_map = LdapServer::field_to_properties_map();
       $field_to_prop_map['bindpw'] = 'bindpw';
       $ldap_servers = ldap_servers_get_servers(NULL, 'all', FALSE, TRUE);
@@ -343,7 +343,7 @@ class LdapServersTestCase extends LdapTestCase {
 
       /** update server conf test **/
 
-      $this->drupalGet('admin/config/people/ldap/servers/edit/server1');
+      $this->backdropGet('admin/config/people/ldap/servers/edit/server1');
 
       $edit = [];
       foreach ($server_data['server1'] as $input_name => $input_values) {
@@ -353,7 +353,7 @@ class LdapServersTestCase extends LdapTestCase {
       }
 
       unset($edit['sid']);
-      $this->drupalPost('admin/config/people/ldap/servers/edit/server1', $edit, t('Update'));
+      $this->backdropPost('admin/config/people/ldap/servers/edit/server1', $edit, t('Update'));
       $ldap_servers = ldap_servers_get_servers(NULL, 'all', FALSE, TRUE);
       $this->assertTrue(count(array_keys($ldap_servers)) == 1, 'Update form for ldap server didnt delete or add another server.', $this->ldapTestId . '.Update Server');
       // Assert confirmation message without error
@@ -366,8 +366,8 @@ class LdapServersTestCase extends LdapTestCase {
       $this->assertTrue(count($mismatches) == 0, 'Update form for ldap server properties match values submitted.', $this->ldapTestId . '.Update Server');
 
       /** delete server conf test **/
-      $this->drupalGet('admin/config/people/ldap/servers/delete/server1');
-      $this->drupalPost('admin/config/people/ldap/servers/delete/server1', [], t('Delete'));
+      $this->backdropGet('admin/config/people/ldap/servers/delete/server1');
+      $this->backdropPost('admin/config/people/ldap/servers/delete/server1', [], t('Delete'));
 
       $ldap_servers = ldap_servers_get_servers(NULL, 'all', FALSE, TRUE);
 
@@ -393,12 +393,12 @@ class LdapServersTestCase extends LdapTestCase {
 
     $mismatches = [];
     foreach ($data as $field_id => $values) {
-      $field_id = drupal_strtolower($field_id);
+      $field_id = backdrop_strtolower($field_id);
       if (!isset($map[$field_id])) {
         continue;
       }
       $property = $map[$field_id];
-      if (!property_exists($object, $property) && !property_exists($object, drupal_strtolower($property))) {
+      if (!property_exists($object, $property) && !property_exists($object, backdrop_strtolower($property))) {
         continue;
       }
       $property_value = $object->{$property};
@@ -417,7 +417,7 @@ class LdapServersTestCase extends LdapTestCase {
       }
       else {
         if (in_array($field_id, $lcase_transformed) && is_scalar($field_value)) {
-          $field_value = drupal_strtolower($field_value);
+          $field_value = backdrop_strtolower($field_value);
         }
         $property_value_show = (is_scalar($property_value)) ? $property_value : serialize($property_value);
         $field_value_show = (is_scalar($field_value)) ? $field_value : serialize($field_value);

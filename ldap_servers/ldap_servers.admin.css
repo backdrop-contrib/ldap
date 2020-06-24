@@ -1,7 +1,7 @@
 
 
 /* Used in /admin/config/people/ldap/user. */
-table.ldap-provision-todrupal input.convert, table.ldap-provision-toldap input.convert {
+table.ldap-provision-tobackdrop input.convert, table.ldap-provision-toldap input.convert {
   background-image: url('/themes/seven/images/list-item.png');
   background-repeat: no-repeat;
 }

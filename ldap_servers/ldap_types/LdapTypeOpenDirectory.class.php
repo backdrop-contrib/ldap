@@ -5,13 +5,13 @@
  * Active Directory LDAP Implementation Details.
  */
 
-require_once drupal_get_path('module', 'ldap_servers') . '/ldap_types/LdapTypeAbstract.class.php';
+require_once backdrop_get_path('module', 'ldap_servers') . '/ldap_types/LdapTypeAbstract.class.php';
 /**
  *
  */
 class LdapTypeOpenDirectory extends LdapTypeAbstract {
 
-  public $documentation = 'http://help.apple.com/advancedserveradmin/mac/10.7/#apdBF94D320-3293-41E0-B7DA-123F857C4032';
+  public $documentation = 'https://help.apple.com/advancedserveradmin/mac/10.7/#apdBF94D320-3293-41E0-B7DA-123F857C4032';
   public $name = 'Apple Open Directory LDAP';
   public $typeId = 'OpenDirectory';
   public $description = 'Apple Open Directory LDAP';

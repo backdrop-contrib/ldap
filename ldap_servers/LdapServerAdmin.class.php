@@ -34,7 +34,7 @@ class LdapServerAdmin extends LdapServer {
           ->execute();
       }
       catch (Exception $e) {
-        drupal_set_message(t('server index query failed. Message = %message, query= %query',
+        backdrop_set_message(t('server index query failed. Message = %message, query= %query',
           ['%message' => $e->getMessage(), '%query' => $e->query_string]), 'error');
         return [];
       }
@@ -56,7 +56,7 @@ class LdapServerAdmin extends LdapServer {
   /**
    *
    */
-  protected function populateFromDrupalForm($op, $values) {
+  protected function populateFromBackdropForm($op, $values) {
     $this->inDatabase = ($op == 'edit');
     $this->sid = trim($values['sid']);
     $this->name = trim($values['name']);
@@ -73,29 +73,29 @@ class LdapServerAdmin extends LdapServer {
     }
     $this->user_dn_expression = trim($values['user_dn_expression']);
     $this->basedn = $this->linesToArray(trim($values['basedn']));
-    $this->user_attr = drupal_strtolower(trim($values['user_attr']));
-    $this->picture_attr = drupal_strtolower(trim($values['picture_attr']));
-    $this->account_name_attr = drupal_strtolower(trim($values['account_name_attr']));
-    $this->mail_attr = drupal_strtolower(trim($values['mail_attr']));
+    $this->user_attr = backdrop_strtolower(trim($values['user_attr']));
+    $this->picture_attr = backdrop_strtolower(trim($values['picture_attr']));
+    $this->account_name_attr = backdrop_strtolower(trim($values['account_name_attr']));
+    $this->mail_attr = backdrop_strtolower(trim($values['mail_attr']));
     $this->mail_template = trim($values['mail_template']);
-    $this->unique_persistent_attr = drupal_strtolower(trim($values['unique_persistent_attr']));
+    $this->unique_persistent_attr = backdrop_strtolower(trim($values['unique_persistent_attr']));
     $this->unique_persistent_attr_binary = trim($values['unique_persistent_attr_binary']);
-    $this->ldapToDrupalUserPhp = $values['ldap_to_drupal_user'];
-    $this->testingDrupalUsername = trim($values['testing_drupal_username']);
-    $this->testingDrupalUserDn = trim($values['testing_drupal_user_dn']);
+    $this->ldapToBackdropUserPhp = $values['ldap_to_backdrop_user'];
+    $this->testingBackdropUsername = trim($values['testing_backdrop_username']);
+    $this->testingBackdropUserDn = trim($values['testing_backdrop_user_dn']);
     $this->groupFunctionalityUnused = $values['grp_unused'];
-    $this->groupObjectClass = drupal_strtolower(trim($values['grp_object_cat']));
+    $this->groupObjectClass = backdrop_strtolower(trim($values['grp_object_cat']));
     $this->groupNested = trim($values['grp_nested']);
 
     $this->groupUserMembershipsAttrExists = trim($values['grp_user_memb_attr_exists']);
-    $this->groupUserMembershipsAttr = drupal_strtolower(trim($values['grp_user_memb_attr']));
+    $this->groupUserMembershipsAttr = backdrop_strtolower(trim($values['grp_user_memb_attr']));
 
-    $this->groupMembershipsAttr = drupal_strtolower(trim($values['grp_memb_attr']));
+    $this->groupMembershipsAttr = backdrop_strtolower(trim($values['grp_memb_attr']));
 
-    $this->groupMembershipsAttrMatchingUserAttr = drupal_strtolower(trim($values['grp_memb_attr_match_user_attr']));
+    $this->groupMembershipsAttrMatchingUserAttr = backdrop_strtolower(trim($values['grp_memb_attr_match_user_attr']));
 
     $this->groupDeriveFromDn = trim($values['grp_derive_from_dn']);
-    $this->groupDeriveFromDnAttr = drupal_strtolower(trim($values['grp_derive_from_dn_attr']));
+    $this->groupDeriveFromDnAttr = backdrop_strtolower(trim($values['grp_derive_from_dn_attr']));
     $this->groupTestGroupDn = trim($values['grp_test_grp_dn']);
     $this->groupTestGroupDnWriteable = trim($values['grp_test_grp_dn_writeable']);
 
@@ -113,7 +113,7 @@ class LdapServerAdmin extends LdapServer {
     $values = new stdClass();
 
     foreach ($this->field_to_properties_map() as $field_name => $property_name) {
-      $field_name_lcase = drupal_strtolower($field_name);
+      $field_name_lcase = backdrop_strtolower($field_name);
       $values->{$field_name_lcase} = $this->{$property_name};
     }
     if (isset($this->bindpw) && $this->bindpw) {
@@ -135,7 +135,7 @@ class LdapServerAdmin extends LdapServer {
       $object = ctools_export_crud_new('ldap_servers');
 
       foreach ($object as $property => $value) {
-        $property_lcase = drupal_strtolower($property);
+        $property_lcase = backdrop_strtolower($property);
         if (!isset($values->$property) || !isset($values->$property_lcase)) {
           $values->$property_lcase = $value;
         }
@@ -158,10 +158,10 @@ class LdapServerAdmin extends LdapServer {
     else {
       unset($values->numeric_sid);
       if ($op == 'add') {
-        $result = drupal_write_record('ldap_servers', $values);
+        $result = backdrop_write_record('ldap_servers', $values);
       }
       else {
-        $result = drupal_write_record('ldap_servers', $values, 'sid');
+        $result = backdrop_write_record('ldap_servers', $values, 'sid');
       }
       ldap_servers_cache_clear();
 
@@ -171,7 +171,7 @@ class LdapServerAdmin extends LdapServer {
       $this->inDatabase = TRUE;
     }
     else {
-      drupal_set_message(t('Failed to write LDAP Server to the database.'));
+      backdrop_set_message(t('Failed to write LDAP Server to the database.'));
     }
   }
 
@@ -220,7 +220,7 @@ class LdapServerAdmin extends LdapServer {
   /**
    *
    */
-  public function drupalForm($op) {
+  public function backdropForm($op) {
 
     $form['server'] = [
       '#type' => 'fieldset',
@@ -232,15 +232,15 @@ class LdapServerAdmin extends LdapServer {
     $form['bind_method'] = [
       '#type' => 'fieldset',
       '#title' => t('Binding Method'),
-      '#description' => t('How the Drupal system is authenticated by the LDAP server.'),
+      '#description' => t('How the Backdrop system is authenticated by the LDAP server.'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
     ];
 
     $form['users'] = [
       '#type' => 'fieldset',
-      '#title' => t('LDAP User to Drupal User Relationship'),
-      '#description' => t('How are LDAP user entries found based on Drupal username or email?  And vice-versa?
+      '#title' => t('LDAP User to Backdrop User Relationship'),
+      '#description' => t('How are LDAP user entries found based on Backdrop username or email? And vice-versa?
        Needed for LDAP Authentication and Authorization functionality.'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
@@ -267,7 +267,7 @@ class LdapServerAdmin extends LdapServer {
       you can use page through 1000 records at a time;
       without pagination you would never see more than the first 1000 entries.
       Pagination is most useful when large queries for batch creating or
-      synching accounts are used.  If you are not using this server for such
+      synching accounts are used. If you are not using this server for such
       tasks, its recommended to leave pagination disabled.') . '</p>',
       '#collapsible' => TRUE,
       '#collapsed' => !ldap_servers_php_supports_pagination(),
@@ -301,7 +301,7 @@ class LdapServerAdmin extends LdapServer {
 
     if (!function_exists('ldap_set_rebind_proc')) {
       $form['server']['followrefs']['#disabled'] = TRUE;
-      $form['server']['followrefs']['#description'] = t('This functionality is disabled because the function ldap_set_rebind_proc can not be found on this server.  Perhaps your version of php does not have this function.  See php.net/manual/en/function.ldap-set-rebind-proc.php') . $form['server']['followrefs']['#description'];
+      $form['server']['followrefs']['#description'] = t('This functionality is disabled because the function ldap_set_rebind_proc can not be found on this server. Perhaps your version of php does not have this function. See php.net/manual/en/function.ldap-set-rebind-proc.php') . $form['server']['followrefs']['#description'];
     }
 
     $form['server']['tls']['#required'] = FALSE;
@@ -311,8 +311,8 @@ class LdapServerAdmin extends LdapServer {
 
     if ($this->bindpw) {
       $pwd_directions = t('You currently have a password stored in the database.
-      Leave password field empty to leave password unchanged.  Enter a new password
-      to replace the current password.  Check the checkbox below to simply
+      Leave password field empty to leave password unchanged. Enter a new password
+      to replace the current password. Check the checkbox below to simply
       remove it from the database.');
       $pwd_class = 'ldap-pwd-present';
     }
@@ -341,7 +341,7 @@ class LdapServerAdmin extends LdapServer {
   /**
    *
    */
-  public function drupalFormValidate($op, $values) {
+  public function backdropFormValidate($op, $values) {
     $errors = [];
 
     if ($op == 'delete') {
@@ -355,7 +355,7 @@ class LdapServerAdmin extends LdapServer {
 
     }
     else {
-      $this->populateFromDrupalForm($op, $values);
+      $this->populateFromBackdropForm($op, $values);
       $errors = $this->validate($op);
     }
     return $errors;
@@ -397,7 +397,7 @@ class LdapServerAdmin extends LdapServer {
     }
 
     if ($this->mail_attr && $this->mail_template) {
-      $errors['mail_attr'] = t('Mail attribute or Mail Template may be used.  Not both.');
+      $errors['mail_attr'] = t('Mail attribute or Mail Template may be used. Not both.');
     }
 
     if ($this->bind_method == LDAP_SERVERS_BIND_METHOD_SERVICE_ACCT && !$this->binddn) {
@@ -417,7 +417,7 @@ class LdapServerAdmin extends LdapServer {
   /**
    *
    */
-  public function drupalFormWarnings($op, $values, $has_errors = NULL) {
+  public function backdropFormWarnings($op, $values, $has_errors = NULL) {
     $errors = [];
 
     if ($op == 'delete') {
@@ -426,7 +426,7 @@ class LdapServerAdmin extends LdapServer {
       }
     }
     else {
-      $this->populateFromDrupalForm($op, $values);
+      $this->populateFromBackdropForm($op, $values);
       $warnings = $this->warnings($op, $has_errors);
     }
     return $warnings;
@@ -442,13 +442,13 @@ class LdapServerAdmin extends LdapServer {
       $defaults = ldap_servers_ldaps_option_array();
       if (isset($defaults['user']['user_attr']) && ($this->user_attr != $defaults['user']['user_attr'])) {
         $tokens = ['%name' => $defaults['name'], '%default' => $defaults['user']['user_attr'], '%user_attr' => $this->user_attr];
-        $warnings['user_attr'] = t('The standard UserName attribute in %name is %default.  You have %user_attr. This may be correct
+        $warnings['user_attr'] = t('The standard UserName attribute in %name is %default. You have %user_attr. This may be correct
           for your particular LDAP.', $tokens);
       }
 
       if (isset($defaults['user']['mail_attr']) && $this->mail_attr && ($this->mail_attr != $defaults['user']['mail_attr'])) {
         $tokens = ['%name' => $defaults['name'], '%default' => $defaults['user']['mail_attr'], '%mail_attr' => $this->mail_attr];
-        $warnings['mail_attr'] = t('The standard mail attribute in %name is %default.  You have %mail_attr.  This may be correct
+        $warnings['mail_attr'] = t('The standard mail attribute in %name is %default. You have %mail_attr. This may be correct
           for your particular LDAP.', $tokens);
       }
     }
@@ -462,9 +462,9 @@ class LdapServerAdmin extends LdapServer {
   /**
    *
    */
-  public function drupalFormSubmit($op, $values) {
+  public function backdropFormSubmit($op, $values) {
 
-    $this->populateFromDrupalForm($op, $values);
+    $this->populateFromBackdropForm($op, $values);
 
     if ($values['clear_bindpw']) {
       $this->bindpw_clear = TRUE;
@@ -480,7 +480,7 @@ class LdapServerAdmin extends LdapServer {
       }
       catch (Exception $e) {
         $this->setError('Save Error',
-        t('Failed to save object.  Your form data was not saved.'));
+        t('Failed to save object. Your form data was not saved.'));
       }
     }
   }
@@ -524,7 +524,7 @@ class LdapServerAdmin extends LdapServer {
 
     /**
      * consumer_type is tag (unique alphanumeric id) of consuming authorization such as
-     *   drupal_roles, og_groups, civicrm_memberships
+     *   backdrop_roles, og_groups, civicrm_memberships
      */
     $fields = [
 
@@ -549,7 +549,7 @@ class LdapServerAdmin extends LdapServer {
           'type' => 'serial',
           'unsigned' => TRUE,
           'not null' => TRUE,
-          'description' => 'Primary ID field for the table.  Only used internally.',
+          'description' => 'Primary ID field for the table. Only used internally.',
           'no export' => TRUE,
         ],
       ],
@@ -591,7 +591,7 @@ class LdapServerAdmin extends LdapServer {
           '#type' => 'select',
           '#options' => ldap_servers_ldaps_option_array(),
           '#title' => t('LDAP Server Type'),
-          '#description' => t('This field is informative.  It\'s purpose is to assist with default values and give validation warnings.'),
+          '#description' => t('This field is informative. It\'s purpose is to assist with default values and give validation warnings.'),
         ],
         'schema' => [
           'type' => 'varchar',
@@ -636,7 +636,7 @@ class LdapServerAdmin extends LdapServer {
           'fieldset' => 'server',
           '#type' => 'checkbox',
           '#title' => t('Use Start-TLS'),
-          '#description' => t('Secure the connection between the Drupal and the LDAP servers using TLS.<br /><em>Note: To use START-TLS, you must set the LDAP Port to 389.</em>'),
+          '#description' => t('Secure the connection between the Backdrop and the LDAP servers using TLS.<br /><em>Note: To use START-TLS, you must set the LDAP Port to 389.</em>'),
         ],
         'schema' => [
           'type' => 'int',
@@ -668,11 +668,11 @@ class LdapServerAdmin extends LdapServer {
           '#title' => t('Binding Method for Searches (such as finding user object or their group memberships)'),
           '#options' => [
             LDAP_SERVERS_BIND_METHOD_SERVICE_ACCT => t('Service Account Bind: Use credentials in the
-            <strong>Service Account</strong> field to bind to LDAP.  <em>This option is usually a best practice.</em>'),
+            <strong>Service Account</strong> field to bind to LDAP. <em>This option is usually a best practice.</em>'),
 
             LDAP_SERVERS_BIND_METHOD_USER => t('Bind with Users Credentials: Use user\'s entered credentials
             to bind to LDAP.<br/> This is only useful for modules that execute during user logon such
-            as LDAP Authentication and LDAP Authorization.  <em>This option is not a best practice in most cases.</em>
+            as LDAP Authentication and LDAP Authorization. <em>This option is not a best practice in most cases.</em>
             This option skips the initial anonymous bind and anonymous search to determine the LDAP user DN, but you
             can only use this option if your user DNs follow a consistent pattern, for example all of them being of
             the form "cn=[username],[base dn]", or all of them being of the form "uid=[username],ou=accounts,[base dn]".
@@ -748,7 +748,7 @@ class LdapServerAdmin extends LdapServer {
         'form' => [
           'fieldset' => 'bind_method',
           '#type' => 'checkbox',
-          '#title' => t('Clear existing password from database.  Check this when switching away from Service Account Binding.'),
+          '#title' => t('Clear existing password from database. Check this when switching away from Service Account Binding.'),
           '#default_value' => 0,
         ],
       ],
@@ -762,7 +762,7 @@ class LdapServerAdmin extends LdapServer {
           '#title' => t('Base DNs for LDAP users, groups, and other entries.'),
           '#description' => '<div>' . t('What DNs have entries relavant to this configuration?
             e.g. <code>ou=campus accounts,dc=ad,dc=uiuc,dc=edu</code>
-            Keep in mind that every additional basedn likely doubles the number of queries.  Place the
+            Keep in mind that every additional basedn likely doubles the number of queries. Place the
             more heavily used one first and consider using one higher base DN rather than 2 or more lower base DNs.
             Enter one per line in case if you need more than one.') . '</div>',
         ],
@@ -828,7 +828,7 @@ class LdapServerAdmin extends LdapServer {
             enter an email "template" here.
             Templates should have the user\'s attribute name in form such as [cn], [uin], etc.
             such as <code>[cn]@mycompany.com</code>.
-            See http://drupal.org/node/997082 for additional documentation on ldap tokens.
+            See https://backdropcms.org/project/ldap#tokens for additional documentation on ldap tokens.
             '),
         ],
         'schema' => [
@@ -862,7 +862,7 @@ class LdapServerAdmin extends LdapServer {
           '#description' => t('In some LDAPs, a user\'s DN, CN, or mail value may
             change when a user\'s name changes or for other reasons.
             In order to avoid creation of multiple accounts for that user or other ambiguities,
-            enter a unique and persistent ldap attribute for users.  In cases
+            enter a unique and persistent ldap attribute for users. In cases
             where DN does not change, enter "dn" here.
             If no such attribute exists, leave this blank.'
           ),
@@ -911,15 +911,15 @@ class LdapServerAdmin extends LdapServer {
         ],
       ],
 
-      'ldap_to_drupal_user' => [
+      'ldap_to_backdrop_user' => [
         'form' => [
           'fieldset' => 'users',
           '#disabled' => (!module_exists('php')),
           '#type' => 'textarea',
           '#cols' => 25,
           '#rows' => 5,
-          '#title' => t('PHP to transform Drupal login username to LDAP UserName attribute.'),
-          '#description' => t('This will appear as disabled unless the "PHP filter" core module is enabled. Enter PHP to transform Drupal username to the value of the UserName attribute.
+          '#title' => t('PHP to transform Backdrop login username to LDAP UserName attribute.'),
+          '#description' => t('This will appear as disabled unless the "PHP filter" core module is enabled. Enter PHP to transform Backdrop username to the value of the UserName attribute.
             The code should print the UserName attribute.
             PHP filter module must be enabled for this to work.
             The variable $name is available and is the user\'s login username.
@@ -934,13 +934,13 @@ class LdapServerAdmin extends LdapServer {
         ],
       ],
 
-      'testing_drupal_username' => [
+      'testing_backdrop_username' => [
         'form' => [
           'fieldset' => 'users',
           '#type' => 'textfield',
           '#size' => 30,
-          '#title' => t('Testing Drupal Username'),
-          '#description' => t('This is optional and used for testing this server\'s configuration against an actual username.  The user need not exist in Drupal and testing will not affect the user\'s LDAP or Drupal Account.'),
+          '#title' => t('Testing Backdrop Username'),
+          '#description' => t('This is optional and used for testing this server\'s configuration against an actual username. The user need not exist in Backdrop and testing will not affect the user\'s LDAP or Backdrop Account.'),
         ],
         'schema' => [
           'type' => 'varchar',
@@ -949,13 +949,13 @@ class LdapServerAdmin extends LdapServer {
         ],
       ],
 
-      'testing_drupal_user_dn' => [
+      'testing_backdrop_user_dn' => [
         'form' => [
           'fieldset' => 'users',
           '#type' => 'textfield',
           '#size' => 120,
           '#title' => t('DN of testing username, e.g. cn=hpotter,ou=people,dc=hogwarts,dc=edu'),
-          '#description' => t('This is optional and used for testing this server\'s configuration against an actual username.  The user need not exist in Drupal and testing will not affect the user\'s LDAP or Drupal Account.'),
+          '#description' => t('This is optional and used for testing this server\'s configuration against an actual username. The user need not exist in Backdrop and testing will not affect the user\'s LDAP or Backdrop Account.'),
         ],
         'schema' => [
           'type' => 'varchar',
@@ -968,7 +968,7 @@ class LdapServerAdmin extends LdapServer {
         'form' => [
           'fieldset' => 'groups',
           '#type' => 'checkbox',
-          '#title' => t('Groups are not relevant to this Drupal site.  This is generally true if LDAP Groups, LDAP Authorization, etc are not it use.'),
+          '#title' => t('Groups are not relevant to this Backdrop site. This is generally true if LDAP Groups, LDAP Authorization, etc are not it use.'),
           '#disabled' => FALSE,
         ],
         'schema' => [
@@ -1006,7 +1006,7 @@ class LdapServerAdmin extends LdapServer {
           '#title' => t('Nested groups are used in my LDAP'),
           '#disabled' => FALSE,
           '#description' => t('If a user is a member of group A and group A is a member of group B,
-             user should be considered to be in group A and B.  If your LDAP has nested groups, but you
+             user should be considered to be in group A and B. If your LDAP has nested groups, but you
              want to ignore nesting, leave this unchecked.'),
           '#states' => [
             'visible' => [
@@ -1092,7 +1092,7 @@ class LdapServerAdmin extends LdapServer {
           '#type' => 'textfield',
           '#size' => 30,
           '#title' => t('User attribute held in "LDAP Group Entry Attribute Holding..."'),
-          '#description' => t('This is almost always "dn" (which technically isn\'t an attribute).  Sometimes its "cn".'),
+          '#description' => t('This is almost always "dn" (which technically isn\'t an attribute). Sometimes its "cn".'),
           '#states' => [
             'visible' => [
               ':input[name=grp_unused]' => ['checked' => FALSE],
@@ -1110,10 +1110,10 @@ class LdapServerAdmin extends LdapServer {
         'form' => [
           'fieldset' => 'groups',
           '#type' => 'checkbox',
-          '#title' => t('Groups are derived from user\'s LDAP entry DN.') . '<em>' .
+          '#title' => t('Groups are derived from user\'s LDAP entry DN.') . ' <em>' .
           t('This
             group definition has very limited functionality and most modules will
-            not take this into account.  LDAP Authorization will.') . '</em>',
+            not take this into account. LDAP Authorization will.') . '</em>',
           '#disabled' => FALSE,
           '#states' => [
             'visible' => [
@@ -1177,7 +1177,7 @@ class LdapServerAdmin extends LdapServer {
           'fieldset' => 'groups',
           '#type' => 'textfield',
           '#size' => 120,
-          '#title' => t('Testing LDAP Group DN that is writable.  WARNING the test script for the server will create, delete, and add members to this group!'),
+          '#title' => t('Testing LDAP Group DN that is writable. WARNING the test script for the server will create, delete, and add members to this group!'),
           '#description' => t('This is optional and can be useful for debugging and validating forms.'),
           '#states' => [
             'visible' => [

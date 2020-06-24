@@ -9,9 +9,9 @@
  * @param string $attr_name
  *   such 'field_user_lname', 'name', 'mail', 'dn'.
  * @param string $attr_type
- *   such as 'field', 'property', etc.  NULL for ldap attributes.
+ *   such as 'field', 'property', etc. NULL for ldap attributes.
  * @param string $attr_ordinal
- *   0, 1, 2, etc.  not used in general.
+ *   0, 1, 2, etc. not used in general.
  *
  * @return string such as 'field.field_user_lname', 'samaccountname', etc.
  */
@@ -65,7 +65,7 @@ function ldap_servers_parse_user_attr_name($user_attr_key) {
  * @param $resource
  *   $ldap_entry
  * @param $text
- *   such as "[dn]", "[cn]@my.org", "[displayName] [sn]", "Drupal Provisioned"
+ *   such as "[dn]", "[cn]@my.org", "[displayName] [sn]", "Backdrop Provisioned"
  * @param string $resource_type
  *
  * @return string|string[]|null
@@ -77,7 +77,7 @@ function ldap_servers_token_replace($resource, $text, $resource_type = 'ldap_ent
   $desired_tokens = ldap_servers_token_tokens_needed_for_template($text);
 
   if (empty($desired_tokens)) {
-    // If no tokens exist in text, return text itself.  It is literal value.
+    // If no tokens exist in text, return text itself. It is literal value.
     return $text;
   }
 
@@ -96,13 +96,13 @@ function ldap_servers_token_replace($resource, $text, $resource_type = 'ldap_ent
 
   // Add lowercase tokens to avoid case sensitivity.
   foreach ($tokens as $attribute => $value) {
-    $tokens[drupal_strtolower($attribute)] = $value;
+    $tokens[backdrop_strtolower($attribute)] = $value;
   }
 
   // If $text is not present as an attribute key, insert it and set the key's value to an empty string.
-  if (!array_key_exists(drupal_strtolower($text), $tokens)) {
+  if (!array_key_exists(backdrop_strtolower($text), $tokens)) {
     $tokens[$text] = '';
-    $tokens[drupal_strtolower($text)] = '';
+    $tokens[backdrop_strtolower($text)] = '';
   }
 
   // Array of attributes (sn, givenname, etc)
@@ -238,7 +238,7 @@ function ldap_servers_token_tokenize_entry($ldap_entry, $token_keys = 'all', $pr
 
   // Add lowercase keyed entries to ldap array.
   foreach ($ldap_entry as $key => $values) {
-    $ldap_entry[drupal_strtolower($key)] = $values;
+    $ldap_entry[backdrop_strtolower($key)] = $values;
   }
 
   // 1. tokenize dn
@@ -324,7 +324,7 @@ function ldap_servers_token_tokenize_entry($ldap_entry, $token_keys = 'all', $pr
       }
 
       $parts = explode(LDAP_SERVERS_TOKEN_DEL, $token_key);
-      $attr_name = drupal_strtolower($parts[0]);
+      $attr_name = backdrop_strtolower($parts[0]);
       $ordinal_key = isset($parts[1]) ? $parts[1] : 0;
       $i = NULL;
 
@@ -369,20 +369,20 @@ function ldap_servers_token_tokenize_entry($ldap_entry, $token_keys = 'all', $pr
       }
 
       $tokens[$pre . $full_token_key . $post] = $value;
-      if ($full_token_key != drupal_strtolower($full_token_key)) {
-        $tokens[$pre . drupal_strtolower($full_token_key) . $post] = $value;
+      if ($full_token_key != backdrop_strtolower($full_token_key)) {
+        $tokens[$pre . backdrop_strtolower($full_token_key) . $post] = $value;
       }
     }
   }
 
-  // Include the dn.  it will not be handled correctly by previous loops.
+  // Include the dn. It will not be handled correctly by previous loops.
   $tokens[$pre . 'dn' . $post] = check_plain($ldap_entry['dn']);
   return $tokens;
 }
 
 /**
  *
- * @param drupal user object $user_account
+ * @param backdrop user object $user_account
  * @param array or 'all' $token_keys
  *   'all' signifies return
  *   all token/value pairs available; otherwise array lists
@@ -408,14 +408,14 @@ function ldap_servers_token_tokenize_user_account($user_account, $token_keys = '
     foreach ((array) $user_account as $property_name => $value) {
       if (is_scalar($value) && $property_name != 'password') {
         $token_keys[] = 'property.' . $property_name;
-        if (drupal_strtolower($property_name) != $property_name) {
-          $token_keys[] = 'property.' . drupal_strtolower($property_name);
+        if (backdrop_strtolower($property_name) != $property_name) {
+          $token_keys[] = 'property.' . backdrop_strtolower($property_name);
         }
       }
       elseif (isset($user_account->{$attr_name}[LANGUAGE_NONE][0]['value']) && is_scalar($user_account->{$attr_name}[LANGUAGE_NONE][0]['value'])) {
         $token_keys[] = 'field.' . $property_name;
-        if (drupal_strtolower($property_name) != $property_name) {
-          $token_keys[] = 'field.' . drupal_strtolower($property_name);
+        if (backdrop_strtolower($property_name) != $property_name) {
+          $token_keys[] = 'field.' . backdrop_strtolower($property_name);
         }
       }
       else {
@@ -484,13 +484,13 @@ function ldap_servers_token_tokenize_user_account($user_account, $token_keys = '
           break;
 
         case 'to-lowercase':
-          $value = drupal_strtolower($value);
+          $value = backdrop_strtolower($value);
           break;
       }
 
       $tokens[$pre . $token_key . $post] = ($attr_type == 'password') ? $value : check_plain($value);
-      if ($token_key != drupal_strtolower($token_key)) {
-        $tokens[$pre . drupal_strtolower($token_key) . $post] = ($attr_type == 'password') ? $value : check_plain($value);
+      if ($token_key != backdrop_strtolower($token_key)) {
+        $tokens[$pre . backdrop_strtolower($token_key) . $post] = ($attr_type == 'password') ? $value : check_plain($value);
       }
     }
   }
@@ -519,7 +519,7 @@ function ldap_servers_token_tokens_needed_for_template($template, $pre = LDAP_SE
 function ldap_servers_token_show_sample_user_tokens($sid) {
 
   $ldap_server = ldap_servers_get_servers($sid, 'all', TRUE);
-  $test_username = $ldap_server->testingDrupalUsername;
+  $test_username = $ldap_server->testingBackdropUsername;
   if (!$test_username || !(
     $ldap_server->bind_method == LDAP_SERVERS_BIND_METHOD_SERVICE_ACCT ||
     $ldap_server->bind_method == LDAP_SERVERS_BIND_METHOD_ANON

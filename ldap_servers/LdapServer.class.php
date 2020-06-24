@@ -86,9 +86,9 @@ class LdapServer {
    */
   public $unique_persistent_attr;
   public $unique_persistent_attr_binary = FALSE;
-  public $ldapToDrupalUserPhp;
-  public $testingDrupalUsername;
-  public $testingDrupalUserDn;
+  public $ldapToBackdropUserPhp;
+  public $testingBackdropUsername;
+  public $testingBackdropUserDn;
   public $detailed_watchdog_log;
   public $editPath;
 
@@ -198,9 +198,9 @@ class LdapServer {
       'picture_attr'  => 'picture_attr',
       'unique_persistent_attr' => 'unique_persistent_attr',
       'unique_persistent_attr_binary' => 'unique_persistent_attr_binary',
-      'ldap_to_drupal_user'  => 'ldapToDrupalUserPhp',
-      'testing_drupal_username'  => 'testingDrupalUsername',
-      'testing_drupal_user_dn'  => 'testingDrupalUserDn',
+      'ldap_to_backdrop_user'  => 'ldapToBackdropUserPhp',
+      'testing_backdrop_username'  => 'testingBackdropUsername',
+      'testing_backdrop_user_dn'  => 'testingBackdropUserDn',
 
       'grp_unused' => 'groupFunctionalityUnused',
       'grp_object_cat' => 'groupObjectClass',
@@ -432,7 +432,7 @@ class LdapServer {
         ldap_set_rebind_proc($this->connection, [$rebHandler, 'rebind_callback']);
       }
 
-      if (drupal_strlen($pass) == 0 || drupal_strlen($userdn) == 0) {
+      if (backdrop_strlen($pass) == 0 || backdrop_strlen($userdn) == 0) {
         watchdog('ldap_servers', "LDAP bind failure for user userdn=%userdn, pass=%pass.", ['%userdn' => $userdn, '%pass' => $pass]);
         return LDAP_LOCAL_ERROR;
       }
@@ -529,7 +529,7 @@ class LdapServer {
    *
    * @param array $attributes
    *   should follow the structure of ldap_add functions
-   *   entry array: http://us.php.net/manual/en/function.ldap-add.php
+   *   entry array: https://us.php.net/manual/en/function.ldap-add.php
    *     $attributes["attribute1"] = "value";
    *     $attributes["attribute2"][0] = "value1";
    *     $attributes["attribute2"][1] = "value2";.
@@ -587,7 +587,7 @@ class LdapServer {
     foreach ($new_entry as $key => $new_val) {
       $old_value = FALSE;
       $old_value_is_scalar = FALSE;
-      $key_lcase = drupal_strtolower($key);
+      $key_lcase = backdrop_strtolower($key);
       if (isset($old_entry[$key_lcase])) {
         if ($old_entry[$key_lcase]['count'] == 1) {
           $old_value = $old_entry[$key_lcase][0];
@@ -604,7 +604,7 @@ class LdapServer {
       if (is_array($new_val) && is_array($old_value) && count(array_diff($new_val, $old_value)) == 0) {
         unset($new_entry[$key]);
       }
-      elseif ($old_value_is_scalar && !is_array($new_val) && drupal_strtolower($old_value) == drupal_strtolower($new_val)) {
+      elseif ($old_value_is_scalar && !is_array($new_val) && backdrop_strtolower($old_value) == backdrop_strtolower($new_val)) {
         // don't change values that aren't changing to avoid false permission constraints.
         unset($new_entry[$key]);
       }
@@ -620,7 +620,7 @@ class LdapServer {
    *   DN of entry.
    * @param array $attributes
    *   should follow the structure of ldap_add functions
-   *   entry array: http://us.php.net/manual/en/function.ldap-add.php
+   *   entry array: https://us.php.net/manual/en/function.ldap-add.php
    *     $attributes["attribute1"] = "value";
    *     $attributes["attribute2"][0] = "value1";
    *     $attributes["attribute2"][1] = "value2";.
@@ -654,7 +654,7 @@ class LdapServer {
 
     foreach ($attributes as $key => $cur_val) {
       $old_value = FALSE;
-      $key_lcase = drupal_strtolower($key);
+      $key_lcase = backdrop_strtolower($key);
       if (isset($old_attributes[$key_lcase])) {
         if ($old_attributes[$key_lcase]['count'] == 1) {
           $old_value = $old_attributes[$key_lcase][0];
@@ -728,7 +728,7 @@ class LdapServer {
    * Perform an LDAP search on all base dns and aggregate into one result.
    *
    * @param string $filter
-   *   The search filter. such as sAMAccountName=jbarclay.  attribute values (e.g. jbarclay) should be esacaped before calling.
+   *   The search filter. such as sAMAccountName=jbarclay. attribute values (e.g. jbarclay) should be esacaped before calling.
    *
    * @param array $attributes
    *   List of desired attributes. If omitted, we only return "dn".
@@ -780,7 +780,7 @@ class LdapServer {
    * @param string $basedn
    *   The search base. If NULL, we use $this->basedn. should not be esacaped.
    * @param string $filter
-   *   The search filter. such as sAMAccountName=jbarclay.  attribute values
+   *   The search filter. such as sAMAccountName=jbarclay. attribute values
    *   (e.g. jbarclay) should be esacaped before calling.
    *
    * @param array $attributes
@@ -804,9 +804,9 @@ class LdapServer {
 
     /**
       * pagingation issues:
-      * -- see documentation queue: http://markmail.org/message/52w24iae3g43ikix#query:+page:1+mid:bez5vpl6smgzmymy+state:results
+      * -- see documentation queue: https://markmail.org/message/52w24iae3g43ikix#query:+page:1+mid:bez5vpl6smgzmymy+state:results
       * -- wait for php 5.4? https://svn.php.net/repository/php/php-src/tags/php_5_4_0RC6/NEWS (ldap_control_paged_result
-      * -- http://sgehrig.wordpress.com/2009/11/06/reading-paged-ldap-results-with-php-is-a-show-stopper/
+      * -- https://sgehrig.wordpress.com/2009/11/06/reading-paged-ldap-results-with-php-is-a-show-stopper/
       */
 
     if ($base_dn == NULL) {
@@ -861,7 +861,7 @@ class LdapServer {
       $result = $this->ldapQuery($scope, $ldap_query_params);
       if ($result && ($this->countEntries($result) !== FALSE)) {
         $entries = ldap_get_entries($this->connection, $result);
-        drupal_alter('ldap_server_search_results', $entries, $ldap_query_params);
+        backdrop_alter('ldap_server_search_results', $entries, $ldap_query_params);
         return (is_array($entries)) ? $entries : FALSE;
       }
       elseif ($this->ldapErrorNumber()) {
@@ -914,7 +914,7 @@ class LdapServer {
         '%errno' => $this->ldapErrorNumber(),
       ];
       watchdog('ldap_servers', "LDAP server pagedLdapQuery() called when functionality not available in php install or
-        not enabled in ldap server configuration.  error. basedn: %basedn| filter: %filter| attributes:
+        not enabled in ldap server configuration. error. basedn: %basedn| filter: %filter| attributes:
          %attributes| errmsg: %errmsg| ldap err no: %errno|", $watchdog_tokens);
       return FALSE;
     }
@@ -960,7 +960,7 @@ class LdapServer {
       }
       @ldap_control_paged_result_response($this->connection, $result, $page_token, $estimated_entries);
       if ($ldap_query_params['sizelimit'] && $this->ldapErrorNumber() == LDAP_SIZELIMIT_EXCEEDED) {
-        // False positive error thrown.  do not set result limit error when $sizelimit specified.
+        // False positive error thrown. do not set result limit error when $sizelimit specified.
       }
       elseif ($this->hasError()) {
         watchdog('ldap_servers', 'ldap_control_paged_result_response() function error. LDAP Error: %message, ldap_list() parameters: %query',
@@ -1005,7 +1005,7 @@ class LdapServer {
         $result = @ldap_search($this->connection, $params['base_dn'], $params['filter'], $params['attributes'], $params['attrsonly'],
           $params['sizelimit'], $params['timelimit'], $params['deref']);
         if ($params['sizelimit'] && $this->ldapErrorNumber() == LDAP_SIZELIMIT_EXCEEDED) {
-          // False positive error thrown.  do not return result limit error when $sizelimit specified.
+          // False positive error thrown. do not return result limit error when $sizelimit specified.
         }
         elseif ($this->hasError()) {
           watchdog('ldap_servers', 'ldap_search() function error. LDAP Error: %message, ldap_search() parameters: %query',
@@ -1018,10 +1018,10 @@ class LdapServer {
         $result = @ldap_read($this->connection, $params['base_dn'], $params['filter'], $params['attributes'], $params['attrsonly'],
           $params['sizelimit'], $params['timelimit'], $params['deref']);
         if ($params['sizelimit'] && $this->ldapErrorNumber() == LDAP_SIZELIMIT_EXCEEDED) {
-          // False positive error thrown.  do not result limit error when $sizelimit specified.
+          // False positive error thrown. do not result limit error when $sizelimit specified.
         }
         elseif ($this->hasError()) {
-          watchdog('ldap_servers', 'ldap_read() function error.  LDAP Error: %message, ldap_read() parameters: %query',
+          watchdog('ldap_servers', 'ldap_read() function error. LDAP Error: %message, ldap_read() parameters: %query',
             ['%message' => $this->errorMsg('ldap'), '%query' => @$params['query_display']],
             WATCHDOG_ERROR);
         }
@@ -1031,7 +1031,7 @@ class LdapServer {
         $result = @ldap_list($this->connection, $params['base_dn'], $params['filter'], $params['attributes'], $params['attrsonly'],
           $params['sizelimit'], $params['timelimit'], $params['deref']);
         if ($params['sizelimit'] && $this->ldapErrorNumber() == LDAP_SIZELIMIT_EXCEEDED) {
-          // False positive error thrown.  do not result limit error when $sizelimit specified.
+          // False positive error thrown. do not result limit error when $sizelimit specified.
         }
         elseif ($this->hasError()) {
           watchdog('ldap_servers', 'ldap_list() function error. LDAP Error: %message, ldap_list() parameters: %query',
@@ -1092,18 +1092,18 @@ class LdapServer {
   }
 
   /**
-   * @param $drupal_username
+   * @param $backdrop_username
    * @param $watchdog_tokens
    *
    * @return string
    */
-  public function userUsernameToLdapNameTransform($drupal_username, &$watchdog_tokens) {
-    if ($this->ldapToDrupalUserPhp && module_exists('php')) {
+  public function userUsernameToLdapNameTransform($backdrop_username, &$watchdog_tokens) {
+    if ($this->ldapToBackdropUserPhp && module_exists('php')) {
       global $name;
       $old_name_value = $name;
-      $name = $drupal_username;
-      $code = "<?php global \$name; \n" . $this->ldapToDrupalUserPhp . "; \n ?>";
-      $watchdog_tokens['%code'] = $this->ldapToDrupalUserPhp;
+      $name = $backdrop_username;
+      $code = "<?php global \$name; \n" . $this->ldapToBackdropUserPhp . "; \n ?>";
+      $watchdog_tokens['%code'] = $this->ldapToBackdropUserPhp;
       $code_result = php_eval($code);
       $watchdog_tokens['%code_result'] = $code_result;
       $ldap_username = $code_result;
@@ -1111,18 +1111,18 @@ class LdapServer {
       // Important because of global scope of $name.
       $name = $old_name_value;
       if ($this->detailedWatchdogLog) {
-        watchdog('ldap_servers', '%drupal_user_name tansformed to %ldap_username by applying code <code>%code</code>', $watchdog_tokens, WATCHDOG_DEBUG);
+        watchdog('ldap_servers', '%backdrop_user_name tansformed to %ldap_username by applying code <code>%code</code>', $watchdog_tokens, WATCHDOG_DEBUG);
       }
     }
     else {
-      $ldap_username = $drupal_username;
+      $ldap_username = $backdrop_username;
     }
 
     // Let other modules alter the ldap name.
     $context = [
       'ldap_server' => $this,
     ];
-    drupal_alter('ldap_servers_username_to_ldapname', $ldap_username, $drupal_username, $context);
+    backdrop_alter('ldap_servers_username_to_ldapname', $ldap_username, $backdrop_username, $context);
 
     return $ldap_username;
 
@@ -1197,10 +1197,10 @@ class LdapServer {
    * @param array $ldap_entry
    *
    * @return object|bool
-   *   Drupal file object image user's thumbnail or FALSE if none present or
+   *   Backdrop file object image user's thumbnail or FALSE if none present or
    *   ERROR happens.
    */
-  public function userPictureFromLdapEntry($ldap_entry, $drupal_username = FALSE) {
+  public function userPictureFromLdapEntry($ldap_entry, $backdrop_username = FALSE) {
     if ($ldap_entry && $this->picture_attr) {
       // Check if ldap entry has been provisioned.
       $image_data = isset($ldap_entry[$this->picture_attr][0]) ? $ldap_entry[$this->picture_attr][0] : FALSE;
@@ -1215,7 +1215,7 @@ class LdapServer {
        * so remove the old file and create the new one. If a picture is not set
        * but the account has an md5 hash, something is wrong and we exit.
        */
-      if ($drupal_username && $account = user_load_by_name($drupal_username)) {
+      if ($backdrop_username && $account = user_load_by_name($backdrop_username)) {
         if ($account->uid == 0 || $account->uid == 1) {
           return FALSE;
         }
@@ -1270,7 +1270,7 @@ class LdapServer {
     $picture_dimensions = empty($picture_dimensions) ? '85x85' : $picture_dimensions;
     $picture_file_size = $config->get('user_picture_file_size');
     $picture_file_size = empty($picture_file_size) ? 30 : $picture_file_size;
-    // Standard Drupal validators for user pictures.
+    // Standard Backdrop validators for user pictures.
     $validators = [
       'file_validate_is_image' => [],
       'file_validate_image_resolution' => [$picture_dimensions],
@@ -1315,10 +1315,10 @@ class LdapServer {
 
   /**
    * @param mixed $user
-   *   - drupal user object (stdClass Object)
+   *   - backdrop user object (stdClass Object)
    *    - ldap entry of user (array)
    *    - ldap dn of user (string)
-   *    - drupal username of user (string)
+   *    - backdrop username of user (string)
    *
    * @return array $ldap_user_entry (with top level keys of 'dn', 'mail', 'sid' and 'attr' )
    */
@@ -1352,7 +1352,7 @@ class LdapServer {
   /**
    * Queries LDAP server for the user.
    *
-   * @param string $drupal_user_name
+   * @param string $backdrop_user_name
    *
    * @param string or int $prov_event
    *   This could be anything, particularly when used by other modules.
@@ -1361,17 +1361,17 @@ class LdapServer {
    *   contexts/ops.
    *
    * @return array
-   *   representing ldap data of a user.  for example of returned value.
+   *   representing ldap data of a user. for example of returned value.
    *   'sid' => ldap server id
    *   'mail' => derived from ldap mail (not always populated).
    *   'dn'   => dn of user
    *   'attr' => single ldap entry array in form returned from ldap_search() extension, e.g.
    *   'dn' => dn of entry
    */
-  public function userUserNameToExistingLdapEntry($drupal_user_name, $ldap_context = NULL) {
+  public function userUserNameToExistingLdapEntry($backdrop_user_name, $ldap_context = NULL) {
 
-    $watchdog_tokens = ['%drupal_user_name' => $drupal_user_name];
-    $ldap_username = $this->userUsernameToLdapNameTransform($drupal_user_name, $watchdog_tokens);
+    $watchdog_tokens = ['%backdrop_user_name' => $backdrop_user_name];
+    $ldap_username = $this->userUsernameToLdapNameTransform($backdrop_user_name, $watchdog_tokens);
     if (!$ldap_username) {
       return FALSE;
     }
@@ -1404,14 +1404,14 @@ class LdapServer {
       // naughty server (i.e.: MS Active Directory) is messing the
       // characters' case.
       // This was contributed by Dan "Gribnif" Wilga, and described
-      // here: http://drupal.org/node/87833
+      // here: https://drupal.org/node/87833
       $name_attr = $this->user_attr;
 
       if (isset($match[$name_attr][0])) {
         // Leave name.
       }
-      elseif (isset($match[drupal_strtolower($name_attr)][0])) {
-        $name_attr = drupal_strtolower($name_attr);
+      elseif (isset($match[backdrop_strtolower($name_attr)][0])) {
+        $name_attr = backdrop_strtolower($name_attr);
 
       }
       else {
@@ -1432,13 +1432,13 @@ class LdapServer {
       // Finally, we must filter out results with spaces added before
       // or after, which are considered OK by LDAP but are no good for us
       // We allow lettercase independence, as requested by Marc Galera
-      // on http://drupal.org/node/97728
+      // on https://drupal.org/node/97728
       //
       // Some setups have multiple $name_attr per entry, as pointed out by
-      // Clarence "sparr" Risher on http://drupal.org/node/102008, so we
+      // Clarence "sparr" Risher on https://drupal.org/node/102008, so we
       // loop through all possible options.
       foreach ($match[$name_attr] as $value) {
-        if (drupal_strtolower(trim($value)) == drupal_strtolower($ldap_username)) {
+        if (backdrop_strtolower(trim($value)) == backdrop_strtolower($ldap_username)) {
           $result = [
             'dn' => $match['dn'],
             'mail' => $this->userEmailFromLdapEntry($match),
@@ -1457,10 +1457,10 @@ class LdapServer {
    * @param string $group_dn
    *   MIXED CASE.
    * @param mixed $user
-   *   - drupal user object (stdClass Object)
+   *   - backdrop user object (stdClass Object)
    *    - ldap entry of user (array)
    *    - ldap dn of user (array)
-   *    - drupal user name (string)
+   *    - backdrop user name (string)
    * @param enum $nested
    *   = NULL (default to server configuration), TRUE, or FALSE indicating to
    *   test for nested groups.
@@ -1473,7 +1473,7 @@ class LdapServer {
     $group_dns = $this->groupMembershipsFromUser($user, 'group_dns', $nested);
     // While list of group dns is going to be in correct mixed case, $group_dn may not since it may be derived from user entered values
     // so make sure in_array() is case insensitive.
-    return (is_array($group_dns) && in_array(drupal_strtolower($group_dn), $this->dnArrayToLowerCase($group_dns)));
+    return (is_array($group_dns) && in_array(backdrop_strtolower($group_dn), $this->dnArrayToLowerCase($group_dns)));
   }
 
   /**
@@ -1506,11 +1506,11 @@ class LdapServer {
      */
     $context = [
       'action' => 'add',
-      'corresponding_drupal_data' => [$group_dn => $attributes],
-      'corresponding_drupal_data_type' => 'group',
+      'corresponding_backdrop_data' => [$group_dn => $attributes],
+      'corresponding_backdrop_data_type' => 'group',
     ];
     $ldap_entries = [$group_dn => $attributes];
-    drupal_alter('ldap_entry_pre_provision', $ldap_entries, $this, $context);
+    backdrop_alter('ldap_entry_pre_provision', $ldap_entries, $this, $context);
     $attributes = $ldap_entries[$group_dn];
 
     /**
@@ -1565,11 +1565,11 @@ class LdapServer {
    * @param string $ldap_user_dn
    *   as ldap dn.
    * @param mixed $user
-   *   - drupal user object (stdClass Object)
+   *   - backdrop user object (stdClass Object)
    *    - ldap entry of user (array) (with top level keys of 'dn', 'mail',
    *   'sid' and 'attr' )
    *    - ldap dn of user (array)
-   *    - drupal username of user (string)
+   *    - backdrop username of user (string)
    *
    * @return bool
    */
@@ -1594,11 +1594,11 @@ class LdapServer {
    * @param string $group_dn
    *   as ldap dn.
    * @param mixed $user
-   *   - drupal user object (stdClass Object)
+   *   - backdrop user object (stdClass Object)
    *    - ldap entry of user (array) (with top level keys of 'dn', 'mail',
    *   'sid' and 'attr' )
    *    - ldap dn of user (array)
-   *    - drupal username of user (string)
+   *    - backdrop username of user (string)
    *
    * @return bool
    */
@@ -1662,12 +1662,12 @@ class LdapServer {
    * recurse through all child groups and add members.
    *
    * @param array $current_group_entries
-   *   of ldap group entries that are starting point.  should include at least
+   *   of ldap group entries that are starting point. should include at least
    *   1 entry.
    * @param array $all_group_dns
-   *   as array of all groups user is a member of.  MIXED CASE VALUES.
+   *   as array of all groups user is a member of. MIXED CASE VALUES.
    * @param array $tested_group_ids
-   *   as array of tested group dn, cn, uid, etc.  MIXED CASE VALUES
+   *   as array of tested group dn, cn, uid, etc. MIXED CASE VALUES
    *   whether these value are dn, cn, uid, etc depends on what attribute
    *   members, uniquemember, memberUid contains whatever attribute is in
    *   $this->$tested_group_ids to avoid redundant recursing.
@@ -1688,7 +1688,7 @@ class LdapServer {
     };
 
     foreach ($current_member_entries as $i => $member_entry) {
-      // 1.  Add entry itself if of the correct type to $all_member_dns.
+      // 1. Add entry itself if of the correct type to $all_member_dns.
       $objectClassMatch = (!$object_classes || (count(array_intersect(array_values($member_entry['objectclass']), $object_classes)) > 0));
       $objectIsGroup = in_array($this->groupObjectClass, array_values($member_entry['objectclass']));
       // Add member.
@@ -1745,17 +1745,17 @@ class LdapServer {
    * Get list of all groups that a user is a member of.
    *
    *    If $nested = TRUE,
-   *    list will include all parent group.  That is if user is a member of "programmer" group
+   *    list will include all parent group. That is if user is a member of "programmer" group
    *    and "programmer" group is a member of "it" group, user is a member of
    *    both "programmer" and "it" groups.
    *
    *    If $nested = FALSE, list will only include groups user is in directly.
    *
    * @param mixed
-   *   - drupal user object (stdClass Object)
+   *   - backdrop user object (stdClass Object)
    *    - ldap entry of user (array) (with top level keys of 'dn', 'mail', 'sid' and 'attr' )
    *    - ldap dn of user (array)
-   *    - drupal username of user (string)
+   *    - backdrop username of user (string)
    * @param mixed $return
    *   = 'group_dns'.
    * @param bool $nested
@@ -1796,17 +1796,17 @@ class LdapServer {
    *    then if nesting is true, using group entries to find parent groups.
    *
    *    If $nested = TRUE,
-   *    list will include all parent group.  That is if user is a member of "programmer" group
+   *    list will include all parent group. That is if user is a member of "programmer" group
    *    and "programmer" group is a member of "it" group, user is a member of
    *    both "programmer" and "it" groups.
    *
    *    If $nested = FALSE, list will only include groups user is in directly.
    *
    * @param mixed
-   *   - drupal user object (stdClass Object)
+   *   - backdrop user object (stdClass Object)
    *    - ldap entry of user (array) (with top level keys of 'dn', 'mail', 'sid' and 'attr' )
    *    - ldap dn of user (array)
-   *    - drupal username of user (string)
+   *    - backdrop username of user (string)
    * @param bool $nested
    *   if groups should be recursed or not.
    *
@@ -1822,12 +1822,12 @@ class LdapServer {
     }
 
     $not_user_ldap_entry = empty($user['attr'][$this->groupUserMembershipsAttr]);
-    // If drupal user passed in, try to get user_ldap_entry.
+    // If backdrop user passed in, try to get user_ldap_entry.
     if ($not_user_ldap_entry) {
       $user = $this->userUserToExistingLdapEntry($user);
       $not_user_ldap_entry = empty($user['attr'][$this->groupUserMembershipsAttr]);
       if ($not_user_ldap_entry) {
-        // user's membership attribute is not present.  either misconfigured or query failed.
+        // user's membership attribute is not present. either misconfigured or query failed.
         return FALSE;
       }
     }
@@ -1882,17 +1882,17 @@ class LdapServer {
    * Get list of all groups that a user is a member of by querying groups.
    *
    *    If $nested = TRUE,
-   *    list will include all parent group.  That is if user is a member of "programmer" group
+   *    list will include all parent group. That is if user is a member of "programmer" group
    *    and "programmer" group is a member of "it" group, user is a member of
    *    both "programmer" and "it" groups.
    *
    *    If $nested = FALSE, list will only include groups user is in directly.
    *
    * @param mixed
-   *   - drupal user object (stdClass Object)
+   *   - backdrop user object (stdClass Object)
    *    - ldap entry of user (array) (with top level keys of 'dn', 'mail', 'sid' and 'attr' )
    *    - ldap dn of user (array)
-   *    - drupal username of user (string)
+   *    - backdrop username of user (string)
    * @param bool $nested
    *   if groups should be recursed or not.
    *
@@ -1948,11 +1948,11 @@ class LdapServer {
    * Recurse through all groups, adding parent groups to $all_group_dns array.
    *
    * @param array $current_group_entries
-   *   of ldap group entries that are starting point.  should include at least 1 entry.
+   *   of ldap group entries that are starting point. should include at least 1 entry.
    * @param array $all_group_dns
-   *   as array of all groups user is a member of.  MIXED CASE VALUES.
+   *   as array of all groups user is a member of. MIXED CASE VALUES.
    * @param array $tested_group_ids
-   *   as array of tested group dn, cn, uid, etc.  MIXED CASE VALUES
+   *   as array of tested group dn, cn, uid, etc. MIXED CASE VALUES
    *   whether these value are dn, cn, uid, etc depends on what attribute members, uniquemember, memberUid contains
    *   whatever attribute is in $this->$tested_group_ids to avoid redundant recursing.
    * @param int $level
@@ -1965,7 +1965,7 @@ class LdapServer {
    *
    *   (&(objectClass=[$this->groupObjectClass])(|([$this->groupMembershipsAttr]=groupid1)([$this->groupMembershipsAttr]=groupid2))
    *
-   * @return FALSE for error or misconfiguration, otherwise TRUE.  results are passed by reference.
+   * @return FALSE for error or misconfiguration, otherwise TRUE. results are passed by reference.
    */
   public function groupMembershipsFromEntryRecursive($current_group_entries, &$all_group_dns, &$tested_group_ids, $level, $max_levels) {
 
@@ -1995,7 +1995,7 @@ class LdapServer {
           // TODO is it always an array?
           if (is_array($goc)) {
             foreach ($goc as $g) {
-              $g = drupal_strtolower($g);
+              $g = backdrop_strtolower($g);
               if ($g == $this->groupObjectClass) {
                 // Found a group, current user must be member in it - so:
                 if ($this->detailed_watchdog_log) {
@@ -2041,13 +2041,13 @@ class LdapServer {
   }
 
   /**
-   * Get "groups" from derived from DN.  Has limited usefulness.
+   * Get "groups" from derived from DN. Has limited usefulness.
    *
    * @param mixed
-   *   - drupal user object (stdClass Object)
+   *   - backdrop user object (stdClass Object)
    *    - ldap entry of user (array) (with top level keys of 'dn', 'mail', 'sid' and 'attr' )
    *    - ldap dn of user (array)
-   *    - drupal username of user (string)
+   *    - backdrop username of user (string)
    *
    * @return array of group strings
    */

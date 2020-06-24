@@ -18,7 +18,7 @@ function ldap_servers_edit_index() {
  * LDAP servers list.
  *
  * @param $sid
- *   server id.  if empty list all servers
+ *   server id. if empty list all servers
  * @param $actions
  *   True or False indicating if server edit, delete, enable, disable, etc links should show
  *
@@ -54,7 +54,7 @@ function ldap_servers_servers_list($sid = NULL, $actions = FALSE) {
 function ldap_servers_admin_form($form, &$form_state, $op = NULL, $sid = NULL) {
   ldap_servers_module_load_include('php', 'ldap_servers', 'LdapServerAdmin.class');
   $server = new LdapServerAdmin($sid);
-  $form = $server->drupalForm($op);
+  $form = $server->backdropForm($op);
   return $form;
 }
 
@@ -63,17 +63,17 @@ function ldap_servers_admin_form($form, &$form_state, $op = NULL, $sid = NULL) {
  */
 function ldap_servers_admin_form_validate($form, &$form_state) {
 
-  $op = drupal_strtolower($form_state['clicked_button']['#value']);
+  $op = backdrop_strtolower($form_state['clicked_button']['#value']);
   ldap_servers_module_load_include('php', 'ldap_servers', 'LdapServerAdmin.class');
   $server = new LdapServerAdmin($form_state['values']['sid']);
 
-  $errors = $server->drupalFormValidate($op, $form_state['values']);
+  $errors = $server->backdropFormValidate($op, $form_state['values']);
   foreach ($errors as $error_name => $error_text) {
     form_set_error($error_name, t($error_text));
   }
-  $warnings = $server->drupalFormWarnings($op, $form_state['values'], (boolean) (count($errors) > 0));
+  $warnings = $server->backdropFormWarnings($op, $form_state['values'], (boolean) (count($errors) > 0));
   foreach ($warnings as $warning_name => $warning_text) {
-    drupal_set_message($warning_text, 'warning');
+    backdrop_set_message($warning_text, 'warning');
   }
 
   $form_state['ldap_warnings'] = (boolean) (count($warnings) > 0);
@@ -84,23 +84,23 @@ function ldap_servers_admin_form_validate($form, &$form_state) {
  * Submit hook for the LDAP server form.
  */
 function ldap_servers_admin_form_submit($form, &$form_state) {
-  $button = drupal_strtolower($form_state['clicked_button']['#value']);
+  $button = backdrop_strtolower($form_state['clicked_button']['#value']);
   $op = ($button == 'add') ? 'add' : 'edit';
   $verb = ($op == 'edit') ? 'edited' : $op . 'ed';
   ldap_servers_module_load_include('php', 'ldap_servers', 'LdapServerAdmin.class');
   $server = new LdapServerAdmin($form_state['values']['sid']);
   // Add form data to object and save or create.
-  $server->drupalFormSubmit($op, $form_state['values']);
+  $server->backdropFormSubmit($op, $form_state['values']);
 
   if ($server->hasError() == FALSE) {
-    drupal_set_message(t('LDAP Server %name !verb.', ['!verb' => $verb, '%name' => $server->name]), 'status');
+    backdrop_set_message(t('LDAP Server %name !verb.', ['!verb' => $verb, '%name' => $server->name]), 'status');
     ldap_servers_cache_clear();
     if ($form_state['ldap_warnings'] && $op != 'add') {
       // Do nothing, but don't redirect away from form.
       // if there are warnings, want them to see form even if its been saved.
     }
     else {
-      drupal_goto(LDAP_SERVERS_MENU_BASE_PATH . '/servers');
+      backdrop_goto(LDAP_SERVERS_MENU_BASE_PATH . '/servers');
     }
   }
   else {
@@ -142,8 +142,8 @@ function ldap_servers_admin_delete($form, &$form_state, $op = NULL, $sid = NULL)
 
     $warnings = module_invoke_all('ldap_server_in_use', $sid, $ldap_server->name);
     if (count($warnings)) {
-      drupal_set_message(join("<br/>", array_values($warnings)), 'error');
-      drupal_goto(LDAP_SERVERS_MENU_BASE_PATH . '/servers/list');
+      backdrop_set_message(join("<br/>", array_values($warnings)), 'error');
+      backdrop_goto(LDAP_SERVERS_MENU_BASE_PATH . '/servers/list');
     }
     else {
       return confirm_form(
@@ -157,7 +157,7 @@ function ldap_servers_admin_delete($form, &$form_state, $op = NULL, $sid = NULL)
       );
     }
   }
-  drupal_goto(LDAP_SERVERS_MENU_BASE_PATH . '/servers/list');
+  backdrop_goto(LDAP_SERVERS_MENU_BASE_PATH . '/servers/list');
 }
 
 /**
@@ -171,18 +171,18 @@ function ldap_servers_admin_delete_submit($form, &$form_state) {
   if ($values['confirm'] && $sid) {
     if ($result = $ldap_server->delete($sid)) {
       $tokens = ['%name' => $ldap_server->name, '!sid' => $sid];
-      drupal_set_message(t('LDAP Server %name (server id = !sid) has been deleted.', $tokens), 'status');
+      backdrop_set_message(t('LDAP Server %name (server id = !sid) has been deleted.', $tokens), 'status');
       watchdog('ldap_servers', 'LDAP Server deleted: %name (sid = !sid) ', $tokens);
     }
     else {
-      drupal_set_message(t('LDAP Server delete failed.'), 'warning');
+      backdrop_set_message(t('LDAP Server delete failed.'), 'warning');
     }
   }
   else {
-    drupal_set_message(t('LDAP Server delete cancelled.'), 'status');
+    backdrop_set_message(t('LDAP Server delete cancelled.'), 'status');
   }
   ldap_servers_cache_clear();
-  drupal_goto(LDAP_SERVERS_MENU_BASE_PATH . '/servers/list');
+  backdrop_goto(LDAP_SERVERS_MENU_BASE_PATH . '/servers/list');
 }
 
 /**
@@ -245,7 +245,7 @@ function ldap_servers_admin_enable_disable_submit($form, &$form_state) {
     $ldap_server->status = $status;
     $ldap_server->save('edit');
     $tokens = ['%name' => $values['name'], '!sid' => $sid, '!action' => t($values['action']) . 'd'];
-    drupal_set_message(t('LDAP Server Configuration %name (server id = !sid) has been !action.', $tokens));
+    backdrop_set_message(t('LDAP Server Configuration %name (server id = !sid) has been !action.', $tokens));
     $message = t('LDAP Server !action: %name (sid = !sid) ', $tokens);
     watchdog('ldap_servers', $message);
 

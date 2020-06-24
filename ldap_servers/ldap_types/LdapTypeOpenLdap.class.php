@@ -4,11 +4,11 @@
  * @file
  * OpenLDAP LDAP Implementation Details.
  *
- * See: http://www.zytrax.com/books/ldap/
- *      http://www.openldap.org/doc/
+ * See: https://www.zytrax.com/books/ldap/
+ *      https://www.openldap.org/doc/
  */
 
-require_once drupal_get_path('module', 'ldap_servers') . '/ldap_types/LdapTypeAbstract.class.php';
+require_once backdrop_get_path('module', 'ldap_servers') . '/ldap_types/LdapTypeAbstract.class.php';
 /**
  *
  */

@@ -4,7 +4,7 @@
  * @file
  * Active Directory LDAP Implementation Details.
  *
- * See http://msdn.microsoft.com/en-us/library/windows/desktop/ms675085(v=vs.85).aspx.
+ * See https://docs.microsoft.com/hu-hu/windows/win32/adschema/active-directory-schema.
  */
 
 module_load_include('php', 'ldap_servers', 'ldap_types/LdapTypeAbstract.class');
@@ -32,7 +32,7 @@ class LdapTypeActiveDirectory extends LdapTypeAbstract {
   /**
    * The following pairs all work in Active Directory,
    * but there is no assurance that any of them will survive
-   * domain merges and migrations.  Its best to pick a true user id
+   * domain merges and migrations. Its best to pick a true user id
    * such as a numeric one given to the user by the organization.
    *
    * UidNumber  - not binary
