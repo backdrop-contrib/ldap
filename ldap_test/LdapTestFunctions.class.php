@@ -64,7 +64,7 @@ class LdapTestFunctions {
    *
    */
   public function setFakeServerUserAttribute($sid, $dn, $attr_name, $attr_value, $i = 0) {
-    $attr_name = drupal_strtolower($attr_name);
+    $attr_name = backdrop_strtolower($attr_name);
     $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $sid);
       if ($test_data === NULL) {
         $test_data = [];
@@ -151,7 +151,7 @@ class LdapTestFunctions {
   /**
    *
    */
-  public function drupalLdapUpdateUser($edit = [], $ldap_authenticated = FALSE, $user) {
+  public function backdropLdapUpdateUser($edit = [], $ldap_authenticated = FALSE, $user) {
     if (count($edit)) {
       if (!empty($user->data)) {
         $edit['data'] = !empty($edit['data']) ? array_merge($user->data, $edit['data']) : $user->data;
@@ -168,7 +168,7 @@ class LdapTestFunctions {
   }
 
   /**
-   * From http://www.midwesternmac.com/blogs/jeff-geerling/programmatically-adding-roles.
+   * From https://www.midwesternmac.com/blogs/jeff-geerling/programmatically-adding-roles.
    */
   public function removeRoleFromUser($user, $role_name) {
 
@@ -419,7 +419,7 @@ class LdapTestFunctions {
    */
   public function getCsvLdapData($test_ldap_id) {
     foreach (['groups', 'users', 'memberships', 'conf'] as $type) {
-      $path = drupal_get_path('module', 'ldap_test') . '/test_ldap/' . $test_ldap_id . '/' . $type . '.csv';
+      $path = backdrop_get_path('module', 'ldap_test') . '/test_ldap/' . $test_ldap_id . '/' . $type . '.csv';
       $this->csvTables[$type] = $this->parseCsv($path);
     }
   }

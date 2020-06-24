@@ -13,17 +13,17 @@
 function ldap_test_ldap_user_data() {
 
   $conf['default'] = [
-    'drupalAcctProvisionServer' => 'activedirectory1',
+    'backdropAcctProvisionServer' => 'activedirectory1',
     'ldapEntryProvisionServer' => LDAP_USER_NO_SERVER_SID,
-    'drupalAcctProvisionTriggers' => [
-      LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE,
-      LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE,
+    'backdropAcctProvisionTriggers' => [
+      LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE,
+      LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE,
     ],
     'ldapEntryProvisionTriggers' => [],
     'userConflictResolve' => LDAP_USER_CONFLICT_LOG,
     'acctCreation'  => LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR,
     'ldapUserSynchMappings' => [
-      LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER => [],
+      LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER => [],
       LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => [],
     ],
     'orphanedCheckQty' => 50,
@@ -31,17 +31,17 @@ function ldap_test_ldap_user_data() {
   ];
 
   $conf['ad_authentication'] = [
-    'drupalAcctProvisionServer' => 'activedirectory1',
+    'backdropAcctProvisionServer' => 'activedirectory1',
     'ldapEntryProvisionServer' => LDAP_USER_NO_SERVER_SID,
-    'drupalAcctProvisionTriggers' => [
-      LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE,
-      LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE,
+    'backdropAcctProvisionTriggers' => [
+      LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE,
+      LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE,
     ],
     'ldapEntryProvisionTriggers' => [],
     'userConflictResolve' => LDAP_USER_CONFLICT_LOG,
     'acctCreation'  => LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR,
     'ldapUserSynchMappings' => [
-      LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER => [],
+      LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER => [],
       LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => [],
     ],
     'orphanedCheckQty' => 50,
@@ -49,48 +49,48 @@ function ldap_test_ldap_user_data() {
   ];
 
   $conf['ad_authorization'] = [
-    'drupalAcctProvisionServer' => 'ldapauthor1',
+    'backdropAcctProvisionServer' => 'ldapauthor1',
     'ldapEntryProvisionServer' => LDAP_USER_NO_SERVER_SID,
-    'drupalAcctProvisionTriggers' => [
-      LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE,
-      LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE,
+    'backdropAcctProvisionTriggers' => [
+      LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE,
+      LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE,
     ],
     'ldapEntryProvisionTriggers' => [],
     'userConflictResolve' => LDAP_USER_CONFLICT_LOG,
     'acctCreation'  => LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR,
 
     'ldapUserSynchMappings' => [
-      LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER => [],
+      LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER => [],
       LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => [],
     ],
     'orphanedCheckQty' => 50,
     'manualAccountConflict' => LDAP_USER_MANUAL_ACCT_CONFLICT_SHOW_OPTION_ON_FORM,
   ];
 
-  $conf['provisionToDrupal'] = [
-    'drupalAcctProvisionServer' => 'activedirectory1',
+  $conf['provisionToBackdrop'] = [
+    'backdropAcctProvisionServer' => 'activedirectory1',
     'ldapEntryProvisionServer' => LDAP_USER_NO_SERVER_SID,
-    'drupalAcctProvisionTriggers' => [
-      LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE,
-      LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE,
+    'backdropAcctProvisionTriggers' => [
+      LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE,
+      LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE,
     ],
     'ldapEntryProvisionTriggers' => [],
     'userConflictResolve' => LDAP_USER_CONFLICT_LOG,
     'acctCreation'  => LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR,
     'ldapUserSynchMappings' => [
-      LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER => [],
+      LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER => [],
       LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => [],
     ],
     'orphanedCheckQty' => 50,
     'manualAccountConflict' => LDAP_USER_MANUAL_ACCT_CONFLICT_SHOW_OPTION_ON_FORM,
   ];
 
-  $conf['provisionToDrupalWithMappings'] = [
-    'drupalAcctProvisionServer' => 'activedirectory1',
+  $conf['provisionToBackdropWithMappings'] = [
+    'backdropAcctProvisionServer' => 'activedirectory1',
     'ldapEntryProvisionServer' => LDAP_USER_NO_SERVER_SID,
-    'drupalAcctProvisionTriggers' => [
-      LDAP_USER_DRUPAL_USER_PROV_ON_USER_UPDATE_CREATE,
-      LDAP_USER_DRUPAL_USER_PROV_ON_AUTHENTICATE,
+    'backdropAcctProvisionTriggers' => [
+      LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE,
+      LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE,
     ],
     'ldapEntryProvisionTriggers' => [
       LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE,
@@ -98,7 +98,7 @@ function ldap_test_ldap_user_data() {
     'userConflictResolve' => LDAP_USER_CONFLICT_LOG,
     'acctCreation'  => LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR,
     'ldapUserSynchMappings' => [
-      LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER => [
+      LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER => [
         '[field.field_display_name]' => [
           'sid' => 'activedirectory1',
           'ldap_attr' => '[givenname] [sn]',
@@ -109,7 +109,7 @@ function ldap_test_ldap_user_data() {
           'config_module' => 'ldap_user',
           'synch_module' => 'ldap_user',
           'enabled' => 1,
-          'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+          'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         ],
         '[field.field_lname]' => [
           'sid' => 'activedirectory1',
@@ -121,7 +121,7 @@ function ldap_test_ldap_user_data() {
           'config_module' => 'ldap_user',
           'synch_module' => 'ldap_user',
           'enabled' => 1,
-          'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+          'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         ],
         '[field.field_fname]' => [
           'sid' => 'activedirectory1',
@@ -133,7 +133,7 @@ function ldap_test_ldap_user_data() {
           'config_module' => 'ldap_user',
           'synch_module' => 'ldap_user',
           'enabled' => 1,
-          'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+          'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         ],
         '[field.field_department]' => [
           'sid' => 'activedirectory1',
@@ -145,7 +145,7 @@ function ldap_test_ldap_user_data() {
           'config_module' => 'ldap_user',
           'synch_module' => 'ldap_user',
           'enabled' => 1,
-          'prov_events' => [LDAP_USER_EVENT_CREATE_DRUPAL_USER, LDAP_USER_EVENT_SYNCH_TO_DRUPAL_USER],
+          'prov_events' => [LDAP_USER_EVENT_CREATE_BACKDROP_USER, LDAP_USER_EVENT_SYNCH_TO_BACKDROP_USER],
         ],
       ],
       LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => [],
@@ -155,9 +155,9 @@ function ldap_test_ldap_user_data() {
   ];
 
   $conf['provisionToLdap_activedirectory1'] = [
-    'drupalAcctProvisionServer' => LDAP_USER_NO_SERVER_SID,
+    'backdropAcctProvisionServer' => LDAP_USER_NO_SERVER_SID,
     'ldapEntryProvisionServer' => 'activedirectory1',
-    'drupalAcctProvisionTriggers' => [],
+    'backdropAcctProvisionTriggers' => [],
     'ldapEntryProvisionTriggers' => [
       LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE,
       LDAP_USER_LDAP_ENTRY_DELETE_ON_USER_DELETE,
@@ -166,7 +166,7 @@ function ldap_test_ldap_user_data() {
     'acctCreation'  => LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR,
     'manualAccountConflict' => LDAP_USER_MANUAL_ACCT_CONFLICT_SHOW_OPTION_ON_FORM,
     'ldapUserSynchMappings' => [
-      LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER => [],
+      LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER => [],
       LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => [
         '[dn]' => [
           'sid' => 'activedirectory1',
@@ -257,7 +257,7 @@ function ldap_test_ldap_user_data() {
           'user_attr' => 'user_tokens',
           'convert' => 0,
           'direction' => LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY,
-          'user_tokens' => 'drupal.hogwarts.edu',
+          'user_tokens' => 'backdrop.hogwarts.edu',
           'config_module' => 'ldap_user',
           'synch_module' => 'ldap_user',
           'enabled' => 1,
@@ -268,9 +268,9 @@ function ldap_test_ldap_user_data() {
   ];
 
   $conf['provisionToLdap_openldap1'] = [
-    'drupalAcctProvisionServer' => LDAP_USER_NO_SERVER_SID,
+    'backdropAcctProvisionServer' => LDAP_USER_NO_SERVER_SID,
     'ldapEntryProvisionServer' => 'openldap1',
-    'drupalAcctProvisionTriggers' => [],
+    'backdropAcctProvisionTriggers' => [],
     'ldapEntryProvisionTriggers' => [
       LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE,
       LDAP_USER_LDAP_ENTRY_DELETE_ON_USER_DELETE,
@@ -279,7 +279,7 @@ function ldap_test_ldap_user_data() {
     'acctCreation'  => LDAP_USER_ACCT_CREATION_LDAP_BEHAVIOR,
     'manualAccountConflict' => LDAP_USER_MANUAL_ACCT_CONFLICT_SHOW_OPTION_ON_FORM,
     'ldapUserSynchMappings' => [
-      LDAP_USER_PROV_DIRECTION_TO_DRUPAL_USER => [],
+      LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER => [],
       LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY => [
         '[dn]' => [
           'sid' => 'openldap1',
@@ -358,7 +358,7 @@ function ldap_test_ldap_user_data() {
           'user_attr' => 'user_tokens',
           'convert' => 0,
           'direction' => LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY,
-          'user_tokens' => 'drupal.hogwarts.edu',
+          'user_tokens' => 'backdrop.hogwarts.edu',
           'config_module' => 'ldap_user',
           'synch_module' => 'ldap_user',
           'enabled' => 1,

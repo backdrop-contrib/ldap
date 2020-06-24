@@ -114,10 +114,10 @@ class LdapServerTest extends LdapServer {
     }
     else {
       if (!$pass) {
-        debug("Simpletest failure for $userdn.  No password submitted");
+        debug("Simpletest failure for $userdn. No password submitted");
       }
       if (!isset($this->entries[$userdn]['password'][0])) {
-        debug("Simpletest failure for $userdn.  No password in entry to test for bind"); debug($this->entries[$userdn]);
+        debug("Simpletest failure for $userdn. No password in entry to test for bind"); debug($this->entries[$userdn]);
       }
       $ldap_errno = LDAP_INVALID_CREDENTIALS;
       if (function_exists('ldap_err2str')) {
@@ -159,7 +159,7 @@ class LdapServerTest extends LdapServer {
 
     $lcase_attribute = [];
     foreach ($attributes as $i => $attribute_name) {
-      $lcase_attribute[] = drupal_strtolower($attribute_name);
+      $lcase_attribute[] = backdrop_strtolower($attribute_name);
     }
     $attributes = $lcase_attribute;
 
@@ -196,7 +196,7 @@ class LdapServerTest extends LdapServer {
      * Search CASE 2: attempt to programmatically evaluate ldap filter
      * by looping through fake ldap entries
      */
-    $base_dn = drupal_strtolower($base_dn);
+    $base_dn = backdrop_strtolower($base_dn);
     $filter = trim($filter, "()");
     $subqueries = [];
     $operand = FALSE;
@@ -245,10 +245,10 @@ class LdapServerTest extends LdapServer {
 
     if ($operand == '|') {
       foreach ($subqueries as $i => $subquery) {
-        $filter_attribute = drupal_strtolower($subquery[0]);
+        $filter_attribute = backdrop_strtolower($subquery[0]);
         $filter_value = $subquery[1];
         foreach ($this->entries as $dn => $entry) {
-          $dn_lcase = drupal_strtolower($dn);
+          $dn_lcase = backdrop_strtolower($dn);
 
           // If not in basedn, skip
           // eg. basedn ou=campus accounts,dc=ad,dc=myuniversity,dc=edu
@@ -264,12 +264,12 @@ class LdapServerTest extends LdapServer {
           // If doesn't filter attribute has no data, continue.
           $attr_value_to_compare = FALSE;
           foreach ($entry as $attr_name => $attr_value) {
-            if (drupal_strtolower($attr_name) == $filter_attribute) {
+            if (backdrop_strtolower($attr_name) == $filter_attribute) {
               $attr_value_to_compare = $attr_value;
               break;
             }
           }
-          if (!$attr_value_to_compare || drupal_strtolower($attr_value_to_compare[0]) != $filter_value) {
+          if (!$attr_value_to_compare || backdrop_strtolower($attr_value_to_compare[0]) != $filter_value) {
             continue;
           }
 
@@ -291,11 +291,11 @@ class LdapServerTest extends LdapServer {
     // Reverse the loops.
     elseif ($operand == '&') {
       foreach ($this->entries as $dn => $entry) {
-        $dn_lcase = drupal_strtolower($dn);
+        $dn_lcase = backdrop_strtolower($dn);
         // Until 1 subquery fails.
         $match = TRUE;
         foreach ($subqueries as $i => $subquery) {
-          $filter_attribute = drupal_strtolower($subquery[0]);
+          $filter_attribute = backdrop_strtolower($subquery[0]);
           $filter_value = $subquery[1];
 
           $substring = strrev(substr(strrev($dn_lcase), 0, strlen($base_dn)));
@@ -308,12 +308,12 @@ class LdapServerTest extends LdapServer {
           // If doesn't filter attribute has no data, continue.
           $attr_value_to_compare = FALSE;
           foreach ($entry as $attr_name => $attr_value) {
-            if (drupal_strtolower($attr_name) == $filter_attribute) {
+            if (backdrop_strtolower($attr_name) == $filter_attribute) {
               $attr_value_to_compare = $attr_value;
               break;
             }
           }
-          if (!$attr_value_to_compare || drupal_strtolower($attr_value_to_compare[0]) != $filter_value) {
+          if (!$attr_value_to_compare || backdrop_strtolower($attr_value_to_compare[0]) != $filter_value) {
             $match = FALSE;
             // Not in basedn.
             break;
@@ -402,7 +402,7 @@ class LdapServerTest extends LdapServer {
    *
    * @param array $ldap_entry
    *   should follow the structure of ldap_add functions
-   *   entry array: http://us.php.net/manual/en/function.ldap-add.php
+   *   entry array: https://us.php.net/manual/en/function.ldap-add.php
    *   $attributes["attribute1"] = "value";
    *   $attributes["attribute2"][0] = "value1";
    *   $attributes["attribute2"][1] = "value2";.

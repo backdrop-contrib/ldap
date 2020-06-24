@@ -109,11 +109,11 @@ function ldap_test_ldap_authorization_data() {
     ],
   ];
 
-  $conf['drupal_role_default']['drupal_role'] = [
+  $conf['backdrop_role_default']['backdrop_role'] = [
 
     'sid' => 'activedirectory1',
-    'consumerType' => 'drupal_role',
-    'consumerModule' => 'ldap_authorization_drupal_role',
+    'consumerType' => 'backdrop_role',
+    'consumerModule' => 'ldap_authorization_backdrop_role',
 
     'description' => 'Hogwarts AD',
     'status' => 1,
@@ -163,10 +163,10 @@ function ldap_test_ldap_authorization_data() {
     'regrantLdapProvisioned' => 1,
   ];
 
-  $conf['drupal_role_authentication_test']['drupal_role'] = [
+  $conf['backdrop_role_authentication_test']['backdrop_role'] = [
     'sid' => 'activedirectory1',
-    'consumerType' => 'drupal_role',
-    'consumerModule' => 'ldap_authorization_drupal_role',
+    'consumerType' => 'backdrop_role',
+    'consumerModule' => 'ldap_authorization_backdrop_role',
 
     'description' => 'Hogwarts AD',
     'status' => 1,

@@ -9,7 +9,7 @@ module_load_include('php', 'ldap_test', 'LdapTestFunctions.class');
 /**
  *
  */
-class LdapTestCase extends DrupalWebTestCase {
+class LdapTestCase extends BackdropWebTestCase {
 
   public $testFunctions;
   public $module_name;
@@ -190,7 +190,7 @@ class LdapTestCase extends DrupalWebTestCase {
    */
   public function AttemptLogonNewUser($name, $goodpwd = TRUE) {
 
-    $this->drupalLogout();
+    $this->backdropLogout();
 
     $edit = [
       'name' => $name,
@@ -200,7 +200,7 @@ class LdapTestCase extends DrupalWebTestCase {
     if ($user) {
       user_delete($user->uid);
     }
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
   }
 
   /**
@@ -392,12 +392,12 @@ class LdapTestCase extends DrupalWebTestCase {
 
     $mismatches = [];
     foreach ($data as $field_id => $values) {
-      $field_id = drupal_strtolower($field_id);
+      $field_id = backdrop_strtolower($field_id);
       if (!isset($map[$field_id])) {
         continue;
       }
       $property = $map[$field_id];
-      if (!is_object($object) || !property_exists($object, $property) && !property_exists($object, drupal_strtolower($property))) {
+      if (!is_object($object) || !property_exists($object, $property) && !property_exists($object, backdrop_strtolower($property))) {
         continue;
       }
       $property_value = $object->{$property};
@@ -406,7 +406,7 @@ class LdapTestCase extends DrupalWebTestCase {
       $field_value = isset($values[$item_id + 2]) ? $values[$item_id + 2] : $values[$item_id];
 
       if (in_array($field_id, $lcase_transformed) && is_scalar($field_value)) {
-        $field_value = drupal_strtolower($field_value);
+        $field_value = backdrop_strtolower($field_value);
       }
       $property_value_show = (is_scalar($property_value)) ? $property_value : serialize($property_value);
       $field_value_show = (is_scalar($field_value)) ? $field_value : serialize($field_value);
