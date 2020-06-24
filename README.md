@@ -1249,8 +1249,9 @@ Automated testing <a name="automatedtesting"></a>
 -----------------
 
 You can test four LDAP modules by Simpletest:
-1. Enable the Simpletest module:
-   Administration > Functionality > List modules > Testing: Enabled
+1. Enable the Simpletest and Field UI (field_ui) core module:
+   - Administration > Functionality > List modules > Testing: Enabled
+   - Administration > Functionality > List modules > Field UI: Enabled
 2. Open the Testing page: Administration > Configuration > Development > Testing
 3. Select these tests:
    - LDAP Servers Tests
