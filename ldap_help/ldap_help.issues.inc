@@ -15,7 +15,7 @@ function ldap_help_issues() {
   ldap_servers_module_load_include('inc', 'ldap_help', 'ldap_help.status');
   $ldap_config = ldap_help_status('html');
 
-  $path = drupal_get_path("module", "ldap_servers");
+  $path = backdrop_get_path("module", "ldap_servers");
 
   $text .= <<<EOT
 
@@ -31,7 +31,7 @@ function ldap_help_issues() {
 
 <div style="border: 1px solid #000000; padding: 10px; margin: 10px; text-align: center;">
   <p>Cut and past the html below into a file called <code>ldap_config.html</code> and attach it when reporting errors.
-  <br/>The table below is the same.  Check that no sensitive data is in it.</p>
+  <br/>The table below is the same. Check that no sensitive data is in it.</p>
   <form>
   <textarea rows=10 cols=120 border=1 style="border: 1px solid #000000">$ldap_config</textarea>
   </form>

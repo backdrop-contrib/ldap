@@ -76,7 +76,7 @@ function ldap_help_form_ldap_servers_settings_alter(&$form, &$form_state) {
   $form['watchdog_detail'] = ['#type' => 'fieldset', '#title' => t('Development')];
   $form['watchdog_detail']['watchdog_detail'] = [
     '#type' => 'checkbox',
-    '#title' => t('Enabled Detailed LDAP Watchdog logging.  This is generally for
+    '#title' => t('Enabled Detailed LDAP Watchdog logging. This is generally for
        debugging and reporting issues with the ldap modules and should not be left
        on.'),
     '#default_value' => $config->get('ldap_help_watchdog_detail'),

@@ -8,13 +8,13 @@
 /**
  * The goal of this function is to illustrate samples from various ldap
  * implementations (AD, openldap, etc) alongside default/common
- * ldap module configurations.  The data for the ldaps and the configuration
+ * ldap module configurations. The data for the ldaps and the configuration
  * should be the same as is used in the simpletets.
  */
 function ldap_help_examples() {
   module_load_include('php', 'ldap_test', 'LdapTestFunctions.class');
   $test_functions = new LdapTestFunctions();
-  drupal_add_library('system', 'drupal.collapse');
+  backdrop_add_library('system', 'backdrop.collapse');
   $sample_ldaps = [
     'activedirectory' => 'activedirectory1',
     'openldap' => 'openldap1',
@@ -74,5 +74,5 @@ function ldap_help_examples() {
     }
   }
 
-  return drupal_render($form);
+  return backdrop_render($form);
 }

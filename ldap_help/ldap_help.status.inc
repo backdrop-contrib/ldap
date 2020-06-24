@@ -10,8 +10,8 @@
  */
 function ldap_help_status($return = 'html') {
 
-  drupal_add_css(drupal_get_path('module', 'system') . '/system.css', 'module', 'all', FALSE);
-  include_once drupal_get_path('module', 'system') . '/system.admin.inc';
+  backdrop_add_css(backdrop_get_path('module', 'system') . '/system.css', 'module', 'all', FALSE);
+  include_once backdrop_get_path('module', 'system') . '/system.admin.inc';
 
   // Server and LDAP Module Data.
   $heading = "Server and LDAP Module";
@@ -79,7 +79,7 @@ function ldap_help_get_server($phpinfo, &$info) {
   $modules = system_rebuild_module_data();
   $ldapmodules = [
     'ldap_servers', 'ldap_authentication', 'ldap_authorization',
-    'ldap_authorization_drupal_role', 'ldap_authorization_og', 'ldap_feeds',
+    'ldap_authorization_backdrop_role', 'ldap_authorization_og', 'ldap_feeds',
     'ldap_query', 'ldap_views',
   ];
   if (module_exists('ldap_sso')) {
@@ -120,7 +120,7 @@ function ldap_help_get_server($phpinfo, &$info) {
   if (!$info['ldaploaded']) {
     $status[] = [
       'title' => 'PHP ldap extension not loaded',
-      'value' => l(t('PHP LDAP extension'), 'http://us2.php.net/ldap') . ' must be loaded for LDAP Integration to work.
+      'value' => l(t('PHP LDAP extension'), 'https://www.php.net/ldap') . ' must be loaded for LDAP Integration to work.
     It comes compiled with most versions of PHP.'  ,
       'severity' => REQUIREMENT_ERROR,
     ];
@@ -138,7 +138,7 @@ function ldap_help_get_server($phpinfo, &$info) {
     'value' => extension_loaded('openssl') ? "yes" : "no",
   ];
 
-  $status[] = ['title' => 'Drupal', 'value' => VERSION , 'severity' => "0"];
+  $status[] = ['title' => 'Backdrop', 'value' => VERSION , 'severity' => "0"];
 
   foreach ($ldapmodules as $ldapmodule) {
     $status[] = ['title' => $ldapmodule, 'value' => $info[$ldapmodule]['text'], 'severity' => "0"];
@@ -199,7 +199,7 @@ function _ldap_help_parse_status_to_text($status, $heading, $replacements = []) 
     "</strong>" => "",
   ]);
 
-  $content = drupal_strtoupper($heading) . $lr;
+  $content = backdrop_strtoupper($heading) . $lr;
   foreach ($status as $item) {
     $item['value'] = str_replace(array_keys($replacements), array_values($replacements), $item['value']);
     $item['title'] = str_replace(array_keys($replacements), array_values($replacements), $item['title']);
@@ -300,11 +300,11 @@ function ldap_help_get_ldap_servers() {
   $servers_objects = ldap_servers_get_servers(NULL, 'all');
   $servers = [];
   $field_to_properties = LdapServer::field_to_properties_map();
-  // Format: ['sid', 'name', 'status', 'ldap_type', 'port', 'tls', 'user_attr', 'mail_attr', 'user_dn_expression', 'ldap_to_drupal_user'].
+  // Format: ['sid', 'name', 'status', 'ldap_type', 'port', 'tls', 'user_attr', 'mail_attr', 'user_dn_expression', 'ldap_to_backdrop_user'].
   $props = array_values($field_to_properties);
   foreach ($servers_objects as $sid => $server_object) {
     $server_admin = new LdapServerAdmin($sid);
-    $form = $server_admin->drupalForm('update');
+    $form = $server_admin->backdropForm('update');
 
     foreach ($props as $property) {
       $value = print_r($server_object->{$property}, TRUE);
@@ -319,7 +319,7 @@ function ldap_help_get_ldap_servers() {
       ];
     }
 
-    $ldaps = (strpos(drupal_strtolower($server_object->address), 'ldaps') !== FALSE) ? 'y' : 'n';
+    $ldaps = (strpos(backdrop_strtolower($server_object->address), 'ldaps') !== FALSE) ? 'y' : 'n';
     $servers[$sid][] = [
       'title' => 'ldaps in address',
       'value' => $ldaps,
@@ -349,7 +349,7 @@ function ldap_help_get_ldap_authentication() {
 
   ldap_servers_module_load_include('php', 'ldap_authentication', 'LdapAuthenticationConfAdmin.class');
   $auth_conf = new LdapAuthenticationConfAdmin();
-  $conf_form = $auth_conf->drupalForm();
+  $conf_form = $auth_conf->backdropForm();
 
   $items['logon']['authenticationMode'] = 'string';
   $items['logon']['authenticationServers'] = 'checkbox';
@@ -357,8 +357,8 @@ function ldap_help_get_ldap_authentication() {
   $items['restrictions']['excludeIfTextInDn'] = 'string';
   $items['restrictions']['allowTestPhp'] = 'string';
   $items['restrictions']['excludeIfNoAuthorizations '] = 'checkbox';
-  $items['drupal_accounts']['loginConflictResolve'] = 'radios';
-  $items['drupal_accounts']['acctCreation'] = 'radios';
+  $items['backdrop_accounts']['loginConflictResolve'] = 'radios';
+  $items['backdrop_accounts']['acctCreation'] = 'radios';
   $items['email']['emailOption'] = 'radios';
   $items['email']['emailUpdate'] = 'radios';
   $items['sso']['ssoRemoteUserStripDomainName'] = 'checkbox';
@@ -377,10 +377,10 @@ function ldap_help_get_ldap_authentication() {
 function ldap_help_get_ldap_user() {
   ldap_servers_module_load_include('php', 'ldap_user', 'LdapUserConfAdmin.class');
   $conf = new LdapUserConfAdmin();
-  $form = $conf->drupalForm();
+  $form = $conf->backdropForm();
 
-  $items['drupal_accounts']['loginConflictResolve'] = 'radios';
-  $items['drupal_accounts']['acctCreation'] = 'radios';
+  $items['backdrop_accounts']['loginConflictResolve'] = 'radios';
+  $items['backdrop_accounts']['acctCreation'] = 'radios';
 
   $status = ldap_help_parse_form($form, $items);
 
@@ -421,12 +421,12 @@ function ldap_help_get_ldap_authorization() {
   foreach ($consumers as $consumer_type => $consumer) {
     $consumer_obj = ldap_authorization_get_consumer_object($consumer_type);
     $mapping_admin = new LdapAuthorizationConsumerConfAdmin($consumer_obj, FALSE);
-    $authorization_form = $mapping_admin->drupalForm($server_options, 'edit');
+    $authorization_form = $mapping_admin->backdropForm($server_options, 'edit');
     $status[$consumer_type] = ldap_help_parse_form($authorization_form, $items);
     $maps = $authorization_form['filter_and_mappings']['mappings']['#default_value'];
     $map_content = (trim($maps)) ? "mappings present" : "empty";
     if ($map_content == 'data present') {
-      $map_content .= ($maps == drupal_strtolower($maps)) ? ', lower case' : ', mixed case';
+      $map_content .= ($maps == backdrop_strtolower($maps)) ? ', lower case' : ', mixed case';
     }
     $status[$consumer_type][] = [
       'title' => 'mappings',

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Test script functions for testing ldap functionality outside of Drupal.
+ * Test script functions for testing ldap functionality outside of Backdrop.
  */
 
 error_reporting(E_ALL | E_STRICT);
@@ -93,7 +93,7 @@ define('LDAP_MORE_RESULTS_TO_RETURN', 0x5f);
 define('LDAP_CLIENT_LOOP', 0x60);
 define('LDAP_REFERRAL_LIMIT_EXCEEDED', 0x61);
 
-define('LDAP_SCRIPTS_COMMAND_LINE_WARNING', "Warning: PHP from the command line may have different PHP versions, php.ini files, and security context than running in a webserver context. This may produce false test results since Drupal LDAP Modules are run in the web server context.");
+define('LDAP_SCRIPTS_COMMAND_LINE_WARNING', "Warning: PHP from the command line may have different PHP versions, php.ini files, and security context than running in a webserver context. This may produce false test results since Backdrop LDAP Modules are run in the web server context.");
 
 require_once 'config.inc';
 

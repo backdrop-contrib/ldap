@@ -11,7 +11,7 @@ Watchout for the following:
   be run within a web server context.
 - Command line PHP with the LDAP Extension enabled are requirements.
 - Often command line PHP will have a different php.ini configuration than the
-  web server's php.ini. See http://php.net/manual/features.commandline.php
+  web server's php.ini. See https://php.net/manual/features.commandline.php
 
 Additional background on prerequisites and debugging Backdrop LDAP module are available at:
 - https://backdropcms.org/project/ldap#prerequisites

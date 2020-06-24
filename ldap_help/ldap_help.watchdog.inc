@@ -10,10 +10,10 @@
  */
 function ldap_help_watchdog() {
 
-  $path = drupal_get_path("module", "ldap_help");
+  $path = backdrop_get_path("module", "ldap_help");
   $_content = "";
   if (module_exists('dblog')) {
-    include_once drupal_get_path('module', 'dblog') . '/dblog.admin.inc';
+    include_once backdrop_get_path('module', 'dblog') . '/dblog.admin.inc';
     $_SESSION['dblog_overview_filter']['type'] = ['ldap' => 'ldap'];
     $_content .= "<h3>" . t('LDAP Watchdog Errors and Notifications') . "</h3>";
     $overview = dblog_overview();

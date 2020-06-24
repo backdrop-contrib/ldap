@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Test script functions for testing ldap functionality outside of Drupal
+ * Test script functions for testing ldap functionality outside of Backdrop
  * see README.txt for instructions.
  */
 
@@ -19,7 +19,7 @@ ldap_help_display('LDAP Extension Loaded', (extension_loaded('ldap')) ? 'yes' : 
 ldap_help_display(NULL, ldap_help_parsePHPModules());
 
 if (!extension_loaded('ldap')) {
-  die('PHP LDAP extension not loaded.  Can not run tests.  Check your php.ini and make sure ldap extension is avaialable.');
+  die('PHP LDAP extension not loaded. Can not run tests. Check your php.ini and make sure ldap extension is avaialable.');
 }
 
 foreach ($config['servers'] as $sid => $server) {
