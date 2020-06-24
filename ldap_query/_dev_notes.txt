@@ -36,16 +36,16 @@ save()     save to db
 delete()
 getLdapQueryObjects() static method to get group of query objects
 getActions() for Admin Interface index
-drupalForm() for admin Interface form
-drupalFormValidate() for admin interface form
-drupalFormSubmit() for admin interface form
+backdropForm() for admin Interface form
+backdropFormValidate() for admin interface form
+backdropFormSubmit() for admin interface form
 
 
 ------------
 Hooks:
 ------------
-hook_ldap_query_alter(); basic drupal alter on ldap query
-hook_ldap_query_results_alter(); basic drupal alter on ldap query
+hook_ldap_query_alter(); basic backdrop alter on ldap query
+hook_ldap_query_results_alter(); basic backdrop alter on ldap query
 
 
 

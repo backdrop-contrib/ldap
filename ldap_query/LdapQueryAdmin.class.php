@@ -30,7 +30,7 @@ class LdapQueryAdmin extends LdapQuery {
           ->execute();
       }
       catch (Exception $e) {
-        drupal_set_message(t('query index query failed. Message = %message, query= %query',
+        backdrop_set_message(t('query index query failed. Message = %message, query= %query',
           ['%message' => $e->getMessage(), '%query' => $e->query_string]), 'error');
         return [];
       }
@@ -59,7 +59,7 @@ class LdapQueryAdmin extends LdapQuery {
   /**
    *
    */
-  protected function populateFromDrupalForm($op, $values) {
+  protected function populateFromBackdropForm($op, $values) {
 
     foreach ($this->fields() as $field_id => $field) {
       if (isset($field['form']) && property_exists('LdapQueryAdmin', $field['property_name'])) {
@@ -100,11 +100,11 @@ class LdapQueryAdmin extends LdapQuery {
           unset($ctools_values->{$field['property_name']});
         }
         else {
-          // Do nothing.  property is already in cloned objecat.
+          // Do nothing. property is already in cloned objecat.
         }
       }
 
-      // Populate our object with ctool's properties.  copying all properties for backward compatibility.
+      // Populate our object with ctool's properties. Copying all properties for backward compatibility.
       $object = ctools_export_crud_new('ldap_query');
 
       foreach ($object as $property_name => $value) {
@@ -125,11 +125,11 @@ class LdapQueryAdmin extends LdapQuery {
       }
       // Edit w/o ctools.
       if ($op == 'edit') {
-        $result = drupal_write_record('ldap_query', $values, 'qid');
+        $result = backdrop_write_record('ldap_query', $values, 'qid');
       }
       // Insert.
       else {
-        $result = drupal_write_record('ldap_query', $values);
+        $result = backdrop_write_record('ldap_query', $values);
       }
     }
 
@@ -137,7 +137,7 @@ class LdapQueryAdmin extends LdapQuery {
       $this->inDatabase = TRUE;
     }
     else {
-      drupal_set_message(t('Failed to write LDAP Query to the database.'));
+      backdrop_set_message(t('Failed to write LDAP Query to the database.'));
     }
   }
 
@@ -184,7 +184,7 @@ class LdapQueryAdmin extends LdapQuery {
   /**
    *
    */
-  public function drupalForm($op) {
+  public function backdropForm($op) {
     $form['#prefix'] = t('<p>Setup an LDAP query to be used by other modules
       such as LDAP Feeds.</p>');
 
@@ -229,7 +229,7 @@ class LdapQueryAdmin extends LdapQuery {
 
     $servers = ldap_servers_get_servers(NULL, 'enabled');
     if (count($servers) == 0) {
-      drupal_set_message(t('No ldap servers configured.  Please configure a server before an ldap query.'), 'error');
+      backdrop_set_message(t('No ldap servers configured. Please configure a server before an ldap query.'), 'error');
     }
     foreach ($servers as $sid => $server) {
       $server_options[$sid] = $server->name;
@@ -255,7 +255,7 @@ class LdapQueryAdmin extends LdapQuery {
   /**
    *
    */
-  public function drupalFormValidate($op, $values) {
+  public function backdropFormValidate($op, $values) {
     $errors = [];
 
     if ($op == 'delete') {
@@ -264,7 +264,7 @@ class LdapQueryAdmin extends LdapQuery {
       }
     }
     else {
-      $this->populateFromDrupalForm($op, $values);
+      $this->populateFromBackdropForm($op, $values);
       $errors = $this->validate($op);
     }
     return $errors;
@@ -292,9 +292,9 @@ class LdapQueryAdmin extends LdapQuery {
   /**
    *
    */
-  public function drupalFormSubmit($op, $values) {
+  public function backdropFormSubmit($op, $values) {
 
-    $this->populateFromDrupalForm($op, $values);
+    $this->populateFromBackdropForm($op, $values);
 
     if ($op == 'delete') {
       $this->delete($this);
@@ -306,7 +306,7 @@ class LdapQueryAdmin extends LdapQuery {
       }
       catch (Exception $e) {
         $this->setError('Save Error',
-          t('Failed to save object.  Your form data was not saved.'));
+          t('Failed to save object. Your form data was not saved.'));
       }
     }
   }

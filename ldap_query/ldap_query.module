@@ -32,7 +32,7 @@ function ldap_query_menu() {
 
   $items['admin/config/people/ldap/query/add'] = [
     'title' => 'Add LDAP Query',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_query_admin_form', 'add'],
     'type' => MENU_LOCAL_TASK + MENU_CONTEXT_INLINE,
     'weight' => 3,
@@ -42,7 +42,7 @@ function ldap_query_menu() {
 
   $items['admin/config/people/ldap/query/edit/%'] = [
     'title' => 'Edit LDAP Query',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_query_admin_form', 'edit', $menu_offset + 2],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_query.admin.inc',
@@ -58,7 +58,7 @@ function ldap_query_menu() {
 
   $items['admin/config/people/ldap/query/delete/%'] = [
     'title' => 'Delete LDAP Query',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_query_admin_delete', $menu_offset + 1, $menu_offset + 2],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_query.admin.inc',
@@ -66,7 +66,7 @@ function ldap_query_menu() {
 
   $items['admin/config/people/ldap/query/enable/%'] = [
     'title' => 'Enable LDAP Query',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_query_admin_enable_disable', $menu_offset + 1, $menu_offset + 2],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_query.admin.inc',
@@ -74,7 +74,7 @@ function ldap_query_menu() {
 
   $items['admin/config/people/ldap/query/disable/%'] = [
     'title' => 'Enable LDAP Query',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_query_admin_enable_disable', $menu_offset + 1, $menu_offset + 2],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_query.admin.inc',
@@ -120,7 +120,7 @@ function ldap_query_cache_clear() {
  * @param string $type
  *   'all', 'enabled',.
  * @param bool $flatten
- *   signifies if array or single object returned.  Only works if sid is specified.
+ *   signifies if array or single object returned. Only works if sid is specified.
  * @param bool $reset
  *   do not use cached or static result.
  *

@@ -19,7 +19,7 @@ function ldap_query_index() {
  * LDAP queries list.
  *
  * @param $qid
- *   query id.  if empty list all queries
+ *   query id. if empty list all queries
  * @param $actions
  *   True or False indicating if query edit, delete, enable, disable, etc links should show in table
  *
@@ -56,7 +56,7 @@ function ldap_query_list($qid = NULL, $actions = FALSE) {
 function ldap_query_admin_form($form, &$form_state, $op = NULL, $qid = NULL) {
   ldap_servers_module_load_include('php', 'ldap_query', 'LdapQueryAdmin.class');
   $server = new LdapQueryAdmin($qid);
-  $form = $server->drupalForm($op);
+  $form = $server->backdropForm($op);
   return $form;
 }
 
@@ -64,11 +64,11 @@ function ldap_query_admin_form($form, &$form_state, $op = NULL, $qid = NULL) {
  * Validate hook for the LDAP server form.
  */
 function ldap_query_admin_form_validate($form, &$form_state) {
-  $op = drupal_strtolower($form_state['clicked_button']['#value']);
+  $op = backdrop_strtolower($form_state['clicked_button']['#value']);
   ldap_servers_module_load_include('php', 'ldap_query', 'LdapQueryAdmin.class');
   $server = new LdapQueryAdmin($form_state['values']['qid']);
 
-  $errors = $server->drupalFormValidate($op, $form_state['values']);
+  $errors = $server->backdropFormValidate($op, $form_state['values']);
   foreach ($errors as $error_name => $error_text) {
     form_set_error($error_name, t($error_text));
   }
@@ -78,23 +78,23 @@ function ldap_query_admin_form_validate($form, &$form_state) {
  * Submit hook for the LDAP server form.
  */
 function ldap_query_admin_form_submit($form, &$form_state) {
-  $button = drupal_strtolower($form_state['clicked_button']['#value']);
+  $button = backdrop_strtolower($form_state['clicked_button']['#value']);
   $op = ($button == 'add') ? 'add' : 'edit';
   $verb = ($op == 'edit') ? 'edited' : $op . 'ed';
   ldap_servers_module_load_include('php', 'ldap_query', 'LdapQueryAdmin.class');
   $query = new LdapQueryAdmin($form_state['values']['qid']);
   // Add form data to object and save or create.
-  $query->drupalFormSubmit($op, $form_state['values']);
+  $query->backdropFormSubmit($op, $form_state['values']);
 
   if ($query->hasError() == FALSE) {
-    drupal_set_message(t('LDAP Query %name !verb.', ['!verb' => $verb, '%name' => $query->name]), 'status');
+    backdrop_set_message(t('LDAP Query %name !verb.', ['!verb' => $verb, '%name' => $query->name]), 'status');
     ldap_query_cache_clear();
     // If ($form_state['ldap_warnings'] && $op != 'add') {
     // do nothing, but don't redirect away from form.
     // if there are warnings, want them to see form even if its been saved
     // }
     // else {.
-    drupal_goto(LDAP_QUERY_MENU_BASE_PATH . '/query');
+    backdrop_goto(LDAP_QUERY_MENU_BASE_PATH . '/query');
     // }.
   }
   else {
@@ -143,7 +143,7 @@ function ldap_query_admin_delete($form, &$form_state, $op = NULL, $qid = NULL) {
       t('Cancel')
     );
   }
-  drupal_goto(LDAP_QUERY_MENU_BASE_PATH . '/query/list');
+  backdrop_goto(LDAP_QUERY_MENU_BASE_PATH . '/query/list');
 }
 
 /**
@@ -157,18 +157,18 @@ function ldap_query_admin_delete_submit($form, &$form_state) {
   if ($values['confirm'] && $qid) {
     if ($result = $ldap_query->delete($qid)) {
       $tokens = ['%name' => $ldap_query->name, '!qid' => $qid];
-      drupal_set_message(t('LDAP Server %name (query id = !qid) has been deleted.', $tokens), 'status');
+      backdrop_set_message(t('LDAP Server %name (query id = !qid) has been deleted.', $tokens), 'status');
       watchdog('ldap_query', 'LDAP Query deleted: %name (qid = !qid) ', $tokens);
     }
     else {
-      drupal_set_message(t('LDAP Query delete failed.'), 'warning');
+      backdrop_set_message(t('LDAP Query delete failed.'), 'warning');
     }
   }
   else {
-    drupal_set_message(t('LDAP Query delete cancelled.'), 'status');
+    backdrop_set_message(t('LDAP Query delete cancelled.'), 'status');
   }
   ldap_query_cache_clear();
-  drupal_goto(LDAP_QUERY_MENU_BASE_PATH . '/query/list');
+  backdrop_goto(LDAP_QUERY_MENU_BASE_PATH . '/query/list');
 }
 
 /**
@@ -231,7 +231,7 @@ function ldap_query_admin_enable_disable_submit($form, &$form_state) {
     $ldap_query->status = $status;
     $ldap_query->save('edit');
     $tokens = ['%name' => $values['name'], '!qid' => $qid, '!action' => t($values['action']) . 'd'];
-    drupal_set_message(t('LDAP Query Configuration %name (query id = !qid) has been !action.', $tokens));
+    backdrop_set_message(t('LDAP Query Configuration %name (query id = !qid) has been !action.', $tokens));
     $message = t('LDAP Query !action: %name (qid = !qid) ', $tokens);
     watchdog('ldap_query', $message);
 
