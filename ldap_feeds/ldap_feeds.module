@@ -18,7 +18,7 @@ function ldap_feeds_ctools_plugin_api($owner, $api) {
  */
 function ldap_feeds_feeds_plugins() {
 
-  $path = drupal_get_path('module', 'ldap_feeds');
+  $path = backdrop_get_path('module', 'ldap_feeds');
   $info = [];
 
   $info['FeedsLdapQueryFetcher'] = [
@@ -33,17 +33,17 @@ function ldap_feeds_feeds_plugins() {
     ],
   ];
 
-  $info['FeedsDrupalUserLdapEntryFetcher'] = [
-    'name' => 'Drupal User LDAP Entry Fetcher',
-    'description' => 'Fetches one entry for each LDAP authenticated user.  Fetches both LDAP entry attributes such as
+  $info['FeedsBackdropUserLdapEntryFetcher'] = [
+    'name' => 'Backdrop User LDAP Entry Fetcher',
+    'description' => 'Fetches one entry for each LDAP authenticated user. Fetches both LDAP entry attributes such as
     <code>cn, dn,</code> etc.
-      and Drupal user data such as <code>uid, name, mail, created, status, language, </code>and <code>signature</code>.
+      and Backdrop user data such as <code>uid, name, mail, created, status, language, </code>and <code>signature</code>.
       Make sure to add dn in your LDAP query for this parser, if you use custom attributes.',
     'handler' => [
       // This is the key name, not the class name.
       'parent' => 'FeedsFetcher',
-      'class' => 'FeedsDrupalUserLdapEntryFetcher',
-      'file' => 'FeedsDrupalUserLdapEntryFetcher.inc',
+      'class' => 'FeedsBackdropUserLdapEntryFetcher',
+      'file' => 'FeedsBackdropUserLdapEntryFetcher.inc',
       'path' => $path,
     ],
   ];
@@ -75,23 +75,23 @@ function ldap_feeds_enable() {
 /**
  *
  */
-function ldap_feeds_drupal_user_attributes() {
+function ldap_feeds_backdrop_user_attributes() {
 
   $attributes = [
-    'uid' => ['token' => 'drupal.uid', 'description' => 'Drupal used id.  e.g. 413'],
-    'name' => ['token' => 'drupal.name', 'description' => 'Drupal username.  e.g. jdoe'],
-    'mail' => ['token' => 'drupal.mail', 'description' => 'Drupal email address.  e.g. jdoe@gmail.com'],
-    'created' => ['token' => 'drupal.created', 'description' => 'Drupal account created timestamp in unix e.g. 432432432'],
-    'status' => ['token' => 'drupal.status', 'description' => 'Drupal user status  e.g. 1 or 0'],
-    'language' => ['token' => 'drupal.language', 'description' => 'Drupal language.'],
-    'signature' => ['token' => 'drupal.signature', 'description' => 'Drupal signature.  e.g. Happy Joe'],
-    'login' => ['token' => 'drupal.login', 'description' => 'Drupal unix timestamp of last login  e.g. 1317494439'],
-    'init' => ['token' => 'drupal.init', 'description' => 'Drupal user init  e.g. jdoe@gmail.com'],
+    'uid' => ['token' => 'backdrop.uid', 'description' => 'Backdrop used id. e.g. 413'],
+    'name' => ['token' => 'backdrop.name', 'description' => 'Backdrop username. e.g. jdoe'],
+    'mail' => ['token' => 'backdrop.mail', 'description' => 'Backdrop email address. e.g. jdoe@gmail.com'],
+    'created' => ['token' => 'backdrop.created', 'description' => 'Backdrop account created timestamp in unix e.g. 432432432'],
+    'status' => ['token' => 'backdrop.status', 'description' => 'Backdrop user status  e.g. 1 or 0'],
+    'language' => ['token' => 'backdrop.language', 'description' => 'Backdrop language.'],
+    'signature' => ['token' => 'backdrop.signature', 'description' => 'Backdrop signature. e.g. Happy Joe'],
+    'login' => ['token' => 'backdrop.login', 'description' => 'Backdrop unix timestamp of last login  e.g. 1317494439'],
+    'init' => ['token' => 'backdrop.init', 'description' => 'Backdrop user init  e.g. jdoe@gmail.com'],
   ];
-  // ldap_authentication and some other modules may want to add additional drupal user tokens
+  // ldap_authentication and some other modules may want to add additional backdrop user tokens
   // largely derived from the $user->data array, but possibly from related data such as authmaps
   // some use cases for alter are simply edge cases.
-  drupal_alter('ldap_feeds_drupal_user_attributes', $attributes);
+  backdrop_alter('ldap_feeds_backdrop_user_attributes', $attributes);
 
   return $attributes;
 }
@@ -103,8 +103,8 @@ function ldap_feeds_form_feeds_ui_mapping_form_alter(&$form, &$form_state, $form
 
   $importer = feeds_importer_load($form['#importer']);
 
-  if ($importer->config['fetcher']['plugin_key'] == 'FeedsDrupalUserLdapEntryFetcher') {
-    ldap_feeds_drupal_user_legend($form, $importer);
+  if ($importer->config['fetcher']['plugin_key'] == 'FeedsBackdropUserLdapEntryFetcher') {
+    ldap_feeds_backdrop_user_legend($form, $importer);
   }
   elseif ($importer->config['fetcher']['plugin_key'] == 'FeedsLdapQueryFetcher') {
     ldap_feeds_query_legend($form, $importer);
@@ -135,25 +135,25 @@ function _ldap_feeds_query_legend($records, $field_name) {
 }
 
 /**
- * Add additional data to mapping form for drupal user fetcher.
+ * Add additional data to mapping form for backdrop user fetcher.
  */
-function ldap_feeds_drupal_user_legend(&$form, $importer) {
+function ldap_feeds_backdrop_user_legend(&$form, $importer) {
 
   $sources = [];
   $servers = ldap_servers_get_servers(NULL, 'enabled');
   $form['legendset']['#description'] = "";
-  $drupal_user_attributes = $importer->config['fetcher']['config']['availableDrupalUserAttributes'];
+  $backdrop_user_attributes = $importer->config['fetcher']['config']['availableBackdropUserAttributes'];
 
-  foreach ($drupal_user_attributes as $attr_name => $attr_conf) {
+  foreach ($backdrop_user_attributes as $attr_name => $attr_conf) {
     $id = $attr_conf['token'];
     $sources[$id] = ['name' => ['#markup' => $id], 'description' => ['#markup' => '']];
   }
 
   foreach ($servers as $sid => $ldap_server) {
-    if ($ldap_server->testingDrupalUsername) {
-      $account = user_load_by_name($ldap_server->testingDrupalUsername);
+    if ($ldap_server->testingBackdropUsername) {
+      $account = user_load_by_name($ldap_server->testingBackdropUsername);
 
-      foreach ($drupal_user_attributes as $attr_name => $attr_conf) {
+      foreach ($backdrop_user_attributes as $attr_name => $attr_conf) {
         if ($attr_name == 'count') {
           continue;
         }
@@ -163,7 +163,7 @@ function ldap_feeds_drupal_user_legend(&$form, $importer) {
         }
       }
 
-      $ldap_user = ldap_servers_get_user_ldap_data($ldap_server->testingDrupalUsername, $sid);
+      $ldap_user = ldap_servers_get_user_ldap_data($ldap_server->testingBackdropUsername, $sid);
       foreach ($ldap_user['attr'] as $id => $value) {
         $set_count = isset($ldap_user['attr'][$id]['count']);
         if ($set_count && !is_numeric($id) && is_scalar($ldap_user['attr'][$id][0]) && $ldap_user['attr'][$id]['count'] == 1) {
@@ -175,7 +175,7 @@ function ldap_feeds_drupal_user_legend(&$form, $importer) {
         }
       }
       $form['legendset']['#description'] .= t('LDAP Attributes in the source "description" column are from testing ldap user (%testing_user) on the server %sid, which is configured in
-        the ldap server form.', ['%sid' => $sid, '%testing_user' => $ldap_server->testingDrupalUsername]);
+        the ldap server form.', ['%sid' => $sid, '%testing_user' => $ldap_server->testingBackdropUsername]);
     }
     else {
       foreach (['dn' => 'distinguished name', 'cn' => 'cname'] as $id => $value) {
@@ -194,6 +194,6 @@ function ldap_feeds_autoload_info() {
   return array(
     'FeedsLdapQueryFetcher' => 'FeedsLdapQueryFetcher.inc',
     'FeedsLdapEntryParser' => 'FeedsLdapEntryParser.inc',
-    'FeedsDrupalUserLdapEntryFetcher' => 'FeedsDrupalUserLdapEntryFetcher.inc',
+    'FeedsBackdropUserLdapEntryFetcher' => 'FeedsBackdropUserLdapEntryFetcher.inc',
   );
 }

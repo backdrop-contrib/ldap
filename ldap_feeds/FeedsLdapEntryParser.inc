@@ -23,7 +23,7 @@ class FeedsLdapEntryParser extends FeedsParser {
       $ldap_entry = $ldap_entries[$i];
       $parsed_item = ['dn' => (string) $ldap_entry['dn']];
       foreach ($mappings as $j => $map) {
-        $source_lcase = drupal_strtolower($map['source']);
+        $source_lcase = backdrop_strtolower($map['source']);
         // Dn is already parsed.
         if ($source_lcase == 'dn') {
           continue;

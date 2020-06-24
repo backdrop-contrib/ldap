@@ -2,27 +2,27 @@
 
 /**
  * @file
- * FeedsDrupalUserLdapEntryFetcher.
+ * FeedsBackdropUserLdapEntryFetcher.
  */
 
-define('LDAP_FEEDS_DRUPAL_USER_FETCHER_FILTER_AUTHENTICATED', FALSE);
-define('LDAP_FEEDS_DRUPAL_USER_FETCHER_FILTER_ROLES', FALSE);
+define('LDAP_FEEDS_BACKDROP_USER_FETCHER_FILTER_AUTHENTICATED', FALSE);
+define('LDAP_FEEDS_BACKDROP_USER_FETCHER_FILTER_ROLES', FALSE);
 /**
  *
  */
-class FeedsDrupalUserLdapEntryFetcherResult extends FeedsFetcherResult {
+class FeedsBackdropUserLdapEntryFetcherResult extends FeedsFetcherResult {
 
   public $filterLdapAuthenticated;
-  public $availableDrupalUserAttributes;
+  public $availableBackdropUserAttributes;
   public $filterRoles;
 
   /**
    * Constructor.
    */
   public function __construct($source_config) {
-    $this->availableDrupalUserAttributes = ldap_feeds_drupal_user_attributes();
-    $this->filterLdapAuthenticated = isset($source_config['filterLdapAuthenticated']) ? $source_config['filterLdapAuthenticated'] : LDAP_FEEDS_DRUPAL_USER_FETCHER_FILTER_AUTHENTICATED;
-    $this->filterRoles = isset($source_config['filterRoles']) ? $source_config['filterRoles'] : LDAP_FEEDS_DRUPAL_USER_FETCHER_FILTER_ROLES;
+    $this->availableBackdropUserAttributes = ldap_feeds_backdrop_user_attributes();
+    $this->filterLdapAuthenticated = isset($source_config['filterLdapAuthenticated']) ? $source_config['filterLdapAuthenticated'] : LDAP_FEEDS_BACKDROP_USER_FETCHER_FILTER_AUTHENTICATED;
+    $this->filterRoles = isset($source_config['filterRoles']) ? $source_config['filterRoles'] : LDAP_FEEDS_BACKDROP_USER_FETCHER_FILTER_ROLES;
 
     parent::__construct('');
     $this->ldap_result = $this->getRaw();
@@ -61,8 +61,8 @@ class FeedsDrupalUserLdapEntryFetcherResult extends FeedsFetcherResult {
 
       if ($ldap_user = ldap_servers_get_user_ldap_data($user)) {
         unset($ldap_user['mail']);
-        $ldap_user['attr']['count'] = $ldap_user['attr']['count'] + count($this->availableDrupalUserAttributes);
-        foreach ($this->availableDrupalUserAttributes as $attr_name => $attr_conf) {
+        $ldap_user['attr']['count'] = $ldap_user['attr']['count'] + count($this->availableBackdropUserAttributes);
+        foreach ($this->availableBackdropUserAttributes as $attr_name => $attr_conf) {
           $ldap_user['attr'][] = $attr_conf['token'];
           $ldap_user['attr'][$attr_conf['token']]['count'] = 1;
           $ldap_user['attr'][$attr_conf['token']][0] = (string) $user->{$attr_name};
@@ -80,14 +80,14 @@ class FeedsDrupalUserLdapEntryFetcherResult extends FeedsFetcherResult {
 /**
  * Fetches data via LDAP Query.
  */
-class FeedsDrupalUserLdapEntryFetcher extends FeedsFetcher {
+class FeedsBackdropUserLdapEntryFetcher extends FeedsFetcher {
 
   /**
    * Implements FeedsFetcher::fetch().
    */
   public function fetch(FeedsSource $source) {
     $source_config = $source->getConfigFor($this);
-    $result = new FeedsDrupalUserLdapEntryFetcherResult($source_config);
+    $result = new FeedsBackdropUserLdapEntryFetcherResult($source_config);
     return $result;
   }
 
@@ -97,7 +97,7 @@ class FeedsDrupalUserLdapEntryFetcher extends FeedsFetcher {
   public function configDefaults() {
     return [
       'filterLdapAuthenticated' => 0,
-      'availableDrupalUserAttributes' => ldap_feeds_drupal_user_attributes(),
+      'availableBackdropUserAttributes' => ldap_feeds_backdrop_user_attributes(),
       'filterRoles' => [],
     ];
   }
