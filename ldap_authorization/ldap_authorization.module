@@ -48,7 +48,7 @@ function ldap_authorization_menu() {
 
   $items['admin/config/people/ldap/authorization/edit/%'] = [
     'title' => 'Edit LDAP Authorization Configuration',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_authorization_admin_form', 6, 'edit'],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_authorization.admin.inc',
@@ -57,7 +57,7 @@ function ldap_authorization_menu() {
   $items['admin/config/people/ldap/authorization/delete/%'] = [
     'title' => 'Delete LDAP Authorization Configuration',
     'description' => 'Delete an ldap authorization configuration',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_authorization_admin_form', 6, 'delete'],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_authorization.admin.inc',
@@ -66,7 +66,7 @@ function ldap_authorization_menu() {
   $items['admin/config/people/ldap/authorization/test/%'] = [
     'title' => 'Test LDAP Authorization Configuration',
     'description' => 'Test an ldap authorization configuration',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_authorization_test_form', 6, 'test'],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_authorization.admin.test.inc',
@@ -74,7 +74,7 @@ function ldap_authorization_menu() {
 
   $items['admin/config/people/ldap/authorization/add/%'] = [
     'title' => 'Add Authorization Configuration',
-    'page callback' => 'drupal_get_form',
+    'page callback' => 'backdrop_get_form',
     'page arguments' => ['ldap_authorization_admin_form', 6, 'add'],
     'access arguments' => ['administer site configuration'],
     'file' => 'ldap_authorization.admin.inc',
@@ -153,13 +153,13 @@ function ldap_authorization_ldap_attributes_needed_alter(&$attribute_maps, $para
 /**
  * Implements hook_ldap_authorization_maps_alter().
  *
- * To suggest authorization ids to grant (drupal roles in this case)
+ * To suggest authorization ids to grant (backdrop roles in this case)
  *
  * @param object $user
- *   drupal user object.
+ *   backdrop user object.
  *
  * @param array $user_ldap_entry
- *   is ldap data from ldap entry which drupal user is mapped to.
+ *   is ldap data from ldap entry which backdrop user is mapped to.
  *
  * @param object $ldap_server
  *
@@ -167,7 +167,7 @@ function ldap_authorization_ldap_attributes_needed_alter(&$attribute_maps, $para
  *   .
  *
  * @param array $authz_ids
- *   any new authorization ids (drupal user role names in this case) in form array('rolename1', 'rolename2',....)
+ *   any new authorization ids (backdrop user role names in this case) in form array('rolename1', 'rolename2',....)
  *
  * @param string $op
  *   = 'set' or 'query'.
@@ -197,7 +197,7 @@ function ldap_authorization_theme() {
 }
 
 /**
- * Param string $consumer_type is machine name of consumer such as drupal_role.
+ * Param string $consumer_type is machine name of consumer such as backdrop_role.
  *
  * @return object
  */
@@ -206,7 +206,7 @@ function ldap_authorization_get_consumer_object($consumer_type) {
   $consumer = ldap_authorization_get_consumers($consumer_type, TRUE, TRUE);
 
   if ($consumer) {
-    require_once drupal_get_path('module', $consumer['consumer_module']) . '/' . $consumer['consumer_class_file'];
+    require_once backdrop_get_path('module', $consumer['consumer_module']) . '/' . $consumer['consumer_class_file'];
     $class = $consumer['consumer_class_name'];
     $consumer_obj = new $class($consumer_type);
     $consumer_obj->detailedWatchdogLog = (module_exists('ldap_help')) ? config_get('ldap_help.settings', 'ldap_help_watchdog_detail') : 0;
@@ -219,14 +219,14 @@ function ldap_authorization_get_consumer_object($consumer_type) {
 
 /**
  * @param string $consumer_type
- *   is machine name of consumer type such as "drupal_role".
+ *   is machine name of consumer type such as "backdrop_role".
  * @param bool $reset
  *   signifies clear static variable.
  * @param bool $flatten
  *   signies return individual consumer not keyed on consumer type.
  *
  * @return array (1) if $flatten is true, consumer configuration array
- *   otherwise (2) associative array of consumer configurations keyed on consumer type such as "drupal_role"
+ *   otherwise (2) associative array of consumer configurations keyed on consumer type such as "backdrop_role"
  */
 function ldap_authorization_get_consumers($consumer_type = NULL, $reset = FALSE, $flatten = FALSE) {
   static $consumers;
@@ -253,7 +253,7 @@ function ldap_authorization_get_consumers($consumer_type = NULL, $reset = FALSE,
  * @param string $op
  *   indicating operation such as query, set, test_query, etc.
  * @param string $consumer_type
- *   e.g. drupal_role, or og_groups.
+ *   e.g. backdrop_role, or og_groups.
  * @param string $context
  *
  * @return array of form:
@@ -279,7 +279,7 @@ function ldap_authorizations_user_authorizations(&$user, $op = 'query', $consume
 }
 
 /**
- * Just tokens for better watchdog and drupal_set_message arguments .**/
+ * Just tokens for better watchdog and backdrop_set_message arguments .**/
 function ldap_authorization_tokens($consumer) {
   $tokens = [];
 
@@ -333,7 +333,7 @@ function ldap_authorization_ldap_user_attrs_list_alter(&$available_user_attrs, &
   $available_user_attrs['[field.ldap_authorizations]'] = [
     'name' => 'Field: LDAP Authorizations',
     'source' => 'LDAP Authorization modules',
-    'configurable_to_drupal' => 0,
+    'configurable_to_backdrop' => 0,
     'configurable_to_ldap' => 0,
     'notes' => t('configure at:') . 'admin/config/people/ldap/authorization',
     'direction' => NULL,

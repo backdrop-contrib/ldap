@@ -5,9 +5,9 @@
  * Simpletest for Ldap Authorization OG Module, for og 7.x-2.x.
  */
 
-drupal_load('module', 'ldap_test');
+backdrop_load('module', 'ldap_test');
 module_load_include('php', 'ldap_test', 'LdapTestCase.class');
-require_once drupal_get_path('module', 'ldap_authorization_og') . '/LdapAuthorizationConsumerOG.class.php';
+require_once backdrop_get_path('module', 'ldap_authorization_og') . '/LdapAuthorizationConsumerOG.class.php';
 
 /**
  * Simpletest for Ldap Authorization OG Module, for og 7.x-2.x.
@@ -48,12 +48,12 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
     parent::setUp(['ldap_authentication', 'ldap_authorization', 'ldap_authorization_og']);
     config_set('ldap_servers.settings', 'ldap_servers_simpletest', 2);
 
-    $this->user1 = $this->drupalCreateUser();
+    $this->user1 = $this->backdropCreateUser();
     $this->groups = [];
     $this->prepTestData(LDAP_TEST_LDAP_NAME, ['activedirectory1']);
 
     // Create group and group content node types.
-    $this->groupBundle = $this->drupalCreateContentType([
+    $this->groupBundle = $this->backdropCreateContentType([
       'type' => 'group',
       'name' => 'OG Group',
     ])->type;
@@ -72,7 +72,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
       $settings['uid'] = $this->user1->uid;
       $settings['title'] = $label;
       $settings['type'] = 'group';
-      $this->group_nodes[$label] = $this->drupalCreateNode($settings);
+      $this->group_nodes[$label] = $this->backdropCreateNode($settings);
     }
 
   }
@@ -131,7 +131,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
     $all_roles = og_roles($this->groupEntityType, $this->groupBundle, 0, FALSE, TRUE);
 
     $this->ldapTestId = $this->module_name . ': setup success';
-    // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    // Just to give warning if setup doesn't succeed. May want to take these out at some point.
     $simpletest = config_get('ldap_servers.settings', 'ldap_servers_simpletest');
     if ($simpletest === NULL) {
       $simpletest = 2;
@@ -147,14 +147,14 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
     $this->assertTrue($setup_success, ' ldap_authorizations og setup successful', $this->ldapTestId);
 
     $this->ldapTestId = $this->module_name . ': cron test';
-    $this->assertTrue(drupal_cron_run(), t('Cron can run with ldap authorization og enabled.'), $this->ldapTestId);
+    $this->assertTrue(backdrop_cron_run(), t('Cron can run with ldap authorization og enabled.'), $this->ldapTestId);
 
     /***
      * I. some basic tests to make sure og module's apis are working before testing ldap_authorization_og
      * if these aren't working as expected, no ldap authorization og functionality will work.
      */
 
-    $web_user = $this->drupalCreateUser();
+    $web_user = $this->backdropCreateUser();
     $this->ldapTestId = $this->module_name . ': og2 functions';
     list($group_nodes, $group_nids, $group_entity_ids, $roles_by_name, $consumer_ids) = $this->getTestData(TRUE);
 
@@ -301,14 +301,14 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
     $this->prepTestData(
     LDAP_TEST_LDAP_NAME,
     [$sid],
-    'provisionToDrupal',
+    'provisionToBackdrop',
     'default',
     'og_group2'
       );
 
     $og_group_consumer = ldap_authorization_get_consumers('og_group', TRUE, TRUE);
     /**
-   * LDAP_authorz.Flags.status=0: Disable ldap_authorization_drupal_role configuration and make sure no authorizations performed
+   * LDAP_authorz.Flags.status=0: Disable ldap_authorization_backdrop_role configuration and make sure no authorizations performed
    */
 
     list($props_set_display, $props_set_correctly) = $this->checkConsumerConfSetup('og_group2');
@@ -325,8 +325,8 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
     $this->consumerAdminConf['og_group']->status = 0;
     $this->consumerAdminConf['og_group']->save();
 
-    $user = $this->drupalCreateUser([]);
-    $hpotter = $this->testFunctions->drupalLdapUpdateUser(['name' => 'hpotter', 'mail' => 'hpotter@hogwarts.edu'], TRUE, $user);
+    $user = $this->backdropCreateUser([]);
+    $hpotter = $this->testFunctions->backdropLdapUpdateUser(['name' => 'hpotter', 'mail' => 'hpotter@hogwarts.edu'], TRUE, $user);
 
     // Just see if the correct ones are derived.
     list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'query');
@@ -353,14 +353,14 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
 
     /**
    * LDAP_authorz.onlyLdapAuthenticated=1: create normal user and
-   * apply authorization query.  should return no roles
+   * apply authorization query. Should return no roles
    */
     $this->consumerAdminConf['og_group']->onlyApplyToLdapAuthenticated = 1;
     $this->consumerAdminConf['og_group']->status = 1;
     $this->consumerAdminConf['og_group']->save();
 
-    $user = $this->drupalCreateUser([]);
-    $hgrainger = $this->testFunctions->drupalLdapUpdateUser(['name' => 'hgrainger', 'mail' => 'hgrainger@hogwarts.edu'], TRUE, $user);
+    $user = $this->backdropCreateUser([]);
+    $hgrainger = $this->testFunctions->backdropLdapUpdateUser(['name' => 'hgrainger', 'mail' => 'hgrainger@hogwarts.edu'], TRUE, $user);
 
     // Remove old authmap in case it exists so test will work.
     db_delete('ldap_authmap')
@@ -389,7 +389,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
       'name' => 'hgrainger',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(
       t('Member for'),
       'New Ldap user with good password authenticated.',
@@ -402,7 +402,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
       );
 
     $hgrainger = user_load_by_name('hgrainger');
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     $this->consumerAdminConf['og_group']->synchOnLogon = 1;
     $this->consumerAdminConf['og_group']->save();
@@ -410,11 +410,11 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
       'name' => 'hgrainger',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Member for'), 'New Ldap user with good password authenticated.',
       'LDAP_authorz.Flags.synchOnLogon=1');
     $hgrainger = user_load_by_name('hgrainger');
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     // Create a couple roles for next 2 tests.
     $troublemaker = new stdClass();
@@ -441,7 +441,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
    *
    *   grant roles via ldap and some not vai ldap manually,
    *   then alter ldap so they are no longer valid,
-   *   then logon again and make sure the ldap provided roles are revoked and the drupal ones are not revoked
+   *   then logon again and make sure the ldap provided roles are revoked and the backdrop ones are not revoked
    *
    */
 
@@ -452,13 +452,13 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
     // Set correct roles manually.
     $hpotter = user_load_by_name('hpotter');
     user_delete($hpotter->uid);
-    $user = $this->drupalCreateUser([]);
-    $hpotter = $this->testFunctions->drupalLdapUpdateUser(['name' => 'hpotter', 'mail' => 'hpotter@hogwarts.edu'], TRUE, $user);
+    $user = $this->backdropCreateUser([]);
+    $hpotter = $this->testFunctions->backdropLdapUpdateUser(['name' => 'hpotter', 'mail' => 'hpotter@hogwarts.edu'], TRUE, $user);
     $edit = [
       'name' => 'hpotter',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(
       t('Member for'),
       'New Ldap user with good password authenticated.',
@@ -466,7 +466,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
       );
     $hpotter = user_load_by_name('hpotter');
 
-    // Add an underserved, ldap granted drupal role superadmin
+    // Add an underserved, ldap granted backdrop role superadmin
     // and an undeserved, non ldap granted role troublemaker.
     $hpotter = user_load($hpotter->uid, TRUE);
     $roles = $hpotter->roles;
@@ -494,7 +494,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
     }
     $hpotter->save();
 
-    // Apply correct authorizations.  should remove the administrator role but not the manually created 'troublemaker' role.
+    // Apply correct authorizations. Should remove the administrator role but not the manually created 'troublemaker' role.
     list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'set', 'og_group', 'logon');
 
     $hpotter = user_load($hpotter->uid, TRUE);
@@ -514,7 +514,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
    * - logon
    * - check if regranted
    */
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
     $this->consumerAdminConf['og_group']->regrantLdapProvisioned = 1;
     $this->consumerAdminConf['og_group']->save();
     $hpotter = user_load($hpotter->uid, TRUE);
@@ -543,11 +543,11 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
   */
 
     if (!empty($og_group_consumer['allowConsumerObjectCreation']) && $og_group_consumer['allowConsumerObjectCreation']) {
-      // @todo.  this needs to be finished when creation of og groups is added to ldap authorization og functionality
+      // @todo. this needs to be finished when creation of og groups is added to ldap authorization og functionality
 
       // Add new mapping to and enable create consumers.
-      $this->prepTestData('hogwarts', [$sid], 'provisionToDrupal', 'default', 'drupal_role_default');
-      $this->drupalGet('user/logout');
+      $this->prepTestData('hogwarts', [$sid], 'provisionToBackdrop', 'default', 'backdrop_role_default');
+      $this->backdropGet('user/logout');
       $new_role = 'oompa-loompas';
       $this->consumerAdminConf['og_group']->createConsumers = 1;
       $this->consumerAdminConf['og_group']->mappings[] = [
@@ -565,7 +565,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
         'name' => 'hpotter',
         'pass' => 'goodpwd',
       ];
-      $this->drupalPost('user', $edit, t('Log in'));
+      $this->backdropPost('user', $edit, t('Log in'));
 
       $new_role_created = in_array($new_role, array_values(user_roles()));
       $roles_by_name = array_flip(user_roles());

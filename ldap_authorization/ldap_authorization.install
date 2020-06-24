@@ -15,10 +15,9 @@ function ldap_authorization_requirements($phase) {
     $requirements['ldap_authorization_ldap_integration']['title'] = t('LDAP Integration LDAP Groups Upgrade Concern');
     $requirements['ldap_authorization_ldap_integration']['severity'] = REQUIREMENT_WARNING;
     $requirements['ldap_authorization_ldap_integration']['value'] = NULL;
-    $requirements['ldap_authorization_ldap_integration']['description'] = t('Upgrade from Drupal 6 LDAP Groups to Drupal 7
-      LDAP Authorization is not automatic.  LDAP Authorization will need to be configured by hand.
+    $requirements['ldap_authorization_ldap_integration']['description'] = t('LDAP Authorization will need to be configured by hand.
       The authorization options are different and automated updgrade is not possible.
-      See also. See http://drupal.org/node/1023016, http://drupal.org/node/1183192.
+      See also. See https://drupal.org/node/1023016, https://drupal.org/node/1183192.
       This message will go away when the ldapauth database table is removed.');
   }
   // Check that ldapauth not installed.

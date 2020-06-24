@@ -83,7 +83,7 @@ class LdapAuthorizationConsumerConf {
       // @todo, this is technically wrong, but I don't quite grok what we're doing in the non-ctools case - justintime
       $server_record = array_pop($result);
       // There's no ctools api call to get the reserved properties, so instead of hardcoding a list of them
-      // here, we just grab everything.  Basically, we sacrifice a few bytes of RAM for forward-compatibility.
+      // here, we just grab everything. Basically, we sacrifice a few bytes of RAM for forward-compatibility.
     }
     else {
       $select = db_select('ldap_authorization', 'ldap_authorization');
@@ -177,7 +177,7 @@ class LdapAuthorizationConsumerConf {
     $mappings = preg_split('/[\n\r]+/', $mapping_list_txt);
     foreach ($mappings as $line) {
       if (count($mapping = explode('|', trim($line))) == 2) {
-        $item_0 = ($make_item0_lowercase) ? drupal_strtolower(trim($mapping[0])) : trim($mapping[0]);
+        $item_0 = ($make_item0_lowercase) ? backdrop_strtolower(trim($mapping[0])) : trim($mapping[0]);
         $result_array[] = [$item_0, trim($mapping[1])];
       }
     }

@@ -3,9 +3,9 @@
 /**
  * @file
  * Abstract class to represent an ldap_authorization consumer behavior
- * such as drupal_role, og_group, etc.  each authorization comsumer
+ * such as backdrop_role, og_group, etc. each authorization comsumer
  * will extend this class with its own class named
- * LdapAuthorizationConsumer<consumer type> such as LdapAuthorizationConsumerDrupalRole.
+ * LdapAuthorizationConsumer<consumer type> such as LdapAuthorizationConsumerBackdropRole.
  */
 
 /**
@@ -14,7 +14,7 @@
 class LdapAuthorizationConsumerAbstract {
 
   /**
-   * Machine name of consumer.  e.g. og_group, drupal_role, etc.
+   * Machine name of consumer. e.g. og_group, backdrop_role, etc.
    */
   public $consumerType = NULL;
 
@@ -24,12 +24,12 @@ class LdapAuthorizationConsumerAbstract {
    */
 
   /**
-   * User interface name of consumer. e.g.  drupal role, og group.
+   * User interface name of consumer. e.g. backdrop role, og group.
    */
   public $name;
 
   /**
-   * User interface name of consumer. e.g. drupal roles, og groups.
+   * User interface name of consumer. e.g. backdrop roles, og groups.
    */
   public $namePlural;
   /**
@@ -47,7 +47,7 @@ class LdapAuthorizationConsumerAbstract {
    */
   public $description;
   /**
-   * Module providing consumer functionality e.g. ldap_authorization_drupal_roles.
+   * Module providing consumer functionality e.g. ldap_authorization_backdrop_roles.
    */
   public $consumerModule;
 
@@ -77,7 +77,7 @@ class LdapAuthorizationConsumerAbstract {
    * @property boolean $allowConsumerObjectCreation
    *
    *  Does this consumer module support creating consumer objects
-   * (drupal roles,  og groups, etc.)
+   * (backdrop roles,  og groups, etc.)
    */
 
   public $allowConsumerObjectCreation = FALSE;
@@ -108,7 +108,7 @@ class LdapAuthorizationConsumerAbstract {
    * Constructor Method.
    *
    * @param string $consumer_type
-   *   e.g. drupal_role, og_group.
+   *   e.g. backdrop_role, og_group.
    * @param array $params
    *   as associative array of default properties.
    */
@@ -148,7 +148,7 @@ class LdapAuthorizationConsumerAbstract {
    * ...
    * ]
    *
-   * Or for Drupal role where rid 3 is moderator and rid 2 is admin:
+   * Or for Backdrop role where rid 3 is moderator and rid 2 is admin:
    * [
    *   [
    *     'from' => 'students',
@@ -173,9 +173,9 @@ class LdapAuthorizationConsumerAbstract {
    * @param string (lowercase) $consumer_id
    * @param array $consumer
    *   as associative array with the following key/values
-   *   'value' => NULL | mixed consumer such as drupal role name, og group entity, etc.
+   *   'value' => NULL | mixed consumer such as backdrop role name, og group entity, etc.
    *   'name' => name of consumer for UI, logging etc.
-   *   'map_to_string' => string mapped to in ldap authorization.  mixed case string
+   *   'map_to_string' => string mapped to in ldap authorization. mixed case string
    *   'exists' => TRUE indicates consumer is known to exist,
    *               FALSE indicates consumer is known to not exist,
    *               NULL indicate consumer's existance not checked yet.
@@ -189,10 +189,10 @@ class LdapAuthorizationConsumerAbstract {
    *
    * @param array $consumers
    *   as associative array keyed on $consumer_id with values
-   *   of $consumer.  $consumer_id and $consumer have structure in LdapAuthorizationConsumerAbstractClass::createConsumer
+   *   of $consumer. $consumer_id and $consumer have structure in LdapAuthorizationConsumerAbstractClass::createConsumer
    *   when values are $consumer['exists'] != TRUE need to be populated by consumer object.
    * @param bool $create_missing_consumers
-   *   indicates if consumers (drupal roles, og groups, etc) should be created
+   *   indicates if consumers (backdrop roles, og groups, etc) should be created
    *   if values are NULL, object will be created if.
    *
    * @return $consumers by reference
@@ -212,15 +212,15 @@ class LdapAuthorizationConsumerAbstract {
    * Grant authorizations to a user.
    *
    * @param object $user
-   *   drupal user object.
+   *   backdrop user object.
    * @param array $consumers
    *   in form of LdapAuthorizationConsumerAbstractClass::populateConsumersFromConsumerIds.
    * @param array $ldap_entry
-   *   is ldap data from ldap entry which drupal user is mapped to.
+   *   is ldap data from ldap entry which backdrop user is mapped to.
    * @param bool $user_save
    *   should user object be saved by authorizationGrant method.
    *
-   * @return array $results.  Array of form
+   * @return array $results. Array of form
    *   array(
    *    <authz consumer id1> => 1,
    *    <authz consumer id2> => 0,
@@ -239,15 +239,15 @@ class LdapAuthorizationConsumerAbstract {
    * Revoke authorizations to a user.
    *
    * @param object $user
-   *   drupal user object.
+   *   backdrop user object.
    * @param array $consumers
    *   in form of LdapAuthorizationConsumerAbstractClass::populateConsumersFromConsumerIds.
    * @param array $ldap_entry
-   *   is ldap data from ldap entry which drupal user is mapped to.
+   *   is ldap data from ldap entry which backdrop user is mapped to.
    * @param bool $user_save
    *   should user object be saved by authorizationGrant method.
    *
-   * @return array $results.  Array of form
+   * @return array $results. Array of form
    *   array(
    *    <authz consumer id1> => 1,
    *    <authz consumer id2> => 0,
@@ -284,7 +284,7 @@ class LdapAuthorizationConsumerAbstract {
   }
 
   /**
-   * Some authorization schemes such as organic groups, require a certain order.  implement this method
+   * Some authorization schemes such as organic groups, require a certain order. implement this method
    * to sort consumer ids/authorization ids.
    *
    * @param string $op
@@ -297,7 +297,7 @@ class LdapAuthorizationConsumerAbstract {
   public function sortConsumerIds($op, &$consumers) {}
 
   /**
-   * Attempt to flush related caches.  This will be something like og_invalidate_cache($gids)
+   * Attempt to flush related caches. This will be something like og_invalidate_cache($gids)
    *
    * @param $consumers
    *   associative array in form of LdapAuthorizationConsumerAbstract::populateConsumersFromConsumerIds
@@ -307,15 +307,15 @@ class LdapAuthorizationConsumerAbstract {
   /**
    * @param string $op
    *   'grant' or 'revoke' signifying what to do with the $consumer_ids.
-   * @param drupal user object $object
+   * @param backdrop user object $object
    * @param array $user_auth_data
-   *   is array specific to this consumer_type.  Stored at $user->data['ldap_authorizations'][<consumer_type>].
+   *   is array specific to this consumer_type. Stored at $user->data['ldap_authorizations'][<consumer_type>].
    * @param $consumers
    *   as associative array in form of LdapAuthorizationConsumerAbstract::populateConsumersFromConsumerIds
    * @param array $ldap_entry,
    *   when available user's ldap entry.
    * @param bool $user_save
-   *   indicates is user data array should be saved or not.  this depends on the implementation calling this function.
+   *   indicates is user data array should be saved or not. this depends on the implementation calling this function.
    */
   protected function grantsAndRevokes($op, &$user, &$user_auth_data, $consumers, &$ldap_entry = NULL, $user_save = TRUE) {
 
@@ -348,7 +348,7 @@ class LdapAuthorizationConsumerAbstract {
       /** grants **/
       if ($op == 'grant') {
         if ($user_has_authorization && !$user_has_authorization_recorded) {
-          // Grant case 1: authorization id already exists for user, but is not ldap provisioned.  mark as ldap provisioned, but don't regrant.
+          // Grant case 1: authorization id already exists for user, but is not ldap provisioned. Mark as ldap provisioned, but don't regrant.
           $results[$consumer_id] = TRUE;
           $user_auth_data[$consumer_id] = [
             'date_granted' => time(),
@@ -384,7 +384,7 @@ class LdapAuthorizationConsumerAbstract {
 
         $log .= "revoking existing consumer object, ";
         if ($user_has_authorization) {
-          // Revoke case 1: user has authorization, revoke it.  revokeSingleAuthorization will remove $user_auth_data[$consumer_id]
+          // Revoke case 1: user has authorization, revoke it. revokeSingleAuthorization will remove $user_auth_data[$consumer_id]
           // defer to default for $user_save param.
           $results[$consumer_id] = $this->revokeSingleAuthorization($user, $consumer_id, $consumer, $user_auth_data, $user_save);
           $log .= t(',result=') . (boolean) ($results[$consumer_id]);
@@ -423,7 +423,7 @@ class LdapAuthorizationConsumerAbstract {
 
     if ($detailed_watchdog_log) {
       watchdog('ldap_authorization', '%username:
-        <hr/>LdapAuthorizationConsumerAbstract grantsAndRevokes() method log.  action=%action:<br/> %consumer_ids_log
+        <hr/>LdapAuthorizationConsumerAbstract grantsAndRevokes() method log. action=%action:<br/> %consumer_ids_log
         ',
         $watchdog_tokens, WATCHDOG_DEBUG);
     }
@@ -431,19 +431,19 @@ class LdapAuthorizationConsumerAbstract {
   }
 
   /**
-   * @param drupal user object $user
+   * @param backdrop user object $user
    *   to have $consumer_id revoked.
    * @param string lower case $consumer_id
-   *   $consumer_id such as drupal role name, og group name, etc.
+   *   $consumer_id such as backdrop role name, og group name, etc.
    * @param mixed $consumer
-   *   depends on type of consumer.  Drupal roles are strings, og groups are ??
+   *   depends on type of consumer. Backdrop roles are strings, og groups are ??
    * @param array $user_auth_data
    *   array of $user data specific to this consumer type.
    *   stored in $user->data['ldap_authorizations'][<consumer_type>] array.
    * @param bool $reset
    *   signifying if caches associated with $consumer_id should be invalidated.
    *
-   *   return boolen TRUE on success, FALSE on fail.  If user save is FALSE, the user object will
+   *   return boolen TRUE on success, FALSE on fail. If user save is FALSE, the user object will
    *   not be saved and reloaded, so a returned TRUE may be misleading.
    *   $user_auth_data should have successfully revoked consumer id removed.
    */
@@ -453,16 +453,16 @@ class LdapAuthorizationConsumerAbstract {
 
   /**
    * @param object $user
-   *   as drupal user object to have $consumer_id granted.
+   *   as backdrop user object to have $consumer_id granted.
    * @param string lower case $consumer_id
-   *   $consumer_id such as drupal role name, og group name, etc.
+   *   $consumer_id such as backdrop role name, og group name, etc.
    * @param mixed $consumer
-   *   depends on type of consumer.  Drupal roles are strings, og groups are ??
+   *   depends on type of consumer. Backdrop roles are strings, og groups are ??
    * @param array $user_auth_data
    *   in form
-   *   array('my drupal role' =>
+   *   array('my backdrop role' =>
    *     'date_granted' => 1351814718,
-   *     'consumer_id_mixed_case' => 'My Drupal Role',
+   *     'consumer_id_mixed_case' => 'My Backdrop Role',
    *     )
    * @param bool $reset
    *   signifying if caches associated with $consumer_id should be invalidated.
@@ -492,14 +492,14 @@ class LdapAuthorizationConsumerAbstract {
   }
 
   /**
-   * @param drupal user object $user
+   * @param backdrop user object $user
    *   to have $consumer_id granted.
    * @param string lower case $consumer_id
-   *   $consumer_id such as drupal role name, og group name, etc.
+   *   $consumer_id such as backdrop role name, og group name, etc.
    * @param mixed $consumer
-   *   depends on type of consumer.  Drupal roles are strings, og groups are ??
+   *   depends on type of consumer. Backdrop roles are strings, og groups are ??
    *
-   *   return boolen TRUE on success, FALSE on fail.  If user save is FALSE, the user object will
+   *   return boolen TRUE on success, FALSE on fail. If user save is FALSE, the user object will
    *   not be saved and reloaded, so a returned TRUE may be misleading.
    */
   public function createSingleAuthorization(&$user, $consumer_id, $consumer, &$user_auth_data) {
@@ -507,9 +507,9 @@ class LdapAuthorizationConsumerAbstract {
   }
 
   /**
-   * @param drupal user object $user
+   * @param backdrop user object $user
    * @param string lowercase $consumer_id
-   *   such as drupal role name, og group name, etc.
+   *   such as backdrop role name, og group name, etc.
    *
    * @return boolean if an ldap_authorization_* module granted the authorization id
    */
@@ -521,9 +521,9 @@ class LdapAuthorizationConsumerAbstract {
    * NOTE this is in mixed case, since we must rely on whatever module is storing
    * the authorization id.
    *
-   * @param drupal user object $user
+   * @param backdrop user object $user
    * @param string lowercase case $consumer_id
-   *   such as drupal role name, og group name, etc.
+   *   such as backdrop role name, og group name, etc.
    *
    * @return param boolean is user has authorization id, regardless of what module granted it.
    */

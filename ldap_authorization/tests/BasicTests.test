@@ -28,7 +28,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     parent::setUp([
       'ldap_authentication',
       'ldap_authorization',
-      'ldap_authorization_drupal_role',
+      'ldap_authorization_backdrop_role',
     // don't need any real servers, configured, just ldap_servers code base.
       'ldap_test',
     ]);
@@ -51,7 +51,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
    */
   public function testSimpleStuff() {
 
-    // Just to give warning if setup doesn't succeed.  may want to take these out at some point.
+    // Just to give warning if setup doesn't succeed. may want to take these out at some point.
     $simpletest = config_get('ldap_servers.settings', 'ldap_servers_simpletest');
     if ($simpletest === NULL) {
       $simpletest = 2;
@@ -60,7 +60,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
         module_exists('ldap_authentication') &&
         module_exists('ldap_servers') &&
         module_exists('ldap_authorization') &&
-        module_exists('ldap_authorization_drupal_role') &&
+        module_exists('ldap_authorization_backdrop_role') &&
         ($simpletest > 0)
       );
     $this->assertTrue($setup_success, ' ldap_authorizations setup successful', 'LDAP Authorization: Test Setup Success');
@@ -81,7 +81,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
 
     // Make sure ldap authorization doesn't break cron.
     $this->assertTrue(
-      drupal_cron_run(),
+      backdrop_cron_run(),
       t('Cron can run with ldap authorization enabled.'),
       'LDAP Authorization: Cron Test'
     );
@@ -93,13 +93,13 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     $sid = 'activedirectory1';
     $testid = 'ExclusiveModeUserLogon3';
     $sids = [$sid];
-    $this->prepTestData(LDAP_TEST_LDAP_NAME, $sids, 'provisionToDrupal', 'default', 'drupal_role_default');
+    $this->prepTestData(LDAP_TEST_LDAP_NAME, $sids, 'provisionToBackdrop', 'default', 'backdrop_role_default');
 
     $hpotter_logon_edit = [
       'name' => 'hpotter',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $hpotter_logon_edit, t('Log in'));
+    $this->backdropPost('user', $hpotter_logon_edit, t('Log in'));
     $this->assertText(t('Member for'), 'New Ldap user with good password authenticated.', 'LDAP Authorization: Test Logon');
     $this->assertTrue(
       $this->testFunctions->ldapUserIsAuthmapped('hpotter'),
@@ -123,13 +123,13 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       'LDAP Authorization: Test Logon for roles'
     );
 
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     /**
      * test revoking of no longer deserved roles when revokeLdapProvisioned=1
      */
-    $this->consumerAdminConf['drupal_role']->revokeLdapProvisioned = 1;
-    $this->consumerAdminConf['drupal_role']->save();
+    $this->consumerAdminConf['backdrop_role']->revokeLdapProvisioned = 1;
+    $this->consumerAdminConf['backdrop_role']->save();
 
     // setup:  remove hpotter from honors members.
     $test_data_pre_test = config_get('ldap_test.settings', 'ldap_test_server__' . $sid);
@@ -140,7 +140,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     config_set('ldap_test.settings', 'ldap_test_server__' . $sid, $test_data);
 
     $hpotter_dn = 'cn=hpotter,ou=people,dc=hogwarts,dc=edu';
-    $this->drupalPost('user', $hpotter_logon_edit, t('Log in'));
+    $this->backdropPost('user', $hpotter_logon_edit, t('Log in'));
     $hpotter = $this->testFunctions->userByNameFlushingCache('hpotter');
     $roles = array_values($hpotter->roles);
 
@@ -151,26 +151,26 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     );
 
     $this->assertTrue(
-      empty($hpotter->data['ldap_authorizations']['drupal_role']['cn=honors students,ou=groups,dc=hogwarts,dc=edu']),
-      'when revokeLdapProvisioned=1, removed user->data[ldap_authorizations][drupal_role][<role>]',
+      empty($hpotter->data['ldap_authorizations']['backdrop_role']['cn=honors students,ou=groups,dc=hogwarts,dc=edu']),
+      'when revokeLdapProvisioned=1, removed user->data[ldap_authorizations][backdrop_role][<role>]',
       'LDAP Authorization: Test Logon'
     );
 
     // Return test data to original state.
     config_set('ldap_test.settings', 'ldap_test_server__' . $sid, $test_data_pre_test);
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     /**
      * test regranting of removed roles (regrantLdapProvisioned = 0)
      */
     $hpotter = $this->testFunctions->userByNameFlushingCache('hpotter');
     $roles = array_values($hpotter->roles);
-    $this->consumerAdminConf['drupal_role']->regrantLdapProvisioned = 0;
-    $this->consumerAdminConf['drupal_role']->save();
+    $this->consumerAdminConf['backdrop_role']->regrantLdapProvisioned = 0;
+    $this->consumerAdminConf['backdrop_role']->save();
     // removeRoleFromUser() needs static reset.
     backdrop_static_reset('user_roles');
     $this->testFunctions->removeRoleFromUser($hpotter, "cn=gryffindor,ou=groups,dc=hogwarts,dc=edu");
-    $this->drupalPost('user', $hpotter_logon_edit, t('Log in'));
+    $this->backdropPost('user', $hpotter_logon_edit, t('Log in'));
     $hpotter = $this->testFunctions->userByNameFlushingCache('hpotter');
     $roles = array_values($hpotter->roles);
 
@@ -180,18 +180,18 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       'LDAP Authorization: Test Logon'
     );
     $this->assertTrue(
-      !empty($hpotter->data['ldap_authorizations']['drupal_role']['cn=gryffindor,ou=groups,dc=hogwarts,dc=edu']),
-      'when regrantLdapProvisioned=0, role is not regranted, but initial grant still remains in user->data[ldap_authorizations][drupal_role][<role>]',
+      !empty($hpotter->data['ldap_authorizations']['backdrop_role']['cn=gryffindor,ou=groups,dc=hogwarts,dc=edu']),
+      'when regrantLdapProvisioned=0, role is not regranted, but initial grant still remains in user->data[ldap_authorizations][backdrop_role][<role>]',
       'LDAP Authorization: Test Logon'
     );
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     /**
      * test regranting of removed roles (regrantLdapProvisioned = 1)
      */
-    $this->consumerAdminConf['drupal_role']->regrantLdapProvisioned = 1;
-    $this->consumerAdminConf['drupal_role']->save();
-    $this->drupalPost('user', $hpotter_logon_edit, t('Log in'));
+    $this->consumerAdminConf['backdrop_role']->regrantLdapProvisioned = 1;
+    $this->consumerAdminConf['backdrop_role']->save();
+    $this->backdropPost('user', $hpotter_logon_edit, t('Log in'));
     $hpotter = $this->testFunctions->userByNameFlushingCache('hpotter');
     $roles = array_values($hpotter->roles);
     $this->assertTrue(
@@ -199,7 +199,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       'when regrantLdapProvisioned=0, did not regrant role on logon',
       'LDAP Authorization: Test Logon'
     );
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
   }
 
@@ -212,27 +212,27 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     $this->prepTestData(
     LDAP_TEST_LDAP_NAME,
     [$sid],
-    'provisionToDrupal',
+    'provisionToBackdrop',
     'default',
-    'drupal_role_default'
+    'backdrop_role_default'
       );
 
     /**
-   * LDAP_authorz.Flags.status=0: Disable ldap_authorization_drupal_role configuration and make sure no authorizations performed
+   * LDAP_authorz.Flags.status=0: Disable ldap_authorization_backdrop_role configuration and make sure no authorizations performed
    */
 
-    $user = $this->drupalCreateUser([]);
-    $hpotter = $this->testFunctions->drupalLdapUpdateUser(['name' => 'hpotter', 'mail' => 'hpotter@hogwarts.edu'], TRUE, $user);
+    $user = $this->backdropCreateUser([]);
+    $hpotter = $this->testFunctions->backdropLdapUpdateUser(['name' => 'hpotter', 'mail' => 'hpotter@hogwarts.edu'], TRUE, $user);
     // Just see if the correct ones are derived.
     list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'query');
-    $roles1 = $new_authorizations['drupal_role'];
+    $roles1 = $new_authorizations['backdrop_role'];
 
-    $this->consumerAdminConf['drupal_role']->status = 0;
-    $this->consumerAdminConf['drupal_role']->save();
+    $this->consumerAdminConf['backdrop_role']->status = 0;
+    $this->consumerAdminConf['backdrop_role']->save();
 
     // Just see if the correct ones are derived.
-    list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'query', 'drupal_role');
-    $roles2 = isset($new_authorizations['drupal_role']) ? $new_authorizations['drupal_role'] : [];
+    list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'query', 'backdrop_role');
+    $roles2 = isset($new_authorizations['backdrop_role']) ? $new_authorizations['backdrop_role'] : [];
     // Not worried about which roles here, just that some are granted.
     $correct_roles = (count($roles1) > 0 && count($roles2) == 0);
 
@@ -250,14 +250,14 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
 
     /**
    * LDAP_authorz.onlyLdapAuthenticated=1: create normal user and
-   * apply authorization query.  should return no roles
+   * apply authorization query. should return no roles
    */
-    $this->consumerAdminConf['drupal_role']->onlyApplyToLdapAuthenticated = 1;
-    $this->consumerAdminConf['drupal_role']->status = 1;
-    $this->consumerAdminConf['drupal_role']->save();
+    $this->consumerAdminConf['backdrop_role']->onlyApplyToLdapAuthenticated = 1;
+    $this->consumerAdminConf['backdrop_role']->status = 1;
+    $this->consumerAdminConf['backdrop_role']->save();
 
-    $user = $this->drupalCreateUser([]);
-    $hgrainger = $this->testFunctions->drupalLdapUpdateUser(['name' => 'hgrainger', 'mail' => 'hgrainger@hogwarts.edu'], TRUE, $user);
+    $user = $this->backdropCreateUser([]);
+    $hgrainger = $this->testFunctions->backdropLdapUpdateUser(['name' => 'hgrainger', 'mail' => 'hgrainger@hogwarts.edu'], TRUE, $user);
 
     // Remove authmap in case it exists so test will work.
     db_delete('ldap_authmap')
@@ -267,7 +267,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
 
     // Just see if the correct ones are derived.
     list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hgrainger, 'query');
-    $roles = isset($new_authorizations['drupal_role']) ? $new_authorizations['drupal_role'] : [];
+    $roles = isset($new_authorizations['backdrop_role']) ? $new_authorizations['backdrop_role'] : [];
     $success = (count($roles) == 0);
     $this->assertTrue(
       $success,
@@ -286,13 +286,13 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
    * LDAP_authorz.Flags.synchOnLogon - execute logon and check that no roles are applied if disabled
    */
 
-    $this->consumerAdminConf['drupal_role']->synchOnLogon = 0;
-    $this->consumerAdminConf['drupal_role']->save();
+    $this->consumerAdminConf['backdrop_role']->synchOnLogon = 0;
+    $this->consumerAdminConf['backdrop_role']->save();
     $edit = [
       'name' => 'hgrainger',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(
       t('Member for'),
       'New Ldap user with good password authenticated.',
@@ -305,19 +305,19 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       );
 
     $hgrainger = user_load_by_name('hgrainger');
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
-    $this->consumerAdminConf['drupal_role']->synchOnLogon = 1;
-    $this->consumerAdminConf['drupal_role']->save();
+    $this->consumerAdminConf['backdrop_role']->synchOnLogon = 1;
+    $this->consumerAdminConf['backdrop_role']->save();
     $edit = [
       'name' => 'hgrainger',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(t('Member for'), 'New Ldap user with good password authenticated.',
       'LDAP_authorz.Flags.synchOnLogon=1');
     $hgrainger = user_load_by_name('hgrainger');
-    $this->drupalGet('user/logout');
+    $this->backdropGet('user/logout');
 
     // Create a couple roles for next 2 tests.
     $troublemaker = new stdClass();
@@ -344,24 +344,24 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
    *
    *   grant roles via ldap and some not vai ldap manually,
    *   then alter ldap so they are no longer valid,
-   *   then logon again and make sure the ldap provided roles are revoked and the drupal ones are not revoked
+   *   then logon again and make sure the ldap provided roles are revoked and the backdrop ones are not revoked
    *
    */
 
-    $this->consumerAdminConf['drupal_role']->onlyApplyToLdapAuthenticated = 0;
-    $this->consumerAdminConf['drupal_role']->revokeLdapProvisioned = 1;
-    $this->consumerAdminConf['drupal_role']->createConsumers = 1;
-    $this->consumerAdminConf['drupal_role']->save();
+    $this->consumerAdminConf['backdrop_role']->onlyApplyToLdapAuthenticated = 0;
+    $this->consumerAdminConf['backdrop_role']->revokeLdapProvisioned = 1;
+    $this->consumerAdminConf['backdrop_role']->createConsumers = 1;
+    $this->consumerAdminConf['backdrop_role']->save();
     // Set correct roles manually.
     $hpotter = user_load_by_name('hpotter');
     user_delete($hpotter->uid);
-    $user = $this->drupalCreateUser([]);
-    $hpotter = $this->testFunctions->drupalLdapUpdateUser(['name' => 'hpotter', 'mail' => 'hpotter@hogwarts.edu'], TRUE, $user);
+    $user = $this->backdropCreateUser([]);
+    $hpotter = $this->testFunctions->backdropLdapUpdateUser(['name' => 'hpotter', 'mail' => 'hpotter@hogwarts.edu'], TRUE, $user);
     $edit = [
       'name' => 'hpotter',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
     $this->assertText(
       t('Member for'),
       'New Ldap user with good password authenticated.',
@@ -369,7 +369,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       );
     $hpotter = user_load_by_name('hpotter');
 
-    // Add an underserved, ldap granted drupal role superadmin
+    // Add an underserved, ldap granted backdrop role superadmin
     // and an undeserved, non ldap granted role troublemaker.
     $hpotter = user_load($hpotter->uid, TRUE);
     $roles = $hpotter->roles;
@@ -381,7 +381,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       'data' => [
         'ldap_authorizations' =>
       [
-        'drupal_role' =>
+        'backdrop_role' =>
         [
           $superadmin->label =>
           ['date_granted' => 1304216778],
@@ -397,12 +397,12 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     }
     $hpotter->save();
 
-    // Apply correct authorizations.  should remove the administrator role but not the manually created 'troublemaker' role.
-    list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'set', 'drupal_role', 'logon');
+    // Apply correct authorizations. should remove the administrator role but not the manually created 'troublemaker' role.
+    list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'set', 'backdrop_role', 'logon');
 
     $hpotter = user_load($hpotter->uid, TRUE);
     $this->assertTrue(
-      (!isset($new_authorizations['drupal_role'][$superadmin->name])),
+      (!isset($new_authorizations['backdrop_role'][$superadmin->name])),
       ' revoke superadmin ldap granted roles when no longer deserved.',
       'LDAP_authorz.Flags.revokeLdapProvisioned=1'
       );
@@ -417,16 +417,16 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
    * - logon
    * - check if regranted
    */
-    $this->drupalGet('user/logout');
-    $this->consumerAdminConf['drupal_role']->regrantLdapProvisioned = 1;
-    $this->consumerAdminConf['drupal_role']->save();
+    $this->backdropGet('user/logout');
+    $this->consumerAdminConf['backdrop_role']->regrantLdapProvisioned = 1;
+    $this->consumerAdminConf['backdrop_role']->save();
     $hpotter = user_load($hpotter->uid, TRUE);
     $roles = $hpotter->roles;
     unset($roles[$superadmin->name]);
     $hpotter->roles = $roles;
     $hpotter->save();
     $hpotter = user_load($hpotter->uid, TRUE);
-    list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'set', 'drupal_role', 'logon');
+    list($new_authorizations, $notifications) = ldap_authorizations_user_authorizations($hpotter, 'set', 'backdrop_role', 'logon');
     $hpotter = user_load($hpotter->uid, TRUE);
     $success = !in_array('administrator', array_values($hpotter->roles));
 
@@ -446,11 +446,11 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
   */
 
     // Add new mapping to and enable create consumers.
-    $this->prepTestData(LDAP_TEST_LDAP_NAME, [$sid], 'provisionToDrupal', 'default', 'drupal_role_default');
-    $this->drupalGet('user/logout');
+    $this->prepTestData(LDAP_TEST_LDAP_NAME, [$sid], 'provisionToBackdrop', 'default', 'backdrop_role_default');
+    $this->backdropGet('user/logout');
     $new_role = 'oompa-loompas';
-    $this->consumerAdminConf['drupal_role']->createConsumers = 1;
-    $this->consumerAdminConf['drupal_role']->mappings[] = [
+    $this->consumerAdminConf['backdrop_role']->createConsumers = 1;
+    $this->consumerAdminConf['backdrop_role']->mappings[] = [
       'from' => 'cn=students,ou=groups,dc=hogwarts,dc=edu',
       'user_entered' => $new_role,
       'normalized' => $new_role,
@@ -458,13 +458,13 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       'valid' => TRUE,
       'error_message' => '',
     ];
-    $this->consumerAdminConf['drupal_role']->save();
+    $this->consumerAdminConf['backdrop_role']->save();
 
     $edit = [
       'name' => 'hpotter',
       'pass' => 'goodpwd',
     ];
-    $this->drupalPost('user', $edit, t('Log in'));
+    $this->backdropPost('user', $edit, t('Log in'));
 
     // user_roles() needs static reset.
     backdrop_static_reset('user_roles');
@@ -505,7 +505,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
     config_clear('ldap_servers.settings', 'ldap_servers_simpletest');
 
     $sid = 'activedirectory1';
-    $this->prepTestData(LDAP_TEST_LDAP_NAME, [$sid], 'provisionToDrupal', 'default');
+    $this->prepTestData(LDAP_TEST_LDAP_NAME, [$sid], 'provisionToBackdrop', 'default');
 
     ldap_servers_module_load_include('php', 'ldap_servers', 'LdapServerAdmin.class');
     $ldap_server = new LdapServerAdmin($sid);
@@ -529,11 +529,11 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       'synchronization_actions[create_consumers]' => [TRUE, FALSE],
     ];
 
-    $this->privileged_user = $this->drupalCreateUser(['administer site configuration']);
-    $this->drupalLogin($this->privileged_user);
+    $this->privileged_user = $this->backdropCreateUser(['administer site configuration']);
+    $this->backdropLogin($this->privileged_user);
     $ldap_server = ldap_servers_get_servers('activedirectory1', NULL, TRUE, TRUE);
     // This is just for debugging to show the server.
-    $this->drupalGet('admin/config/people/ldap/servers/edit/activedirectory1');
+    $this->backdropGet('admin/config/people/ldap/servers/edit/activedirectory1');
     $ldap_server_admin = new LdapServerAdmin($sid);
 
     if (!is_array($ldap_server_admin->basedn)) {
@@ -541,10 +541,10 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
       $ldap_server_admin->save('update');
       $ldap_server_admin = new LdapServerAdmin($sid);
     }
-    $this->drupalGet('admin/config/people/ldap/servers/edit/activedirectory1');
+    $this->backdropGet('admin/config/people/ldap/servers/edit/activedirectory1');
 
     foreach ([0] as $i) {
-      foreach (['drupal_role'] as $consumer_type) {
+      foreach (['backdrop_role'] as $consumer_type) {
         // May want to put this back in after ctools requirement is fixed.
         foreach ([1] as $ctools_enabled) {
           $this->ldapTestId = "testUIForms.$i.$consumer_type.ctools.$ctools_enabled";
@@ -558,14 +558,14 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
           $lcase_transformed = [];
 
           /** add server conf test **/
-          $this->drupalGet('admin/config/people/ldap/authorization/add/' . $consumer_type);
+          $this->backdropGet('admin/config/people/ldap/authorization/add/' . $consumer_type);
 
           $edit = [];
           foreach ($consumer_form_data as $input_name => $input_values) {
             $edit[$input_name] = $input_values[$i];
           }
 
-          $this->drupalPost('admin/config/people/ldap/authorization/add/' . $consumer_type, $edit, t('Add'));
+          $this->backdropPost('admin/config/people/ldap/authorization/add/' . $consumer_type, $edit, t('Add'));
           $field_to_prop_map = LdapAuthorizationConsumerConf::field_to_properties_map();
           $ldap_consumer = ldap_authorization_get_consumer_object($consumer_type);
           $this->assertTrue(is_object($ldap_consumer), 'ldap consumer conf loaded after add-save', $this->ldapTestId . ' Add consumer configuration');
@@ -581,7 +581,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
 
           /** update server conf test **/
 
-          $this->drupalGet('admin/config/people/ldap/authorization/edit/' . $consumer_type);
+          $this->backdropGet('admin/config/people/ldap/authorization/edit/' . $consumer_type);
 
           $edit = [];
           foreach ($consumer_form_data as $input_name => $input_values) {
@@ -591,7 +591,7 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
           }
 
           unset($edit['sid']);
-          $this->drupalPost('admin/config/people/ldap/authorization/edit/' . $consumer_type, $edit, t('Save'));
+          $this->backdropPost('admin/config/people/ldap/authorization/edit/' . $consumer_type, $edit, t('Save'));
           $ldap_consumer = ldap_authorization_get_consumer_object($consumer_type);
           $this->assertTrue(is_object($ldap_consumer), 'ldap consumer conf loaded after edit-save', $this->ldapTestId . ' update consumer configuration');
 
@@ -604,8 +604,8 @@ class LdapAuthorizationBasicTests extends LdapTestCase {
           $this->assertTrue(count($mismatches) == 0, 'Update form for ldap server properties match values submitted.', $this->ldapTestId . '.Update consumer conf');
 
           /** delete server conf test **/
-          $this->drupalGet('admin/config/people/ldap/authorization/delete/' . $consumer_type);
-          $this->drupalPost('admin/config/people/ldap/authorization/delete/' . $consumer_type, [], t('Delete'));
+          $this->backdropGet('admin/config/people/ldap/authorization/delete/' . $consumer_type);
+          $this->backdropPost('admin/config/people/ldap/authorization/delete/' . $consumer_type, [], t('Delete'));
           ctools_include('export');
           ctools_export_load_object_reset('ldap_authorization');
           $consumer_conf = ldap_authorization_get_consumer_conf($consumer_type);

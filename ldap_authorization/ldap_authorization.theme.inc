@@ -56,7 +56,7 @@ function theme_ldap_authorization_test_results($variables) {
   $server_link = l($consumer->consumerConf->sid, LDAP_SERVERS_MENU_BASE_PATH . '/servers/edit/' . $consumer->consumerConf->sid);
 
   $table = [
-    'header' => [t('Drupal Username'), t('Authorization Type'), t('Authorization IDs'), t('Configuration'), t('LDAP Server Configuration')],
+    'header' => [t('Backdrop Username'), t('Authorization Type'), t('Authorization IDs'), t('Configuration'), t('LDAP Server Configuration')],
     'attributes' => ['id' => 'ldap_authorization_authorizations', 'class' => 'data'],
     'colgroups' => [],
     'sticky' => FALSE,
@@ -117,7 +117,7 @@ function ldap_authorization_map_errors($err_id, $consumer_conf_link) {
   switch ($err_id) {
 
     case  LDAP_AUTHORIZATION_USER_LDAP_NOT_FOUND:
-      $authorizations_text = t('LDAP entry for drupal user not found.', $tokens);
+      $authorizations_text = t('LDAP entry for backdrop user not found.', $tokens);
       break;
 
     case LDAP_AUTHORIZATION_USER_NOT_LDAP_AUTHENTICATED:

@@ -1,5 +1,5 @@
-name = LDAP Authorization - Drupal Roles
-description = Implements LDAP authorization for Drupal roles
+name = LDAP Authorization - Backdrop Roles
+description = Implements LDAP authorization for Backdrop roles
 package = LDAP
 dependencies[] = ldap_authorization
 backdrop = 1.x

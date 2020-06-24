@@ -56,20 +56,20 @@ class LdapAuthorizationConsumerConfAdmin extends LdapAuthorizationConsumerConf {
     else {
 
       if ($op == 'edit') {
-        $result = drupal_write_record('ldap_authorization', $values, 'consumer_type');
+        $result = backdrop_write_record('ldap_authorization', $values, 'consumer_type');
       }
       /**
  *Insert.
  */
       else {
-        $result = drupal_write_record('ldap_authorization', $values);
+        $result = backdrop_write_record('ldap_authorization', $values);
       }
 
       if ($result) {
         $this->inDatabase = TRUE;
       }
       else {
-        drupal_set_message(t('Failed to write LDAP Authorization to the database.'));
+        backdrop_set_message(t('Failed to write LDAP Authorization to the database.'));
       }
     }
 
@@ -109,7 +109,7 @@ class LdapAuthorizationConsumerConfAdmin extends LdapAuthorizationConsumerConf {
   /**
    *
    */
-  public function drupalForm($server_options, $op) {
+  public function backdropForm($server_options, $op) {
 
     $consumer_tokens = ldap_authorization_tokens($this->consumer);
     $form['intro'] = [
@@ -119,7 +119,7 @@ class LdapAuthorizationConsumerConfAdmin extends LdapAuthorizationConsumerConf {
 
     $form['status'] = [
       '#type' => 'fieldset',
-      '#title' => t('I.  Basics', $consumer_tokens),
+      '#title' => t('I. Basics', $consumer_tokens),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     ];
@@ -146,7 +146,7 @@ class LdapAuthorizationConsumerConfAdmin extends LdapAuthorizationConsumerConf {
 
     $form['status']['only_ldap_authenticated'] = [
       '#type' => 'checkbox',
-      '#title' => t('Only apply the following LDAP to !consumer_name configuration to users authenticated via LDAP.  One uncommon reason for disabling this is when you are using Drupal authentication, but want to leverage LDAP for authorization; for this to work the Drupal username still has to map to an LDAP entry.', $consumer_tokens),
+      '#title' => t('Only apply the following LDAP to !consumer_name configuration to users authenticated via LDAP. One uncommon reason for disabling this is when you are using Backdrop authentication, but want to leverage LDAP for authorization; for this to work the Backdrop username still has to map to an LDAP entry.', $consumer_tokens),
       '#default_value' => $this->onlyApplyToLdapAuthenticated,
     ];
 
@@ -184,7 +184,7 @@ Representations of groups derived from LDAP might initially look like:
 
     $form['filter_and_mappings']['use_first_attr_as_groupid'] = [
       '#type' => 'checkbox',
-      '#title' => t('Convert full dn to value of first attribute before mapping.  e.g.  <code>cn=students,ou=groups,dc=hogwarts,dc=edu</code> would be converted to <code>students</code>', $consumer_tokens),
+      '#title' => t('Convert full dn to value of first attribute before mapping. e.g. <code>cn=students,ou=groups,dc=hogwarts,dc=edu</code> would be converted to <code>students</code>', $consumer_tokens),
       '#default_value' => $this->useFirstAttrAsGroupId,
     ];
     $form['filter_and_mappings']['mappings'] = [
@@ -199,13 +199,13 @@ Representations of groups derived from LDAP might initially look like:
       '#title' => t('Only grant !consumer_namePlural that match a filter above.', $consumer_tokens),
       '#default_value' => $this->useMappingsAsFilter,
       '#description' => t('If enabled, only above mapped !consumer_namePlural will be assigned (e.g. students and administrator).
-        <strong>If not checked, !consumer_namePlural not mapped above also may be created and granted (e.g. gryffindor and probation students).  In some LDAPs this can lead to hundreds of !consumer_namePlural being created if "Create !consumer_namePlural if they do not exist" is enabled below.
+        <strong>If not checked, !consumer_namePlural not mapped above also may be created and granted (e.g. gryffindor and probation students). In some LDAPs this can lead to hundreds of !consumer_namePlural being created if "Create !consumer_namePlural if they do not exist" is enabled below.
         </strong>', $consumer_tokens),
     ];
 
     $form['more'] = [
       '#type' => 'fieldset',
-      '#title' => t('Part III.  Even More Settings.'),
+      '#title' => t('Part III. Even More Settings.'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
     ];
@@ -253,7 +253,7 @@ Representations of groups derived from LDAP might initially look like:
      * @todo  some general options for an individual mapping (perhaps in an advance tab).
      *
      * - on synchronization allow: revoking authorizations made by this module, authorizations made outside of this module
-     * - on synchronization create authorization contexts not in existance when needed (drupal roles etc)
+     * - on synchronization create authorization contexts not in existance when needed (backdrop roles etc)
      * - synchronize actual authorizations (not cached) when granting authorizations
      */
 
@@ -310,7 +310,7 @@ Representations of groups derived from LDAP might initially look like:
   /**
    *
    */
-  public function drupalFormValidate($op, $values) {
+  public function backdropFormValidate($op, $values) {
     $errors = [];
 
     if ($op == 'delete') {
@@ -320,10 +320,10 @@ Representations of groups derived from LDAP might initially look like:
     }
     else {
 
-      $this->populateFromDrupalForm($op, $values);
+      $this->populateFromBackdropForm($op, $values);
       $errors = $this->validate($values);
       if (count($this->mappings) == 0 && trim($values['mappings'])) {
-        $errors['mappings'] = t('Bad mapping syntax.  Text entered but not able to convert to array.');
+        $errors['mappings'] = t('Bad mapping syntax. Text entered but not able to convert to array.');
       }
 
     }
@@ -351,12 +351,12 @@ Representations of groups derived from LDAP might initially look like:
           $errors['mappings'] = $text;
         }
         elseif ($type == 'warning' ||  $type == 'status') {
-          drupal_set_message(check_plain($text), $type);
+          backdrop_set_message(check_plain($text), $type);
         }
       }
     }
     if ($this->useMappingsAsFilter && !count($this->mappings)) {
-      $errors['mappings'] = t('Mappings are missing.  Mappings must be supplied if filtering is enabled.');
+      $errors['mappings'] = t('Mappings are missing. Mappings must be supplied if filtering is enabled.');
     }
     return $errors;
   }
@@ -364,9 +364,9 @@ Representations of groups derived from LDAP might initially look like:
   /**
    *
    */
-  protected function populateFromDrupalForm($op, $values) {
+  protected function populateFromBackdropForm($op, $values) {
 
-    $this->inDatabase = (drupal_strtolower($op) == 'edit' || drupal_strtolower($op) == 'save');
+    $this->inDatabase = (backdrop_strtolower($op) == 'edit' || backdrop_strtolower($op) == 'save');
     $this->consumerType = $values['consumer_type'];
 
     $this->sid = $values['sid'];
@@ -388,9 +388,9 @@ Representations of groups derived from LDAP might initially look like:
   /**
    *
    */
-  public function drupalFormSubmit($op, $values) {
+  public function backdropFormSubmit($op, $values) {
 
-    $this->populateFromDrupalForm($op, $values);
+    $this->populateFromBackdropForm($op, $values);
     if ($op == 'delete') {
       $this->delete();
     }
@@ -402,7 +402,7 @@ Representations of groups derived from LDAP might initially look like:
       }
       catch (Exception $e) {
         $this->errorName = 'Save Error';
-        $this->errorMsg = t('Failed to save object.  Your form data was not saved.');
+        $this->errorMsg = t('Failed to save object. Your form data was not saved.');
         $this->hasError = TRUE;
       }
     }
@@ -415,7 +415,7 @@ Representations of groups derived from LDAP might initially look like:
 
     /**
      * consumer_type is tag (unique alphanumeric id) of consuming authorization such as
-     *   drupal_roles, og_groups, civicrm_memberships
+     *   backdrop_roles, og_groups, civicrm_memberships
      */
     $fields = [
       'numeric_consumer_conf_id' => [
@@ -423,7 +423,7 @@ Representations of groups derived from LDAP might initially look like:
           'type' => 'serial',
           'unsigned' => TRUE,
           'not null' => TRUE,
-          'description' => 'Primary ID field for the table.  Only used internally.',
+          'description' => 'Primary ID field for the table. Only used internally.',
           'no export' => TRUE,
         ],
       ],

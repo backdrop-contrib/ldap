@@ -2,16 +2,16 @@
 
 /**
  * @file
- * Class to represent configuration of ldap authorizations to drupal roles.
+ * Class to represent configuration of ldap authorizations to backdrop roles.
  */
 
 module_load_include('php', 'ldap_authorization', 'LdapAuthorizationConsumerAbstract.class');
 /**
  *
  */
-class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstract {
+class LdapAuthorizationConsumerBackdropRole extends LdapAuthorizationConsumerAbstract {
 
-  public $consumerType = 'drupal_role';
+  public $consumerType = 'backdrop_role';
   public $allowConsumerObjectCreation = TRUE;
 
   public $defaultConsumerConfProperties = [
@@ -27,8 +27,8 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
    *
    */
   public function __construct($consumer_type = NULL) {
-    $params = ldap_authorization_drupal_role_ldap_authorization_consumer();
-    parent::__construct('drupal_role', $params['drupal_role']);
+    $params = ldap_authorization_backdrop_role_ldap_authorization_consumer();
+    parent::__construct('backdrop_role', $params['backdrop_role']);
   }
 
   /**
@@ -42,10 +42,10 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
       // Role exists.
       return FALSE;
     }
-    elseif (drupal_strlen($consumer_id) > 63) {
-      watchdog('ldap_authorization_drupal_role', 'Tried to create drupal role
-        with name of over 63 characters (%group_name).  Please correct your
-        drupal ldap_authorization settings', ['%group_name' => $consumer_id]);
+    elseif (backdrop_strlen($consumer_id) > 63) {
+      watchdog('ldap_authorization_backdrop_role', 'Tried to create backdrop role
+        with name of over 63 characters (%group_name). Please correct your
+        backdrop ldap_authorization settings', ['%group_name' => $consumer_id]);
       return FALSE;
     }
 
@@ -54,13 +54,13 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
     $new_role->label = $new_role->name;
     if (!($status = user_role_save($new_role))) {
       // If role is not created, remove from array to user object doesn't have it stored as granted.
-      watchdog('user', 'failed to create drupal role %role in ldap_authorizations module', ['%role' => $new_role->name]);
+      watchdog('user', 'failed to create backdrop role %role in ldap_authorizations module', ['%role' => $new_role->name]);
       return FALSE;
     }
     else {
       // Flush existingRolesByRoleName cache after creating new role.
       $roles_by_consumer_id = $this->existingRolesByRoleName(TRUE);
-      watchdog('user', 'created drupal role %role in ldap_authorizations module', ['%role' => $new_role->name]);
+      watchdog('user', 'created backdrop role %role in ldap_authorizations module', ['%role' => $new_role->name]);
     }
     return TRUE;
   }
@@ -106,7 +106,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
 
     $role_name_lcase = $consumer_id;
     $role_name = empty($consumer['value']) ? $consumer_id : $consumer['value'];
-    $rid = $this->getDrupalRoleIdFromRoleName($role_name);
+    $rid = $this->getBackdropRoleIdFromRoleName($role_name);
     if (!$rid) {
       // Role id not found.
       $result = FALSE;
@@ -134,7 +134,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
     }
 
     if ($this->detailedWatchdogLog) {
-      watchdog('ldap_authorization', 'LdapAuthorizationConsumerDrupalRole.revokeSingleAuthorization()
+      watchdog('ldap_authorization', 'LdapAuthorizationConsumerBackdropRole.revokeSingleAuthorization()
         revoked:  rid=%rid, role_name=%role_name for username=%username, result=%result',
         [
           '%rid' => $rid,
@@ -155,9 +155,9 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
 
     $role_name_lcase = $consumer_id;
     $role_name = empty($consumer['value']) ? $consumer_id : $consumer['value'];
-    $rid = $this->getDrupalRoleIdFromRoleName($role_name);
+    $rid = $this->getBackdropRoleIdFromRoleName($role_name);
     if (is_null($rid)) {
-      watchdog('ldap_authorization', 'LdapAuthorizationConsumerDrupalRole.grantSingleAuthorization()
+      watchdog('ldap_authorization', 'LdapAuthorizationConsumerBackdropRole.grantSingleAuthorization()
       failed to grant %username the role %role_name because role does not exist',
       ['%role_name' => $role_name, '%username' => $user->name],
       WATCHDOG_ERROR);
@@ -167,7 +167,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
     $user->roles[] = $rid;
     $user_edit = ['roles' => $user->roles];
     if ($this->detailedWatchdogLog) {
-      watchdog('ldap_authorization', 'grantSingleAuthorization in drupal rold' . print_r($user, TRUE), [], WATCHDOG_DEBUG);
+      watchdog('ldap_authorization', 'grantSingleAuthorization in backdrop role' . print_r($user, TRUE), [], WATCHDOG_DEBUG);
     }
 
     $account = user_load($user->uid);
@@ -179,7 +179,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
     $result = ($user && in_array($rid, $user->roles));
 
     if ($this->detailedWatchdogLog) {
-      watchdog('ldap_authorization', 'LdapAuthorizationConsumerDrupalRole.grantSingleAuthorization()
+      watchdog('ldap_authorization', 'LdapAuthorizationConsumerBackdropRole.grantSingleAuthorization()
         granted: rid=%rid, role_name=%role_name for username=%username, result=%result',
         [
           '%rid' => $rid,
@@ -199,7 +199,7 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
   public function usersAuthorizations(&$user) {
     $authorizations = [];
     foreach ($user->roles as $rid => $role_name_mixed_case) {
-      $authorizations[] = drupal_strtolower($role_name_mixed_case);
+      $authorizations[] = backdrop_strtolower($role_name_mixed_case);
     }
     return $authorizations;
   }
@@ -215,10 +215,10 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
     $role_name = $mapping['normalized'];
     $tokens = ['!map_to' => $role_name];
     $roles_by_name = $this->existingRolesByRoleName();
-    $pass = isset($roles_by_name[drupal_strtolower($role_name)]);
+    $pass = isset($roles_by_name[backdrop_strtolower($role_name)]);
 
     if (!$pass) {
-      $message_text = '"' . t('Drupal role') . ' ' . t('!map_to', $tokens) . '" ' . t('does not map to any existing Drupal roles.');
+      $message_text = '"' . t('Backdrop role') . ' ' . t('!map_to', $tokens) . '" ' . t('does not map to any existing Backdrop roles.');
       if ($has_form_values) {
         $create_consumers = (isset($form_values['synchronization_actions']['create_consumers']) && $form_values['synchronization_actions']['create_consumers']);
       }
@@ -227,15 +227,15 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
       }
       if ($create_consumers && $this->allowConsumerObjectCreation) {
         $message_type = 'warning';
-        $message_text .= ' ' . t('"!map_to" will be created when needed.  If "!map_to" is not intentional, please fix it.', $tokens);
+        $message_text .= ' ' . t('"!map_to" will be created when needed. If "!map_to" is not intentional, please fix it.', $tokens);
       }
       elseif (!$this->allowConsumerObjectCreation) {
         $message_type = 'error';
-        $message_text .= ' ' . t('Since automatic Drupal role creation is not possible with this module, an existing role must be mapped to.');
+        $message_text .= ' ' . t('Since automatic Backdrop role creation is not possible with this module, an existing role must be mapped to.');
       }
       elseif (!$create_consumers) {
         $message_type = 'error';
-        $message_text .= ' ' . t('Since automatic Drupal role creation is disabled, an existing role must be mapped to.  Either enable role creation or map to an existing role.');
+        $message_text .= ' ' . t('Since automatic Backdrop role creation is disabled, an existing role must be mapped to. Either enable role creation or map to an existing role.');
       }
     }
     return [$message_type, $message_text];
@@ -245,9 +245,9 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
    * @param string mixed case $role_name
    * @return integer role id
    */
-  private function getDrupalRoleIdFromRoleName($role_name) {
+  private function getBackdropRoleIdFromRoleName($role_name) {
     $role_ids_by_name = $this->existingRolesByRoleName();
-    $role_name_lowercase = drupal_strtolower($role_name);
+    $role_name_lowercase = backdrop_strtolower($role_name);
     return empty($role_ids_by_name[$role_name_lowercase]) ? NULL : $role_ids_by_name[$role_name_lowercase]['rid'];
   }
 
@@ -264,8 +264,8 @@ class LdapAuthorizationConsumerDrupalRole extends LdapAuthorizationConsumerAbstr
     if ($reset || !is_array($roles_by_name)) {
       $roles_by_name = [];
       foreach (array_flip(user_roles(TRUE)) as $role_name => $rid) {
-        $roles_by_name[drupal_strtolower($role_name)]['rid'] = $rid;
-        $roles_by_name[drupal_strtolower($role_name)]['role_name'] = $role_name;
+        $roles_by_name[backdrop_strtolower($role_name)]['rid'] = $rid;
+        $roles_by_name[backdrop_strtolower($role_name)]['role_name'] = $role_name;
       }
     }
     return $roles_by_name;

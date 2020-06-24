@@ -11,7 +11,7 @@
  * @param mixed $form
  * @param mixed $form_state
  *
- * @return array drupal form array
+ * @return array backdrop form array
  */
 function ldap_authorization_test_form($form, &$form_state, $consumer_type) {
   $consumer = ldap_authorization_get_consumer_object($consumer_type);
@@ -31,7 +31,7 @@ function ldap_authorization_test_form($form, &$form_state, $consumer_type) {
     ];
     $form['pre-filtered']['overview'] = [
       '#type' => 'item',
-      '#markup' => t('Below are the "raw authorizations" and which strategy they are derived from.  If enabled, the mapping filter is applied to these.'),
+      '#markup' => t('Below are the "raw authorizations" and which strategy they are derived from. If enabled, the mapping filter is applied to these.'),
     ];
 
     if (isset($_SESSION['ldap_authorization_test_query']['maps'])) {
@@ -144,7 +144,7 @@ function ldap_authorization_test_form($form, &$form_state, $consumer_type) {
 
   $form['usernames'] = [
     '#type' => 'textarea',
-    '#title' => t('Drupal usernames to test !consumer_shortName authorizations results for.  One per line.', $consumer_tokens),
+    '#title' => t('Backdrop usernames to test !consumer_shortName authorizations results for. One per line.', $consumer_tokens),
     '#default_value' => @$_SESSION['ldap_authorization_test_query']['usernames'],
     '#cols' => 50,
     '#rows' => 6,
@@ -215,7 +215,7 @@ function ldap_authorization_test_form_submit($form, &$form_state) {
       $random_users = $select->execute()->fetchAllAssoc('name', PDO::FETCH_ASSOC);
     }
     catch (Exception $e) {
-      drupal_set_message(t('db users query failed. Message = %message, query= %query',
+      backdrop_set_message(t('db users query failed. Message = %message, query= %query',
         ['%message' => $e->getMessage(), '%query' => $e->query_string]), 'error');
       return "";
     }
