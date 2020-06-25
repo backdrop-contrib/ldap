@@ -138,7 +138,7 @@ function ldap_help_get_server($phpinfo, &$info) {
     'value' => extension_loaded('openssl') ? "yes" : "no",
   ];
 
-  $status[] = ['title' => 'Backdrop', 'value' => VERSION , 'severity' => "0"];
+  $status[] = ['title' => 'Backdrop', 'value' => BACKDROP_VERSION , 'severity' => "0"];
 
   foreach ($ldapmodules as $ldapmodule) {
     $status[] = ['title' => $ldapmodule, 'value' => $info[$ldapmodule]['text'], 'severity' => "0"];
