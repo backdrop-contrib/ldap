@@ -176,6 +176,9 @@ Installation <a name="installation"></a>
   Administration > Configuration > User accounts > LDAP Configuration
   ( admin/config/people/ldap )
 
+Note: The Simple LDAP module also provides integration with LDAP with less
+functionality: https://backdropcms.org/project/simple_ldap
+
 
 #### Configuration overrides
 
@@ -2020,4 +2023,4 @@ complete text.
 Screenshot <a name="screenshot"></a>
 ----------
 
-![Simple LDAP screenshot](https://github.com/backdrop-contrib/ldap/blob/1.x-2.x/images/screenshot.png)
+![LDAP screenshot](https://github.com/backdrop-contrib/ldap/blob/1.x-2.x/images/screenshot.png)
