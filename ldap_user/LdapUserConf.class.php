@@ -7,6 +7,7 @@
  */
 
 require_once 'ldap_user.module';
+module_load_include('inc', 'ldap_servers', 'ldap_servers.tokens');
 /**
  *
  */
