@@ -323,10 +323,7 @@ class LdapAuthenticationConf {
 
     $this->ldapUser = new LdapUserConf();
     $this->ssoEnabled = module_exists('ldap_sso');
-    $this->apiPrefs['requireHttps'] = config_get('ldap_servers.settings', 'ldap_servers_require_ssl_for_credentials');
-    if ($this->apiPrefs['requireHttps'] === NULL) {
-      $this->apiPrefs['requireHttps'] = 0;
-    }
+    $this->apiPrefs['requireHttps'] = 0;
     $this->apiPrefs['encryption'] = config_get('ldap_servers.settings', 'ldap_servers_encryption');
 
   }
