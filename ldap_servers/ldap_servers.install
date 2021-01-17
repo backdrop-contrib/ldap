@@ -146,3 +146,45 @@ function ldap_servers_schema() {
 function ldap_servers_update_last_removed() {
   return 7209;
 }
+
+/**
+ * Move ldap_servers module settings from variables to config.
+ */
+function ldap_servers_update_1000() {
+  // Migrate variables to config.
+  $config = config('ldap_servers.settings');
+  $config->set('ldap_servers_encryption', update_variable_get('ldap_servers_encryption', 10));
+  $config->set('ldap_servers_simpletest', update_variable_get('ldap_simpletest', FALSE));
+  $config->set('ldap_servers_overrides', update_variable_get('ldap_servers_overrides', array()));
+  $config->set('ldap_servers_encrypt_key', update_variable_get('ldap_servers_encrypt_key', FALSE));
+  $config->set('ldap_servers_simpletest_globals', update_variable_get('ldap_simpletest_globals', array()));
+  $config->set('previous_encryption', update_variable_get('previous_encryption', 10));
+  $config->set('watchdog_detail', update_variable_get('watchdog_detail', 0));
+  $config->set('user_data_clear', update_variable_get('user_data_clear', 0));
+  $config->set('user_data_clear_date', update_variable_get('user_data_clear_date', 0));
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('ldap_servers_encryption');
+  update_variable_del('ldap_simpletest');
+  update_variable_del('ldap_servers_overrides');
+  update_variable_del('ldap_servers_encrypt_key');
+  update_variable_del('ldap_simpletest_globals');
+  update_variable_del('previous_encryption');
+  update_variable_del('watchdog_detail');
+  update_variable_del('user_data_clear');
+  update_variable_del('user_data_clear_date');
+
+}
+
+/**
+ * Rename some columns in the 'ldap_servers' table: Replace 'drupal' with 'backdrop'.
+ */
+function ldap_servers_update_1001() {
+  db_change_field('ldap_servers', 'ldap_to_drupal_user', 'ldap_to_backdrop_user',
+      array('type' => 'varchar', 'length' => 1024, 'not null' => FALSE));
+  db_change_field('ldap_servers', 'testing_drupal_username', 'testing_backdrop_username',
+      array('type' => 'varchar', 'length' => 255, 'not null' => FALSE));
+  db_change_field('ldap_servers', 'testing_drupal_user_dn', 'testing_backdrop_user_dn',
+      array('type' => 'varchar', 'length' => 255, 'not null' => FALSE));
+}
