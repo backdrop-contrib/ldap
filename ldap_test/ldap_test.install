@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * LDAP Test Install File.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function ldap_test_uninstall() {
+
+}
+
+/**
+ * Remove unnecessary variables of the ldap_test module.
+ */
+function ldap_test_update_1000() {
+  // Delete variables. 
+  update_variable_del('ldap_test_servers');
+  update_variable_del('ldap_test_server__activedirectory1');
+  update_variable_del('ldap_test_server__openldap1');
+}
