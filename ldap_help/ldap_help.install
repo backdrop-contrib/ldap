@@ -11,3 +11,20 @@
 function ldap_help_uninstall() {
 
 }
+
+/**
+ * Move ldap_help module settings from variables to config.
+ */
+function ldap_help_update_1000() {
+  // Migrate variables to config.
+  $config = config('ldap_help.settings');
+  $config->set('ldap_help_watchdog_detail', update_variable_get('ldap_help_watchdog_detail', 0));
+  $config->set('ldap_help_user_data_clear', update_variable_get('ldap_help_user_data_clear', 0));
+  $config->set('ldap_help_user_data_clear_set_date', update_variable_get('ldap_help_user_data_clear_set_date', 0));
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('ldap_help_watchdog_detail');
+  update_variable_del('ldap_help_user_data_clear');
+  update_variable_del('ldap_help_user_data_clear_set_date');
+}
