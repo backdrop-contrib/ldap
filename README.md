@@ -1155,24 +1155,35 @@ Related sources:
 LDAP Help module <a name="help"></a>
 ----------------
 
-It is just for debugging, administrator help and reporting issues. Use it if
-you have problems. Disable it in production. It adds no functionality or end
-user help.
+This module assists Backdrop administrators in configuring, debugging, sharing,
+and submitting support and bug request related to LDAP modules.
+LDAP Help module should be disabled unless you are debugging or configuring LDAP
+problems. Disable it in production. It adds no functionality or end user help.
 
 Dependencies:
 - LDAP Servers module
 - LDAP Test module
 
-Configuration page:
+Assist pages:
 - Administration > Configuration > User accounts > LDAP Configuration > Help
   ( admin/config/people/ldap/help )
 - LDAP Module Resources
 - Status page
 - LDAP Watchdog errors and notifications
 - How to report bugs in LDAP project
-- Sample LDAPs:
+- Sample LDAPs (hpotter):
   - Active Directory
   - OpenLDAP
+
+Configuration page:
+- Administration > Configuration > User accounts > LDAP Configuration
+  ( admin/config/people/ldap )
+- Enabled Detailed LDAP Watchdog logging. This is generally for debugging and
+  reporting issues with the ldap modules and should not be left on.
+- Discard and ignore user authorization data stored by ldap module in user records
+  data before a specific date. This is useful for implementers of development
+  versions of the module that may have corrupt user data from the past.
+- Reset the clear date to the current date.
 
 
 
