@@ -493,3 +493,10 @@ function ldap_user_update_check_user_fields($query = FALSE) {
   return $fields_added;
 
 }
+
+/**
+ * Implements hook_update_last_removed().
+ */
+function ldap_user_update_last_removed() {
+  return 7206;
+}
