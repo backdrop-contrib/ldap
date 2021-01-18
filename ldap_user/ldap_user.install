@@ -500,3 +500,43 @@ function ldap_user_update_check_user_fields($query = FALSE) {
 function ldap_user_update_last_removed() {
   return 7206;
 }
+
+/**
+ * Move ldap_user module settings from variables to config.
+ */
+function ldap_user_update_1000() {
+  // Migrate variables to config.
+  $config = config('ldap_user.settings');
+  $ldap_user_conf = _ldap_user_replace_drupal_with_backdrop(update_variable_get('ldap_user_conf', array()));
+  $config->set('ldap_user_conf', $ldap_user_conf);
+  $config->set('ldap_user_cron_last_uid_checked', update_variable_get('ldap_user_cron_last_uid_checked', 1));
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('ldap_user_conf');
+  update_variable_del('ldap_user_cron_last_uid_checked');
+  update_variable_del('ldap_user_cron_last_orphan_checked');
+}
+
+/**
+ * Replaces 'drupal' string with 'backdrop' in the keys of the given array.
+ *
+ * @param array $variables
+ *   Array of variables.
+ *
+ * @return array
+ *   Array of variables with changed keys.
+ */
+function _ldap_user_replace_drupal_with_backdrop($variables)
+{
+  $return = array();
+  foreach($variables as $key => $value) {
+    if (is_array($value) && !empty($value)) {
+      $value = _ldap_user_replace_drupal_with_backdrop($value);
+    }
+    $key = str_replace("Drupal", "Backdrop", $key);
+    $key = str_replace("drupal", "backdrop", $key);
+    $return[$key] = $value;
+  }
+  return $return;
+}
