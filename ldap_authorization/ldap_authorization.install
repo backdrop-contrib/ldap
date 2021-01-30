@@ -113,3 +113,10 @@ function ldap_authorization_schema() {
 
   return $schema;
 }
+
+/**
+ * Implements hook_update_last_removed().
+ */
+function ldap_authorization_update_last_removed() {
+  return 7204;
+}
