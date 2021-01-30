@@ -43,3 +43,16 @@ function ldap_authentication_uninstall() {
 function ldap_authentication_update_last_removed() {
   return 7100;
 }
+
+/**
+ * Move ldap_authentication module settings from variables to config.
+ */
+function ldap_authentication_update_1000() {
+  // Migrate variables to config.
+  $config = config('ldap_authentication.settings');
+  $config->set('ldap_authentication_conf', update_variable_get('ldap_authentication_conf', array()));
+  $config->save();
+
+  // Delete variables.
+  update_variable_del('ldap_authentication_conf');
+}
