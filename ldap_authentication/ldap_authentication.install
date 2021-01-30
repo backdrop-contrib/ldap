@@ -36,3 +36,10 @@ function ldap_authentication_install() {
 function ldap_authentication_uninstall() {
 
 }
+
+/**
+ * Implements hook_update_last_removed().
+ */
+function ldap_authentication_update_last_removed() {
+  return 7100;
+}
