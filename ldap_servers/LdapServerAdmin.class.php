@@ -20,6 +20,7 @@ class LdapServerAdmin extends LdapServer {
    */
   public static function getLdapServerObjects($sid = NULL, $type = NULL, $class = 'LdapServer', $reset = FALSE) {
     $servers = [];
+    $select = [];
     try {
       $configs = config_get_names_with_prefix('ldap.server.');
       foreach ($configs as $config) {
