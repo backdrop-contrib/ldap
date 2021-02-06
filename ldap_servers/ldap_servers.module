@@ -1197,5 +1197,11 @@ function ldap_servers_config_info() {
     'label' => t('LDAP Servers settings'),
     'group' => t('Configuration'),
   );
+
+  $prefixes['ldap.server'] = array(
+    'name_key' => 'id',
+    'label_key' => 'id',
+    'group' => t('LDAP servers'),
+  );
   return $prefixes;
 }

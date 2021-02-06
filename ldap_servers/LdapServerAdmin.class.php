@@ -20,24 +20,16 @@ class LdapServerAdmin extends LdapServer {
    */
   public static function getLdapServerObjects($sid = NULL, $type = NULL, $class = 'LdapServer', $reset = FALSE) {
     $servers = [];
-    if (module_exists('ctools')) {
-      ctools_include('export');
-      if ($reset) {
-        ctools_export_load_object_reset('ldap_servers');
+    try {
+      $configs = config_get_names_with_prefix('ldap.server.');
+      foreach ($configs as $config) {
+        $select[] = (object) config_get($config, 'config');
       }
-      $select = ctools_export_load_object('ldap_servers', 'all');
     }
-    else {
-      try {
-        $select = db_select('ldap_servers', 'ldap_servers')
-          ->fields('ldap_servers')
-          ->execute();
-      }
-      catch (Exception $e) {
-        backdrop_set_message(t('server index query failed. Message = %message, query= %query',
-          ['%message' => $e->getMessage(), '%query' => $e->query_string]), 'error');
-        return [];
-      }
+    catch (Exception $e) {
+      backdrop_set_message(t('server index query failed. Message = %message, query= %query',
+        ['%message' => $e->getMessage(), '%query' => $e->query_string]), 'error');
+      return [];
     }
     foreach ($select as $result) {
       $servers[$result->sid] = ($class == 'LdapServer') ? new LdapServer($result->sid) : new LdapServerAdmin($result->sid);
@@ -129,50 +121,13 @@ class LdapServerAdmin extends LdapServer {
     $values->tls = (int) $this->tls;
     $values->followrefs = (int) $this->followrefs;
 
-    if (module_exists('ctools')) {
-      ctools_include('export');
-      // Populate our object with ctool's properties.
-      $object = ctools_export_crud_new('ldap_servers');
-
-      foreach ($object as $property => $value) {
-        $property_lcase = backdrop_strtolower($property);
-        if (!isset($values->$property) || !isset($values->$property_lcase)) {
-          $values->$property_lcase = $value;
-        }
-      }
-
-      try {
-        $values->export_type = NULL;
-        $result = ctools_export_crud_save('ldap_servers', $values);
-      }
-      catch (Exception $e) {
-        $values->export_type = EXPORT_IN_DATABASE;
-        $result = ctools_export_crud_save('ldap_servers', $values);
-      }
-
-      // ctools_export_crud_save doesn't invalidate cache.
-      ctools_export_load_object_reset('ldap_servers');
-
-    }
-    // Directly via db.
-    else {
-      unset($values->numeric_sid);
-      if ($op == 'add') {
-        $result = backdrop_write_record('ldap_servers', $values);
-      }
-      else {
-        $result = backdrop_write_record('ldap_servers', $values, 'sid');
-      }
-      ldap_servers_cache_clear();
-
-    }
-
-    if ($result) {
-      $this->inDatabase = TRUE;
-    }
-    else {
-      backdrop_set_message(t('Failed to write LDAP Server to the database.'));
-    }
+    unset($values->numeric_sid);
+    $config = config('ldap.server.' . $values->sid);
+    $config->set('id', $values->sid);
+    $config->set('config', $values);
+    $config->save();
+    ldap_servers_cache_clear();
+    $this->inDatabase = TRUE;
   }
 
   /**
@@ -180,12 +135,9 @@ class LdapServerAdmin extends LdapServer {
    */
   public function delete($sid) {
     if ($sid == $this->sid) {
-      $result = db_delete('ldap_servers')->condition('sid', $sid)->execute();
-      if (module_exists('ctools')) {
-        ctools_include('export');
-        // Invalidate cache.
-        ctools_export_load_object_reset('ldap_servers');
-      }
+      $config = config('ldap.server.' . $sid);
+      $result = $config->delete();
+      $result = !empty($result);
       $this->inDatabase = FALSE;
       return $result;
     }

@@ -233,26 +233,9 @@ class LdapServer {
     }
     $this->detailed_watchdog_log = $detailed_watchdog_log;
     $server_record = FALSE;
-    if (module_exists('ctools')) {
-      ctools_include('export');
-      $result = ctools_export_load_object('ldap_servers', 'names', [$sid]);
-      if (isset($result[$sid])) {
-        $server_record = new stdClass();
-        foreach ($result[$sid] as $db_field_name => $value) {
-          $server_record->{$db_field_name} = $value;
-        }
-      }
-    }
-    else {
-      $select = db_select('ldap_servers')
-        ->fields('ldap_servers')
-        ->condition('ldap_servers.sid', $sid)
-        ->execute();
-      foreach ($select as $record) {
-        if ($record->sid == $sid) {
-          $server_record = $record;
-        }
-      }
+    $record = (object) config_get('ldap.server.' . $sid, 'config');
+    if (isset($record->sid) && ($record->sid == $sid)) {
+      $server_record = $record;
     }
 
     $server_record_bindpw = NULL;
