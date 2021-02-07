@@ -19,21 +19,17 @@ class LdapQueryAdmin extends LdapQuery {
    */
   public static function getLdapQueryObjects($sid = 'all', $type = 'enabled', $class = 'LdapQuery') {
     $queries = [];
-    if (module_exists('ctools')) {
-      ctools_include('export');
-      $select = ctools_export_load_object('ldap_query', 'all');
+    $select = [];
+    try {
+      $configs = config_get_names_with_prefix('ldap.query.');
+      foreach ($configs as $config) {
+        $select[] = (object) config_get($config, 'config');
+      }
     }
-    else {
-      try {
-        $select = db_select('ldap_query', 'ldap_query')
-          ->fields('ldap_query')
-          ->execute();
-      }
-      catch (Exception $e) {
-        backdrop_set_message(t('query index query failed. Message = %message, query= %query',
-          ['%message' => $e->getMessage(), '%query' => $e->query_string]), 'error');
-        return [];
-      }
+    catch (Exception $e) {
+      backdrop_set_message(t('query index query failed. Message = %message, query= %query',
+        ['%message' => $e->getMessage(), '%query' => $e->query_string]), 'error');
+      return [];
     }
     foreach ($select as $result) {
       $query = ($class == 'LdapQuery') ? new LdapQuery($result->qid) : new LdapQueryAdmin($result->qid);
@@ -81,64 +77,19 @@ class LdapQueryAdmin extends LdapQuery {
   public function save($op) {
 
     $op = $this->inDatabase ? 'edit' : 'insert';
-
-    // Add or edit with ctolls.
-    if (module_exists('ctools')) {
-
-      ctools_include('export');
-      $ctools_values = clone $this;
-
-      foreach ($this->fields() as $field_id => $field) {
-        $value = $this->{$field['property_name']};
-        // Field not exportable.
-        if (isset($field['exportable']) && $field['exportable'] === FALSE) {
-          unset($ctools_values->{$field['property_name']});
-        }
-        // Field in property with different name.
-        elseif (isset($field['schema']) && $field['property_name'] != $field_id) {
-          $ctools_values->{$field_id} = $value;
-          unset($ctools_values->{$field['property_name']});
-        }
-        else {
-          // Do nothing. property is already in cloned objecat.
-        }
-      }
-
-      // Populate our object with ctool's properties. Copying all properties for backward compatibility.
-      $object = ctools_export_crud_new('ldap_query');
-
-      foreach ($object as $property_name => $value) {
-        if (!isset($ctools_values->{$property_name})) {
-          $ctools_values->$property_name = $value;
-        }
-      }
-      $result = ctools_export_crud_save('ldap_query', $ctools_values);
-      // ctools_export_crud_save doesn't invalidate cache.
-      ctools_export_load_object_reset('ldap_query');
-    }
-    else {
-      $values = [];
-      foreach ($this->fields() as $field_id => $field) {
-        if (isset($field['schema'])) {
-          $values[$field_id] = $this->{$field['property_name']};
-        }
-      }
-      // Edit w/o ctools.
-      if ($op == 'edit') {
-        $result = backdrop_write_record('ldap_query', $values, 'qid');
-      }
-      // Insert.
-      else {
-        $result = backdrop_write_record('ldap_query', $values);
+    $values = [];
+    foreach ($this->fields() as $field_id => $field) {
+      if (isset($field['schema'])) {
+        $values[$field_id] = $this->{$field['property_name']};
       }
     }
+    $config = config('ldap.query.' . $values['qid']);
+    $config->set('id', $values['qid']);
+    $config->set('name', $values['name']);
+    $config->set('config', $values);
+    $config->save();
+    $this->inDatabase = TRUE;
 
-    if ($result) {
-      $this->inDatabase = TRUE;
-    }
-    else {
-      backdrop_set_message(t('Failed to write LDAP Query to the database.'));
-    }
   }
 
   /**
@@ -147,11 +98,9 @@ class LdapQueryAdmin extends LdapQuery {
   public function delete($qid) {
     if ($qid == $this->qid) {
       $this->inDatabase = FALSE;
-      if (module_exists('ctools')) {
-        ctools_include('export');
-        ctools_export_load_object_reset('ldap_query');
-      }
-      return db_delete('ldap_query')->condition('qid', $qid)->execute();
+      $config = config('ldap.query.' . $qid);
+      $result = $config->delete();
+      return !empty($result);
     }
     else {
       return FALSE;

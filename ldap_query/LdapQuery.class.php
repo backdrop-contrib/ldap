@@ -47,33 +47,19 @@ class LdapQuery {
     }
 
     $query_records = [];
-    if (module_exists('ctools')) {
-      ctools_include('export');
-      $result = ctools_export_load_object('ldap_query', 'names', [$qid]);
-      if (isset($result[$qid])) {
-        $query_record = $result[$qid];
-        foreach ($query_record as $property_name => $value) {
-          $this->{$property_name} = $value;
-        }
-      }
+    $record = (object) config_get('ldap.query.' . $qid, 'config');
+    if (isset($record->qid) && ($record->qid == $qid)) {
+      $query_records[$record->qid] = $record;
     }
-    else {
-      $select = db_select('ldap_query')
-        ->fields('ldap_query')
-        ->condition('ldap_query.qid', $qid)
-        ->execute();
-      foreach ($select as $record) {
-        $query_records[$record->qid] = $record;
-      }
-      if (!isset($query_records[$qid])) {
-        $this->inDatabase = FALSE;
-        return;
-      }
-      $query_record = $query_records[$qid];
-      foreach ($this->fields() as $field_id => $field) {
-        if (isset($query_record->$field_id)) {
-          $this->{$field['property_name']} = @$query_record->$field_id;
-        }
+
+    if (!isset($query_records[$qid])) {
+      $this->inDatabase = FALSE;
+      return;
+    }
+    $query_record = $query_records[$qid];
+    foreach ($this->fields() as $field_id => $field) {
+      if (isset($query_record->$field_id)) {
+        $this->{$field['property_name']} = @$query_record->$field_id;
       }
     }
 

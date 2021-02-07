@@ -151,3 +151,16 @@ function ldap_query_autoload_info() {
     'LdapQueryInc' => 'ldap_query.inc',
   );
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function ldap_query_config_info() {
+
+  $prefixes['ldap.query'] = array(
+    'name_key' => 'id',
+    'label_key' => 'name',
+    'group' => t('LDAP queries'),
+  );
+  return $prefixes;
+}
