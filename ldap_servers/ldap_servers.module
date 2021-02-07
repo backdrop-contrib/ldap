@@ -1200,7 +1200,7 @@ function ldap_servers_config_info() {
 
   $prefixes['ldap.server'] = array(
     'name_key' => 'id',
-    'label_key' => 'id',
+    'label_key' => 'name',
     'group' => t('LDAP servers'),
   );
   return $prefixes;

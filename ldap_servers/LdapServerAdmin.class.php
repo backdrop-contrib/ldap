@@ -125,6 +125,7 @@ class LdapServerAdmin extends LdapServer {
     unset($values->numeric_sid);
     $config = config('ldap.server.' . $values->sid);
     $config->set('id', $values->sid);
+    $config->set('name', $values->name);
     $config->set('config', $values);
     $config->save();
     ldap_servers_cache_clear();
