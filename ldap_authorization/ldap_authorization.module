@@ -356,3 +356,15 @@ function ldap_authorization_autoload_info() {
     'LdapAuthorizationConsumerConfAdmin' => 'LdapAuthorizationConsumerConfAdmin.class.php',
   );
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function ldap_authorization_config_info() {
+  $prefixes['ldap.authorization'] = array(
+    'name_key' => 'id',
+    'label_key' => 'id',
+    'group' => t('LDAP consumers'),
+  );
+  return $prefixes;
+}

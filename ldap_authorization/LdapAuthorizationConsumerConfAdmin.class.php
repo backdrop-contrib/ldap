@@ -33,46 +33,11 @@ class LdapAuthorizationConsumerConfAdmin extends LdapAuthorizationConsumerConf {
     $values->create_consumers = (int) $this->createConsumers;
     $values->regrant_ldap_provisioned = (int) $this->regrantLdapProvisioned;
 
-    if (module_exists('ctools')) {
-      ctools_include('export');
-      // Populate our object with ctool's properties.
-      $object = ctools_export_crud_new('ldap_authorization');
-      foreach ($object as $property => $value) {
-        if (!isset($values->$property)) {
-          $values->$property = $value;
-        }
-      }
-      try {
-        $values->export_type = NULL;
-        $result = ctools_export_crud_save('ldap_authorization', $values);
-      }
-      catch (Exception $e) {
-        $values->export_type = EXPORT_IN_DATABASE;
-        $result = ctools_export_crud_save('ldap_authorization', $values);
-      }
-      // ctools_export_crud_save doesn't invalidate cache.
-      ctools_export_load_object_reset('ldap_authorization');
-    }
-    else {
-
-      if ($op == 'edit') {
-        $result = backdrop_write_record('ldap_authorization', $values, 'consumer_type');
-      }
-      /**
- *Insert.
- */
-      else {
-        $result = backdrop_write_record('ldap_authorization', $values);
-      }
-
-      if ($result) {
-        $this->inDatabase = TRUE;
-      }
-      else {
-        backdrop_set_message(t('Failed to write LDAP Authorization to the database.'));
-      }
-    }
-
+    $config = config('ldap.authorization.' . $values->consumer_type);
+    $config->set('id', $values->consumer_type);
+    $config->set('config', $values);
+    $config->save();
+    $this->inDatabase = TRUE;
   }
 
   public $fields;
@@ -83,8 +48,10 @@ class LdapAuthorizationConsumerConfAdmin extends LdapAuthorizationConsumerConf {
    */
   public function delete() {
     if ($this->consumerType) {
+      $config = config('ldap.authorization.' . $this->consumerType);
+      $result = $config->delete();
       $this->inDatabase = FALSE;
-      return db_delete('ldap_authorization')->condition('consumer_type', $this->consumerType)->execute();
+      return !empty($result);
     }
     else {
       return FALSE;

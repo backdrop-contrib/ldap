@@ -76,23 +76,9 @@ class LdapAuthorizationConsumerConf {
    *
    */
   protected function loadFromDb() {
-    if (module_exists('ctools')) {
-      ctools_include('export');
-      $result = ctools_export_load_object('ldap_authorization', 'names', [$this->consumerType]);
 
-      // @todo, this is technically wrong, but I don't quite grok what we're doing in the non-ctools case - justintime
-      $server_record = array_pop($result);
-      // There's no ctools api call to get the reserved properties, so instead of hardcoding a list of them
-      // here, we just grab everything. Basically, we sacrifice a few bytes of RAM for forward-compatibility.
-    }
-    else {
-      $select = db_select('ldap_authorization', 'ldap_authorization');
-      $select->fields('ldap_authorization');
-      $select->condition('ldap_authorization.consumer_type', $this->consumerType);
-      $server_record = $select->execute()->fetchObject();
-    }
-
-    if (!$server_record) {
+    $server_record = (object) config_get('ldap.authorization.' . $this->consumerType, 'config');
+    if (!isset($server_record->consumer_type)) {
       $this->inDatabase = FALSE;
       return FALSE;
     }
