@@ -382,8 +382,8 @@ class LdapServersTestCase extends LdapTestCase {
    *
    */
   public function serverConfCount() {
-    $records = db_query('SELECT * FROM {ldap_servers}')->fetchAllAssoc('sid');
-    return count(array_keys($records));
+    $configs = config_get_names_with_prefix('ldap.server.');
+    return count($configs);
   }
 
   /**
