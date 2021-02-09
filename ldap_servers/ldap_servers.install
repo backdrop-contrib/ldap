@@ -178,13 +178,31 @@ function ldap_servers_update_1000() {
 }
 
 /**
- * Rename some columns in the 'ldap_servers' table: Replace 'drupal' with 'backdrop'.
+ * Move settings of the LDAP servers from database to config
  */
 function ldap_servers_update_1001() {
-  db_change_field('ldap_servers', 'ldap_to_drupal_user', 'ldap_to_backdrop_user',
-      array('type' => 'varchar', 'length' => 1024, 'not null' => FALSE));
-  db_change_field('ldap_servers', 'testing_drupal_username', 'testing_backdrop_username',
-      array('type' => 'varchar', 'length' => 255, 'not null' => FALSE));
-  db_change_field('ldap_servers', 'testing_drupal_user_dn', 'testing_backdrop_user_dn',
-      array('type' => 'varchar', 'length' => 255, 'not null' => FALSE));
+  if (db_table_exists('ldap_servers')) {
+    $select = db_select('ldap_servers')
+      ->fields('ldap_servers')
+      ->execute()
+      ->fetchAll();
+    foreach($select as $values) {
+      unset($values->numeric_sid);
+      $values->basedn = unserialize($values->basedn);
+      // Replace 'drupal' with 'backdrop'.
+      $values->ldap_to_backdrop_user = $values->ldap_to_drupal_user;
+      unset($values->ldap_to_drupal_user);
+      $values->testing_backdrop_username = $values->testing_drupal_username;
+      unset($values->testing_drupal_username);
+      $values->testing_backdrop_user_dn = $values->testing_drupal_user_dn;
+      unset($values->testing_drupal_user_dn);
+      // Save to config.
+      $config = config('ldap.server.' . $values->sid);
+      $config->set('id', $values->sid);
+      $config->set('name', $values->name);
+      $config->set('config', $values);
+      $config->save();
+    }
+    db_drop_table('ldap_servers');
+  }
 }
