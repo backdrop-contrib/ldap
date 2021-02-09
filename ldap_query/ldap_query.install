@@ -69,3 +69,23 @@ function ldap_query_schema() {
 function ldap_query_update_last_removed() {
   return 7102;
 }
+
+/**
+ * Move settings of the LDAP queries from database to config
+ */
+function ldap_query_update_1000() {
+  if (db_table_exists('ldap_query')) {
+    $select = db_select('ldap_query')
+      ->fields('ldap_query')
+      ->execute()
+      ->fetchAll();
+    foreach($select as $values) {
+      $config = config('ldap.query.' . $values->qid);
+      $config->set('id', $values->qid);
+      $config->set('name', $values->name);
+      $config->set('config', $values);
+      $config->save();
+    }
+    db_drop_table('ldap_query');
+  }
+}
