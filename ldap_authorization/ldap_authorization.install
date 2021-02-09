@@ -122,47 +122,39 @@ function ldap_authorization_update_last_removed() {
 }
 
 /**
- * Increase size of columns of 'ldap_authorization' table.
+ * Move settings of the LDAP consumers from database to config
  */
 function ldap_authorization_update_1000() {
-  db_change_field('ldap_authorization', 'sid', 'sid',
-      array('type' => 'varchar', 'length' => 50, 'not null' => TRUE));
-  db_change_field('ldap_authorization', 'consumer_type', 'consumer_type',
-      array('type' => 'varchar', 'length' => 50, 'not null' => TRUE));
-  db_change_field('ldap_authorization', 'consumer_module', 'consumer_module',
-      array('type' => 'varchar', 'length' => 60, 'not null' => TRUE));
-}
-
-/**
- * Replace 'drupal' consumer with 'backdrop' in the 'ldap_authorization' table.
- */
-function ldap_authorization_update_1001() {
-  db_update('ldap_authorization')
-    ->fields(array(
-      'consumer_type' => 'backdrop_role',
-      'consumer_module' => 'ldap_authorization_backdrop_role',
-    ))
-    ->condition('consumer_type', 'drupal_role')
-    ->execute();
+  if (db_table_exists('ldap_authorization')) {
+    $select = db_select('ldap_authorization')
+      ->fields('ldap_authorization')
+      ->execute()
+      ->fetchAll();
+    foreach($select as $values) {
+      $values->mappings = str_replace('\\"', '"', $values->mappings);
+      // Replace 'drupal' with 'backdrop'.
+      if ($values->consumer_type == 'drupal_role') {
+        $values->consumer_type = 'backdrop_role';
+        $values->consumer_module = 'ldap_authorization_backdrop_role';
+      }
+      // Save to config.
+      $config = config('ldap.authorization.' . $values->consumer_type);
+      $config->set('id', $values->consumer_type);
+      $config->set('config', $values);
+      $config->save();
+    }
+    db_drop_table('ldap_authorization');
+  }
 }
 
 /**
  * Enable the ldap_authorization_backdrop_role module instead of the ldap_authorization_drupal_role.
  */
-function ldap_authorization_update_1002() {
+function ldap_authorization_update_1001() {
   // Check that the 'backdrop_role' consumer is enabled.
-  $count = db_select('ldap_authorization')
-    ->fields('ldap_authorization')
-    ->condition('consumer_type', 'backdrop_role')
-    ->condition('status', 1)
-    ->execute()
-    ->rowCount();
-  // Enable the 'ldap_authorization_backdrop_role' module.
-  if ($count) {
-    db_update('system')
-      ->fields(array('status' => 1))
-      ->condition('name', 'ldap_authorization_backdrop_role')
-      ->execute();
+  $config = config_get('ldap.authorization.backdrop_role', 'config');
+  if (isset($config['status']) && $config['status'] && module_exists('ldap_authorization')) {
+    module_enable(array('ldap_authorization_backdrop_role'), TRUE);
   }
   // Delete the record of the unavailable 'ldap_authorization_drupal_role' module.
   db_delete('system')
@@ -173,7 +165,7 @@ function ldap_authorization_update_1002() {
 /**
  * Copy content of the 'authmap' table into the 'ldap_authmap' table.
  */
-function ldap_authorization_update_1003() {
+function ldap_authorization_update_1002() {
   $ldap_authmap_schema = backdrop_get_schema_unprocessed('ldap_user', 'ldap_authmap');
   db_create_table('ldap_authmap', $ldap_authmap_schema);
   if (db_table_exists('authmap') && db_table_exists('ldap_authmap')) {
