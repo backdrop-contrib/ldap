@@ -186,3 +186,25 @@ function ldap_authorization_update_1002() {
       ->execute();
   }
 }
+
+/**
+ * Replace 'drupal_role' consumer with 'backdrop_role' in 'users' table.
+ */
+function ldap_authorization_update_1003() {
+  $select = db_select('users')
+    ->fields('users', array('uid', 'data'))
+    ->execute()
+    ->fetchAll();
+  foreach($select as $row) {
+    $data = unserialize($row->data);
+    if (isset($data['ldap_authorizations']['drupal_role'])) {
+      $data['ldap_authorizations']['backdrop_role'] = $data['ldap_authorizations']['drupal_role'];
+      unset($data['ldap_authorizations']['drupal_role']);
+      $data = serialize($data);
+      db_update('users')
+        ->fields(array('data' => $data))
+        ->condition('uid', $row->uid)
+        ->execute();
+    }
+  }
+}
