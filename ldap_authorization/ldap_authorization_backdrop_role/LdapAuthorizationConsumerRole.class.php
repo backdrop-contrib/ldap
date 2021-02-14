@@ -198,8 +198,9 @@ class LdapAuthorizationConsumerBackdropRole extends LdapAuthorizationConsumerAbs
    */
   public function usersAuthorizations(&$user) {
     $authorizations = [];
-    foreach ($user->roles as $rid => $role_name_mixed_case) {
-      $authorizations[] = backdrop_strtolower($role_name_mixed_case);
+    $user_roles = user_roles();
+    foreach ($user->roles as $rid) {
+      $authorizations[] = backdrop_strtolower($user_roles[$rid]);
     }
     return $authorizations;
   }
