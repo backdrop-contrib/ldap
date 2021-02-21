@@ -43,7 +43,7 @@ function ldap_user_test_form($form, &$form_state, $op = NULL) {
     '#default_value' => isset($_SESSION['ldap_user_test_form']['test_mode']) ? $_SESSION['ldap_user_test_form']['test_mode'] : 'query',
     '#options' => [
       'query' => t('Test Query. Will not alter anything in backdrop or LDAP'),
-      'execute' => t('Execute Action. Will perform provisioning configured for events below. If this is selected only one action should be selected below'),
+      'execute' => t('Execute Action. Will perform provisioning configured for events below. If this is selected only one action should be selected below.'),
     ],
   ];
 

@@ -26,7 +26,7 @@ Content
   - [Derive Authorizations from User Attribute](#derive2)
   - [Derive Authorizations from LDAP Group Entry](#derive3)
   - [LDAP Authorization - Backdrop Roles module](#roles)
-  - [LDAP Authorization - OG (Organic Groups) module](#og)
+  - [LDAP Authorization - OG (Organic Groups) module NOT AVAILABLE!](#og)
 - [LDAP Query module](#query)
 - [LDAP Views module](#views)
 - [LDAP Feeds module](#feeds)
@@ -51,7 +51,7 @@ Content
 - [Debugging](#debugging)
 
 
-### Other information
+### Further information
 
 - [Issues](#issues)
 - [Current Maintainer](#maintainer)
@@ -228,6 +228,19 @@ Implements two configuration pages:
     - Edit, delete or disable an LDAP server configuration
     - Test: bindig, group create, delete, add member, remove member
 
+Export the configuration of a server:
+  - Administration > Configuration > Development > Configuration management > Single import/export > Export
+    ( admin/config/development/configuration/single/export )
+  - Configuration group: LDAP servers
+  - Configuration name: Select the name of the server
+  - The configuration will appear in the "Exported configuration" field. Copy it.
+
+Import the configuration of a server:
+  - Administration > Configuration > Development > Configuration management > Single import/export > Import
+    ( admin/config/development/configuration/single )
+  - Paste the configuration of the server here and press the "Import" button.
+
+
 
 LDAP User module <a name="user"></a>
 ----------------
@@ -363,6 +376,17 @@ Configuration page:
   - Edit, delete a consumer.
   - Test: It shows what authorizations would be granted with this configuration.
 
+Export the configuration of an "authorization consumer":
+  - Administration > Configuration > Development > Configuration management > Single import/export > Export
+    ( admin/config/development/configuration/single/export )
+  - Configuration group: LDAP consumers
+  - Configuration name: Select the name of the consumer
+  - The configuration will appear in the "Exported configuration" field. Copy it.
+
+Import the configuration of an "authorization consumer":
+  - Administration > Configuration > Development > Configuration management > Single import/export > Import
+    ( admin/config/development/configuration/single )
+  - Paste the configuration of the consumer here and press the "Import" button.
 
 #### Vocabulary of LDAP Authorization and its Code: <a name="vocabulary"></a>
 
@@ -671,14 +695,14 @@ the authorizations a given test user would be granted.
 
 
 
-#### LDAP Authorization - OG (Organic Groups) module <a name="og"></a>
+#### NOT AVAILABLE: LDAP Authorization - OG (Organic Groups) module <a name="og"></a>
 
 Implements LDAP authorization for Organic Groups. It provides an
 "authorization consumer" for Organic Groups groups.
 
 Dependencies:
 - LDAP Authorization module
-- Organic groups module
+- Organic Groups module: This module has not yet been converted to Backdrop from Drupal 7!
 
 Configuration page:
 It has a single configuration entry at admin/config/people/ldap/authorization
@@ -794,6 +818,18 @@ You can create and store queries what include these settings:
 - Time Limit in seconds
 - How aliases should be handled during the search
 - Scope of search (Base or Onelevel or Subtree)
+
+Export the configuration of a query:
+  - Administration > Configuration > Development > Configuration management > Single import/export > Export
+    ( admin/config/development/configuration/single/export )
+  - Configuration group: LDAP queries
+  - Configuration name: Select the name of the query
+  - The configuration will appear in the "Exported configuration" field. Copy it.
+
+Import the configuration of a query:
+  - Administration > Configuration > Development > Configuration management > Single import/export > Import
+    ( admin/config/development/configuration/single )
+  - Paste the configuration of the query here and press the "Import" button.
 
 
 
@@ -1274,7 +1310,7 @@ You can test four LDAP modules by Simpletest:
    - LDAP User User Interface
    - LDAP Authentication Tests
    - LDAP Authorization Basic Tests
-   - OG 1.x-2.x Tests. (This requires the OG module. /Organic groups/)
+   - OG 1.x-2.x Tests. NOT AVAILABLE! (This requires the Organic Groups module.)
 4. Press "Run tests" button.
 
 
@@ -1493,6 +1529,54 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
     [/Example]
     ```
 
+  Or import the following to this page: admin/config/development/configuration/single
+    ```
+    {
+        "_config_name": "ldap.server.local",
+        "id": "local",
+        "name": "local",
+        "config": {
+            "sid": "local",
+            "name": "local",
+            "status": 1,
+            "ldap_type": "openldap",
+            "address": "simpleldap.local",
+            "port": "389",
+            "tls": 0,
+            "followrefs": 0,
+            "bind_method": "1",
+            "basedn": [
+                "dc=local"
+            ],
+            "binddn": "cn=admin,dc=local",
+            "user_dn_expression": "",
+            "user_attr": "cn",
+            "account_name_attr": "cn",
+            "mail_attr": "mail",
+            "mail_template": "",
+            "picture_attr": "",
+            "unique_persistent_attr": "",
+            "unique_persistent_attr_binary": "0",
+            "ldap_to_backdrop_user": "",
+            "testing_backdrop_username": "ldapuser",
+            "testing_backdrop_user_dn": "cn=ldapuser,ou=people,dc=local",
+            "grp_unused": 0,
+            "grp_object_cat": "groupofnames",
+            "grp_nested": "0",
+            "grp_user_memb_attr_exists": "0",
+            "grp_user_memb_attr": "",
+            "grp_memb_attr": "member",
+            "grp_memb_attr_match_user_attr": "dn",
+            "grp_derive_from_dn": "0",
+            "grp_derive_from_dn_attr": "",
+            "grp_test_grp_dn": "cn=test_group,ou=groups,dc=local",
+            "grp_test_grp_dn_writeable": "cn=test_group,ou=groups,dc=local",
+            "search_pagination": 0,
+            "search_page_size": "1000",
+            "bindpw": "admin"
+        }
+    }
+    ```
 - User: admin/config/people/ldap/user
     ```
     [Example]
@@ -1502,6 +1586,35 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
     [/Example]
     ```
 
+  Or import the following to this page: admin/config/development/configuration/single
+    ```
+    {
+        "_config_name": "ldap_user.settings",
+        "ldap_user_conf": {
+            "backdropAcctProvisionServer": 0,
+            "ldapEntryProvisionServer": 0,
+            "backdropAcctProvisionTriggers": {
+                "2": "2",
+                "1": "1"
+            },
+            "ldapEntryProvisionTriggers": {
+                "6": 0,
+                "7": 0,
+                "8": 0,
+                "3": 0
+            },
+            "orphanedBackdropAcctBehavior": "ldap_user_orphan_email",
+            "orphanedCheckQty": "100",
+            "userConflictResolve": 2,
+            "accountsWithSameEmail": null,
+            "manualAccountConflict": "1",
+            "acctCreation": 4,
+            "ldapUserSynchMappings": [],
+            "disableAdminPasswordField": 0
+        },
+        "ldap_user_cron_last_uid_checked": 1
+    }
+    ```
 - Authentication: admin/config/people/ldap/authentication
     ```
     [Example]
@@ -1512,6 +1625,44 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
       Email Template Handling : Never use the template.
       Password Behavior : Display password field disabled
     [/Example]
+    ```
+
+  Or import the following to this page: admin/config/development/configuration/single
+    ```
+    {
+        "_config_name": "ldap_authentication.settings",
+        "ldap_authentication_conf": {
+            "sids": {
+                "local": "local"
+            },
+            "authenticationMode": 1,
+            "loginUIUsernameTxt": null,
+            "loginUIPasswordTxt": null,
+            "ldapUserHelpLinkUrl": null,
+            "ldapUserHelpLinkText": "Logon Help",
+            "emailOption": 3,
+            "emailUpdate": 2,
+            "passwordOption": 2,
+            "allowOnlyIfTextInDn": [],
+            "excludeIfTextInDn": [],
+            "allowTestPhp": "",
+            "excludeIfNoAuthorizations": null,
+            "ssoRemoteUserStripDomainName": null,
+            "ssoExcludedPaths": [],
+            "ssoExcludedHosts": [],
+            "seamlessLogin": null,
+            "ssoNotifyAuthentication": null,
+            "ldapImplementation": null,
+            "cookieExpire": null,
+            "emailTemplate": "@username@fake-domain.com",
+            "emailTemplateHandling": 1,
+            "templateUsagePromptUser": 0,
+            "templateUsageNeverUpdate": 0,
+            "templateUsageResolveConflict": 0,
+            "templateUsagePromptRegex": ".*@fake-domain\\.com",
+            "templateUsageRedirectOnLogin": 0
+        }
+    }
     ```
 
 - Add the "Backdrop role" consumer: admin/config/people/ldap/authorization/add/backdrop_role
@@ -1529,6 +1680,30 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
     [/Example]
     ```
 
+    Or import the following to this page: admin/config/development/configuration/single
+    ```
+    {
+        "_config_name": "ldap.authorization.backdrop_role",
+        "id": "backdrop_role",
+        "config": {
+            "sid": "local",
+            "numeric_consumer_conf_id": null,
+            "consumer_type": "backdrop_role",
+            "consumer_module": "ldap_authorization_backdrop_role",
+            "status": 1,
+            "only_ldap_authenticated": 1,
+            "use_first_attr_as_groupid": 1,
+            "mappings": "a:0:{}",
+            "use_filter": 0,
+            "synch_to_ldap": 0,
+            "synch_on_logon": 1,
+            "revoke_ldap_provisioned": 1,
+            "create_consumers": 1,
+            "regrant_ldap_provisioned": 1
+        }
+    }
+    ```
+
 - Add LDAP Query: admin/config/people/ldap/query/add
     ```
     [Example]
@@ -1544,6 +1719,29 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
       How aliases should be handled during the search : (default) aliases are never dereferenced.
       Scope of search : SUBTREE. (default)
     [/Example]
+    ```
+
+    Or import the following to this page: admin/config/development/configuration/single
+    ```
+    {
+        "_config_name": "ldap.query.users",
+        "id": "users",
+        "name": "users",
+        "config": {
+            "query_numeric_id": "1",
+            "qid": "users",
+            "name": "users",
+            "sid": "local",
+            "status": "1",
+            "base_dn_str": "ou=people,dc=local",
+            "filter": "(sn=*)",
+            "attributes_str": "sn,objectClass,mail,cn,dn",
+            "sizelimit": "0",
+            "timelimit": "0",
+            "deref": "0",
+            "scope": "3"
+        }
+    }
     ```
 
 #### 3. Manual tests of the LDAP module on the local test server <a name="manualvagranttesting"></a>
@@ -1590,7 +1788,201 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
 - LDAP Views:
   1. A query was created in the previous section: Add LDAP Query
      It is the data source of the view. Name of the query: users
-  2. Add a new view: admin/structure/views/add
+  2. Add a new view:
+     Import the following to this page: admin/config/development/configuration/single
+     And go to step 9.
+     ```
+     {
+         "_config_name": "views.view.user_list",
+         "name": "user_list",
+         "description": "",
+         "tag": "default",
+         "disabled": false,
+         "base_table": "ldap",
+         "human_name": "User list",
+         "core": "1.18.1",
+         "display": {
+             "default": {
+                 "display_title": "Master",
+                 "display_plugin": "default",
+                 "display_options": {
+                     "query": {
+                         "type": "views_query",
+                         "options": {
+                             "qid": "users"
+                         }
+                     },
+                     "access": {
+                         "type": "none"
+                     },
+                     "cache": {
+                         "type": "none"
+                     },
+                     "exposed_form": {
+                         "type": "basic"
+                     },
+                     "pager": {
+                         "type": "some",
+                         "options": {
+                             "items_per_page": "10"
+                         }
+                     },
+                     "style_plugin": "default",
+                     "row_plugin": "fields",
+                     "fields": {
+                         "attribute": {
+                             "id": "attribute",
+                             "table": "ldap",
+                             "field": "attribute",
+                             "relationship": "none",
+                             "group_type": "group",
+                             "ui_name": "",
+                             "label": "User name",
+                             "exclude": 0,
+                             "alter": {
+                                 "alter_text": 0,
+                                 "text": "",
+                                 "make_link": 0,
+                                 "path": "",
+                                 "absolute": 0,
+                                 "external": 0,
+                                 "replace_spaces": 0,
+                                 "path_case": "none",
+                                 "trim_whitespace": 0,
+                                 "alt": "",
+                                 "rel": "",
+                                 "link_class": "",
+                                 "prefix": "",
+                                 "suffix": "",
+                                 "target": "",
+                                 "nl2br": 0,
+                                 "max_length": "",
+                                 "word_boundary": 1,
+                                 "ellipsis": 1,
+                                 "more_link": 0,
+                                 "more_link_text": "",
+                                 "more_link_path": "",
+                                 "strip_tags": 0,
+                                 "trim": 0,
+                                 "preserve_tags": "",
+                                 "html": 0
+                             },
+                             "element_type": "",
+                             "element_class": "",
+                             "element_label_type": "",
+                             "element_label_class": "",
+                             "element_label_colon": 1,
+                             "element_wrapper_type": "",
+                             "element_wrapper_class": "",
+                             "element_default_classes": 1,
+                             "empty": "",
+                             "hide_empty": 0,
+                             "empty_zero": 0,
+                             "hide_alter_empty": 1,
+                             "multivalue": "v-all",
+                             "value_separator": "",
+                             "index_value": "0",
+                             "attribute_name": "cn"
+                         },
+                         "attribute_1": {
+                             "id": "attribute_1",
+                             "table": "ldap",
+                             "field": "attribute",
+                             "relationship": "none",
+                             "group_type": "group",
+                             "ui_name": "",
+                             "label": "Email address",
+                             "exclude": 0,
+                             "alter": {
+                                 "alter_text": 0,
+                                 "text": "",
+                                 "make_link": 0,
+                                 "path": "",
+                                 "absolute": 0,
+                                 "external": 0,
+                                 "replace_spaces": 0,
+                                 "path_case": "none",
+                                 "trim_whitespace": 0,
+                                 "alt": "",
+                                 "rel": "",
+                                 "link_class": "",
+                                 "prefix": "",
+                                 "suffix": "",
+                                 "target": "",
+                                 "nl2br": 0,
+                                 "max_length": "",
+                                 "word_boundary": 1,
+                                 "ellipsis": 1,
+                                 "more_link": 0,
+                                 "more_link_text": "",
+                                 "more_link_path": "",
+                                 "strip_tags": 0,
+                                 "trim": 0,
+                                 "preserve_tags": "",
+                                 "html": 0
+                             },
+                             "element_type": "",
+                             "element_class": "",
+                             "element_label_type": "",
+                             "element_label_class": "",
+                             "element_label_colon": 1,
+                             "element_wrapper_type": "",
+                             "element_wrapper_class": "",
+                             "element_default_classes": 1,
+                             "empty": "",
+                             "hide_empty": 0,
+                             "empty_zero": 0,
+                             "hide_alter_empty": 1,
+                             "multivalue": "v-all",
+                             "value_separator": "",
+                             "index_value": "0",
+                             "attribute_name": "mail"
+                         }
+                     },
+                     "filters": [],
+                     "sorts": {
+                         "cn": {
+                             "id": "cn",
+                             "table": "ldap",
+                             "field": "cn",
+                             "relationship": "none",
+                             "group_type": "group",
+                             "ui_name": "",
+                             "order": "ASC",
+                             "exposed": false,
+                             "expose": {
+                                 "label": ""
+                             }
+                         }
+                     },
+                     "title": "User list"
+                 }
+             },
+             "page": {
+                 "display_title": "Page",
+                 "display_plugin": "page",
+                 "display_options": {
+                     "query": {
+                         "type": "views_query",
+                         "options": []
+                     },
+                     "path": "user-list",
+                     "menu": {
+                         "type": "normal",
+                         "title": "LDAP users",
+                         "description": "",
+                         "name": "main-menu",
+                         "weight": "0",
+                         "context": 0,
+                         "context_only_inline": 0
+                     }
+                 }
+             }
+         }
+     }
+     ```
+
+     Or open this page and add a new view: admin/structure/views/add
      ( Administration > Structure > Views > Add view )
      - View name: User list
      - Show: LDAP Query
@@ -1600,10 +1992,11 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
        ( admin/structure/views/nojs/display/user_list/page/query )
      - LDAP Search: users
      - Press the "Apply" button.
-  4. Set a field: 
-     - Fields > Add
-     - Select "LDAP Query: DN".
-     - Press the "Add and configure fields" button.
+  4. Set the first field: 
+     - Use "LDAP Query: LDAP Attribute (LDAP Attribute)" link.
+     - Label: User name
+     - Values to show: All values
+     - Attribute name: cn
      - Press the "Apply (all displays)" button.
   5. Set another field: 
      - Fields > Add
@@ -1615,7 +2008,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
      - Press the "Apply (all displays)" button.
   6. Set sort criteria: 
      - Sort criteria > Add
-     - Select: "LDAP Query: DN"
+     - Select: "LDAP Query: CN"
      - Press the "Add and configure sort criteria" button.
      - Press the "Apply (all displays)" button.
   7. You can set a menu entry:
@@ -1647,6 +2040,121 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
      - You can see the new empty "Surname" field on a user account page.
        ( user/1/edit )
   3. Create new Feed importer:
+     Import the following to this page: admin/config/development/configuration/single
+     And go to step 12.
+     ```
+     {
+         "_config_name": "feeds.feeds_importer.ldap_data_to_user_fields",
+         "id": "ldap_data_to_user_fields",
+         "disabled": false,
+         "config": {
+             "name": "LDAP Data to User Fields",
+             "description": "",
+             "fetcher": {
+                 "plugin_key": "FeedsBackdropUserLdapEntryFetcher",
+                 "config": {
+                     "filterLdapAuthenticated": 0,
+                     "availableBackdropUserAttributes": {
+                         "uid": {
+                             "token": "backdrop.uid",
+                             "description": "Backdrop used id. e.g. 413"
+                         },
+                         "name": {
+                             "token": "backdrop.name",
+                             "description": "Backdrop username. e.g. jdoe"
+                         },
+                         "mail": {
+                             "token": "backdrop.mail",
+                             "description": "Backdrop email address. e.g. jdoe@gmail.com"
+                         },
+                         "created": {
+                             "token": "backdrop.created",
+                             "description": "Backdrop account created timestamp in unix e.g. 432432432"
+                         },
+                         "status": {
+                             "token": "backdrop.status",
+                             "description": "Backdrop user status  e.g. 1 or 0"
+                         },
+                         "language": {
+                             "token": "backdrop.language",
+                             "description": "Backdrop language."
+                         },
+                         "signature": {
+                             "token": "backdrop.signature",
+                             "description": "Backdrop signature. e.g. Happy Joe"
+                         },
+                         "login": {
+                             "token": "backdrop.login",
+                             "description": "Backdrop unix timestamp of last login  e.g. 1317494439"
+                         },
+                         "init": {
+                             "token": "backdrop.init",
+                             "description": "Backdrop user init  e.g. jdoe@gmail.com"
+                         }
+                     },
+                     "filterRoles": []
+                 }
+             },
+             "parser": {
+                 "plugin_key": "FeedsLdapEntryParser",
+                 "config": []
+             },
+             "processor": {
+                 "plugin_key": "FeedsUserProcessor",
+                 "config": {
+                     "roles": {
+                         "authenticated": 0,
+                         "editor": 0,
+                         "administrator": 0,
+                         "tesztelo": 0,
+                         "szerepkor": 0,
+                         "kner": 0,
+                         "igenylo": 0,
+                         "test-group": 0,
+                         "default_group": 0,
+                         "ldapcsoport": 0
+                     },
+                     "status": "1",
+                     "defuse_mail": 0,
+                     "mappings": [
+                         {
+                             "source": "cn",
+                             "target": "name",
+                             "unique": 1,
+                             "language": "und"
+                         },
+                         {
+                             "source": "mail",
+                             "target": "mail",
+                             "unique": false,
+                             "language": "und"
+                         },
+                         {
+                             "source": "SN",
+                             "target": "field_surname",
+                             "unique": false
+                         }
+                     ],
+                     "insert_new": "1",
+                     "update_existing": "2",
+                     "update_non_existent": "skip",
+                     "input_format": "plain_text",
+                     "skip_hash_check": 0,
+                     "bundle": "user",
+                     "language": "und"
+                 }
+             },
+             "content_type": "",
+             "update": 0,
+             "import_period": "-1",
+             "expire_period": 3600,
+             "import_on_create": 1,
+             "process_in_background": 0
+         }
+     }
+     ```
+
+     Or open this page and fill out the form: admin/structure/feeds/create
      - admin/structure/feeds/create
        ```
        [Example]
@@ -1745,7 +2253,7 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
         [/Example]
         ```
         - Press the "Save" button.
-  12. Log in Backdrop with a new user provided by LDAP.
+  12. Log in Backdrop with a new user provided by LDAP. (Don't skip this step!)
       - For example:
         - Username: ldapuser
         - Password: ldapuser
@@ -1775,10 +2283,105 @@ Configuration page: Administration > Configuration > User accounts > LDAP Config
          Attributes to return : cn,mail
        [/Example]
        ```
-     - Press the "Add" button.
-       You can test the LDAP query at admin/config/people/ldap/query under
+
+       Or import the following to this page: admin/config/development/configuration/single
+       ```
+       {
+          "_config_name": "ldap.query.get_ldap_users",
+          "id": "get_ldap_users",
+          "name": "Get LDAP Users",
+          "config": {
+              "query_numeric_id": "2",
+              "qid": "get_ldap_users",
+              "name": "Get LDAP Users",
+              "sid": "local",
+              "status": "1",
+              "base_dn_str": "ou=people,dc=local",
+              "filter": "(objectClass=inetOrgPerson)",
+              "attributes_str": "cn,mail",
+              "sizelimit": "0",
+              "timelimit": "0",
+              "deref": "0",
+              "scope": "3"
+          }
+       }
+       ```
+
+     - You can test the LDAP query at admin/config/people/ldap/query under
        "OPERATIONS".
-  3. Create new Feed importer: admin/structure/feeds/create
+  3. Create new Feed importer:
+     Import the following to this page: admin/config/development/configuration/single
+     And go to step 12.
+     ```
+     {
+         "_config_name": "feeds.feeds_importer.ldap_data_to_user_data",
+         "id": "ldap_data_to_user_data",
+         "disabled": false,
+         "config": {
+             "name": "LDAP Data to User Data",
+             "description": "Import users",
+             "fetcher": {
+                 "plugin_key": "FeedsLdapQueryFetcher",
+                 "config": {
+                     "query_ids": {
+                         "get_ldap_users": "get_ldap_users"
+                     }
+                 }
+             },
+             "parser": {
+                 "plugin_key": "FeedsLdapEntryParser",
+                 "config": []
+             },
+             "processor": {
+                 "plugin_key": "FeedsUserProcessor",
+                 "config": {
+                     "roles": {
+                         "authenticated": 0,
+                         "editor": 0,
+                         "administrator": 0,
+                         "tesztelo": 0,
+                         "szerepkor": 0,
+                         "kner": 0,
+                         "igenylo": 0,
+                         "test-group": 0,
+                         "default_group": 0,
+                         "ldapgroup": 0
+                     },
+                     "status": "1",
+                     "defuse_mail": 0,
+                     "mappings": [
+                         {
+                             "source": "cn",
+                             "target": "name",
+                             "unique": 1,
+                             "language": "und"
+                         },
+                         {
+                             "source": "mail",
+                             "target": "mail",
+                             "unique": false
+                         }
+                     ],
+                     "insert_new": "1",
+                     "update_existing": "2",
+                     "update_non_existent": "skip",
+                     "input_format": "plain_text",
+                     "skip_hash_check": 0,
+                     "bundle": "user",
+                     "language": "und"
+                 }
+             },
+             "content_type": "",
+             "update": 0,
+             "import_period": "-1",
+             "expire_period": 3600,
+             "import_on_create": 1,
+             "process_in_background": 0
+         }
+     }
+     ```
+
+     Or open this page and fill out the form: admin/structure/feeds/create
      ```
      [Example]
         Name : LDAP Data to User Data
