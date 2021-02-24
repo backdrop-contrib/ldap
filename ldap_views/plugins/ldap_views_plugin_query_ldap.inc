@@ -196,7 +196,18 @@ class ldap_views_plugin_query_ldap extends views_plugin_query {
     $condition     = $this->build_condition();
     $contextual    = $this->build_contextual_filter();
     $search_filter = !empty($contextual) && !empty($condition) ? '(&' . $condition . $contextual . ')' : $condition . $contextual;
-    return !empty($search_filter) ? $search_filter : $filter;
+    // If both ldap views filters and ldap views query filter exist, combine them.
+    // If the ldap views filter exist, use that.
+    // Else, use ldap query filter.
+    if (!empty($search_filter) && !empty($filter)) {
+      return '(&' . $search_filter . $filter . ')';
+    }
+    elseif (!empty($search_filter)) {
+      return $search_filter;
+    }
+    else {
+      return $filter;
+    }
   }
 
   /**
