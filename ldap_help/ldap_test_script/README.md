@@ -4,7 +4,7 @@ LDAP test script
 This script is intended to help separate LDAP module configuration and bugs
 from LDAP server, ldap php extension, and related connectivity and LDAP
 permissions issues. It uses the php ldap extension functions like
-ldap_connect(), ldap_search(), etc. rather than the Backdrop LDAP module code.
+`ldap_connect()`, `ldap_search()`, etc. rather than the Backdrop LDAP module code.
 
 Watchout for the following:
 - The test script does not depend on the Backdrop LDAP module and should not
@@ -22,7 +22,7 @@ Running the Script
 ------------------
 
 1.  Copy this directory (ldap_test_script) outside of web root.
-2.  Edit config.inc to reflect your server configuration. The array is in the form:
+2.  Edit `config.inc` to reflect your server configuration. The array is in the form:
     ```php
     $config['servers'][<server friendly name>][<server param>] = value
     $config['servers'][<server friendly name>]['test_queries'][<query name>] = array of test query data
@@ -92,7 +92,7 @@ Running the Script
       );
       ```
       
-3. Comment out the die() statement near the top of config.php
+3. Comment out the `die()` statement near the top of `config.inc`
     That is:
       `die('Move this...`
     Becomes:
@@ -101,5 +101,7 @@ Running the Script
 4. From the ldap_test_script, type:
      `php test.php`
 
-5. If this script has created some unnecessary entries in the LDAP database by
-   the provision test ("test_user, "test_group"), then you should remove them.
+5. Read the results.
+
+6. If this script has created some unnecessary entries in the LDAP database by
+   the provision test (`test_user`, `test_group`), then you should remove them.
