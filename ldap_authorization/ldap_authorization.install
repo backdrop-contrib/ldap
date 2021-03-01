@@ -73,48 +73,6 @@ function ldap_authorization_user_entity_fields() {
 }
 
 /**
- * Implements hook_schema().
- */
-function ldap_authorization_schema() {
-
-  $schema['ldap_authorization'] = [
-    'export' => [
-      'key' => 'consumer_type',
-      'key name' => 'Mapping ID',
-      'identifier' => 'consumer_type',
-      'primary key' => 'numeric_consumer_conf_id',
-      'api' => [
-        'owner' => 'ldap_authorization',
-        'api' => 'ldap_authorization',
-        'minimum_version' => 1,
-        'current_version' => 1,
-      ],
-    ],
-
-    'description' => "Data used to map users ldap entry to authorization rights.",
-    'primary key' => ['numeric_consumer_conf_id'],
-    'foreign keys' => [
-      'sid' => [
-        'table' => 'ldap_servers',
-        'columns' => ['sid' => 'sid'],
-      ],
-    ],
-  ];
-
-  module_load_include('inc', 'ldap_servers', 'ldap_servers.functions');
-  module_load_include('php', 'ldap_authorization', 'LdapAuthorizationConsumerConfAdmin.class');
-
-  $fields = LdapAuthorizationConsumerConfAdmin::fields();
-  foreach ($fields as $name => $props) {
-    if (isset($props['schema'])) {
-      $schema['ldap_authorization']['fields'][$name] = $props['schema'];
-    }
-  }
-
-  return $schema;
-}
-
-/**
  * Implements hook_update_last_removed().
  */
 function ldap_authorization_update_last_removed() {

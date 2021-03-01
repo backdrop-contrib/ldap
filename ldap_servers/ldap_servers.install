@@ -104,43 +104,6 @@ function ldap_servers_requirements($phase) {
 }
 
 /**
- * Implements hook_schema().
- */
-function ldap_servers_schema() {
-  module_load_include('inc', 'ldap_servers', 'ldap_servers.functions');
-  // To get the LDAP_SERVERS_ENC_TYPE_CLEARTEXT constants issue#1209576.
-  module_load_include('module', 'ldap_servers', 'ldap_servers');
-  module_load_include('php', 'ldap_servers', 'LdapServerAdmin.class');
-
-  $schema['ldap_servers'] = [
-    'export' => [
-      'key' => 'sid',
-      'key name' => 'Server ID',
-      'primary key' => 'numeric_sid',
-      'identifier' => 'ldap_servers_conf',
-      'api' => [
-        'owner' => 'ldap_servers',
-        'api' => 'ldap_servers',
-        'minimum_version' => 1,
-        'current_version' => 1,
-      ],
-    ],
-    'primary key' => ['numeric_sid'],
-    'unique keys' => ['name' => ['name']],
-  ];
-
-  $fields = LdapServerAdmin::fields();
-  foreach ($fields as $name => $props) {
-    if (isset($props['schema'])) {
-      $schema['ldap_servers']['fields'][$name] = $props['schema'];
-    }
-  }
-
-  return $schema;
-
-}
-
-/**
  * Implements hook_update_last_removed().
  */
 function ldap_servers_update_last_removed() {

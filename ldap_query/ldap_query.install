@@ -20,50 +20,6 @@ function ldap_query_uninstall() {
 }
 
 /**
- * Implements hook_schema().
- */
-
-/**
- * Implements hook_schema().
- */
-function ldap_query_schema() {
-
-  $schema['ldap_query'] = [
-    'export' => [
-      'key' => 'qid',
-      'key name' => 'Query Name',
-      'identifier' => 'qid',
-      'primary key' => 'query_numeric_id',
-      'api' => [
-        'owner' => 'ldap_query',
-        'api' => 'ldap_query',
-        'minimum_version' => 1,
-        'current_version' => 1,
-      ],
-    ],
-
-    'description' => "LDAP Query Data leveraged by other LDAP Modules",
-    'primary key' => ['query_numeric_id'],
-    'foreign keys' => [
-      'sid' => [
-        'table' => 'ldap_servers',
-        'columns' => ['sid' => 'sid'],
-      ],
-    ],
-  ];
-  module_load_include('module', 'ldap_servers');
-  ldap_servers_module_load_include('php', 'ldap_query', 'LdapQuery.class');
-  $fields = LdapQuery::fields();
-  foreach ($fields as $field_id => $field) {
-    if (isset($field['schema'])) {
-      $schema['ldap_query']['fields'][$field_id] = $field['schema'];
-    }
-  }
-
-  return $schema;
-}
-
-/**
  * Implements hook_update_last_removed().
  */
 function ldap_query_update_last_removed() {
