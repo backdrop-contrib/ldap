@@ -111,7 +111,11 @@ class LdapServersTestCase extends LdapTestCase {
         $pass = (count($diff1) == 0 && count($diff2) == 0 && $count == $desired_count);
         $this->assertTrue($pass, "LdapServer::groupMembershipsFromUser nested=$nested", $group . $suffix);
         if (!$pass) {
-          debug('groupMembershipsFromUser');debug($groups);  debug($diff1);  debug($diff2);  debug($groups_desired);
+          debug('groupMembershipsFromUser');
+          debug($groups);
+          debug($diff1);
+          debug($diff2);
+          debug($groups_desired);
         }
 
         // Test parent groupUserMembershipsFromUserAttr, for openldap should be false, for ad should work.
@@ -126,7 +130,10 @@ class LdapServersTestCase extends LdapTestCase {
         }
         $this->assertTrue($pass, "LdapServer::groupUserMembershipsFromUserAttr $nested_display, $ldap_type, is false because not configured", $group . $suffix);
         if (!$pass) {
-          debug('groupUserMembershipsFromUserAttr');debug($groups);  debug($diff1);  debug($diff2);
+          debug('groupUserMembershipsFromUserAttr');
+          debug($groups);
+          debug($diff1);
+          debug($diff2);
         }
 
         $groups = $ldap_server->groupUserMembershipsFromEntry($ldap_module_user_entry, $nested);
@@ -136,7 +143,11 @@ class LdapServersTestCase extends LdapTestCase {
         $pass = (count($diff1) == 0 && count($diff2) == 0 && $count == $desired_count);
         $this->assertTrue($pass, "LdapServer::groupUserMembershipsFromEntry $nested_display works", $group . $suffix);
         if (!$pass) {
-          debug('groupUserMembershipsFromEntry'); debug($groups);  debug($diff1);  debug($diff2);  debug($groups_desired);
+          debug('groupUserMembershipsFromEntry');
+          debug($groups);
+          debug($diff1);
+          debug($diff2);
+          debug($groups_desired);
         }
       }
     }
@@ -361,7 +372,8 @@ class LdapServersTestCase extends LdapTestCase {
       // assert load of server has correct properties for each input.
       $mismatches = $this->compareFormToProperties($ldap_servers['server1'], $server_data['server1'], 1, $field_to_prop_map, $lcase_transformed);
       if (count($mismatches)) {
-        debug('mismatches between ldap server properties and form submitted values'); debug($mismatches);
+        debug('mismatches between ldap server properties and form submitted values');
+        debug($mismatches);
       }
       $this->assertTrue(count($mismatches) == 0, 'Update form for ldap server properties match values submitted.', $this->ldapTestId . '.Update Server');
 

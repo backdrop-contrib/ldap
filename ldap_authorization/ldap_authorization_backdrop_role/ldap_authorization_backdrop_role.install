@@ -11,5 +11,5 @@
 function ldap_authorization_backdrop_role_uninstall() {
   module_load_include('inc', 'ldap_servers', 'ldap_servers.user_data_remove');
   batch_set(ldap_severs_user_data_setup_batch('backdrop_role'));
-  $batch =& batch_get();
+  $batch = &batch_get();
 }

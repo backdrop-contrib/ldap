@@ -375,8 +375,7 @@ EOT;
    */
   private function checkPuidOrphans($sid, $orphan_handling) {
     $ldap_server = ldap_servers_get_servers($sid, NULL, TRUE);
-    if ($ldap_server && empty($ldap_server->unique_persistent_attr)
-      && $orphan_handling != 'ldap_user_orphan_do_not_check') {
+    if ($ldap_server && empty($ldap_server->unique_persistent_attr) && $orphan_handling != 'ldap_user_orphan_do_not_check') {
       backdrop_set_message(t('You\'ve configured the orphan check but are missing the required persistent user ID property.'), 'error');
     }
   }
@@ -710,7 +709,7 @@ EOT;
         if (
           (isset($mapping['configurable_to_backdrop']) && $mapping['configurable_to_backdrop'] && $direction == LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER)
           ||
-          (isset($mapping['configurable_to_ldap']) && $mapping['configurable_to_ldap']  && $direction == LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY)
+          (isset($mapping['configurable_to_ldap']) && $mapping['configurable_to_ldap'] && $direction == LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY)
           ) {
           $user_attr_options[$target_id] = substr($target_id, 1, -1);
         }
@@ -989,8 +988,8 @@ EOT;
     ];
 
     /**
-    *  Backdrop Account Provisioning and Synching
-    */
+     *  Backdrop Account Provisioning and Synching
+     */
     $values['userConflictResolveDescription'] = t('What should be done if a local Backdrop or other external
       user account already exists with the same login name.');
     $values['userConflictOptions'] = [

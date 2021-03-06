@@ -149,7 +149,7 @@ function ldap_servers_update_1001() {
       ->fields('ldap_servers')
       ->execute()
       ->fetchAll();
-    foreach($select as $values) {
+    foreach ($select as $values) {
       unset($values->numeric_sid);
       $values->basedn = unserialize($values->basedn);
       // Replace 'drupal' with 'backdrop'.

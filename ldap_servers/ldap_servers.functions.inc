@@ -267,10 +267,10 @@ function ldap_pear_escape_filter_value($values = []) {
 
     // ASCII < 32 escaping.
     $val = ldap_pear_asc2hex32($val);
-
+    // Apply escaped "null" if string is empty.
     if (NULL === $val) {
       $val = '\0';
-    }  // apply escaped "null" if string is empty
+    }
 
     $values[$key] = $val;
   }

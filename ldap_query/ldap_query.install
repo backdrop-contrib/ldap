@@ -35,7 +35,7 @@ function ldap_query_update_1000() {
       ->fields('ldap_query')
       ->execute()
       ->fetchAll();
-    foreach($select as $values) {
+    foreach ($select as $values) {
       $config = config('ldap.query.' . $values->qid);
       $config->set('id', $values->qid);
       $config->set('name', $values->name);

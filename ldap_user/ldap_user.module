@@ -649,14 +649,12 @@ function ldap_user_ldap_exclude($account = NULL, $edit = NULL, $direction = LDAP
   }
 
   // Exclude users who have the field ldap_user_ldap_exclude set to 1.
-  if (is_object($account) && isset($account->ldap_user_ldap_exclude[LANGUAGE_NONE][0]['value'])
-    && $account->ldap_user_ldap_exclude[LANGUAGE_NONE][0]['value'] == 1) {
+  if (is_object($account) && isset($account->ldap_user_ldap_exclude[LANGUAGE_NONE][0]['value']) && $account->ldap_user_ldap_exclude[LANGUAGE_NONE][0]['value'] == 1) {
     return TRUE;
   }
 
   // Exclude new users who have the value set to 1 in their $edit array.
-  if (is_array($edit) && isset($edit['ldap_user_ldap_exclude'][LANGUAGE_NONE][0]['value'])
-    && $edit['ldap_user_ldap_exclude'][LANGUAGE_NONE][0]['value'] == 1) {
+  if (is_array($edit) && isset($edit['ldap_user_ldap_exclude'][LANGUAGE_NONE][0]['value']) && $edit['ldap_user_ldap_exclude'][LANGUAGE_NONE][0]['value'] == 1) {
     return TRUE;
   }
 
@@ -874,7 +872,7 @@ function ldap_user_user_login(&$edit, $account) {
         if (!empty($account->data)) {
           $user_edit['data'] = !empty($user_edit['data']) ? array_merge($account->data, $user_edit['data']) : $account->data;
         }
-        foreach($user_edit as $key => $value) {
+        foreach ($user_edit as $key => $value) {
           $account->{$key} = $value;
         }
         $account->save();
@@ -931,7 +929,7 @@ function ldap_user_user_insert($account) {
 }
 
 /**
- * Implements hook_user_update()
+ * Implements hook_user_update().
  */
 function ldap_user_user_update($account) {
   $user_edit = array();
@@ -1196,7 +1194,7 @@ function ldap_user_load_user_acct_and_entity($user_id, $user_id_type = 'username
 }
 
 /**
- * Implements hook_ldap_servers_username_to_ldapname_alter
+ * Implements hook_ldap_servers_username_to_ldapname_alter().
  * - Set ldap name to auth name.
  */
 function ldap_user_ldap_servers_username_to_ldapname_alter(&$ldap_username, $backdrop_username, $context) {

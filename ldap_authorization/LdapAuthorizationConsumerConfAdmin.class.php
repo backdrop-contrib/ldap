@@ -307,7 +307,7 @@ Representations of groups derived from LDAP might initially look like:
       $errors['consumer_type'] = t('Consumer type is missing.');
     }
 
-    if ($this->inDatabase  && (!$this->consumerType)) {
+    if ($this->inDatabase && (!$this->consumerType)) {
       $errors['consumer_type'] = t('Edit or delete called without consumer type in form.');
     }
 
@@ -317,7 +317,7 @@ Representations of groups derived from LDAP might initially look like:
         if ($type == 'error') {
           $errors['mappings'] = $text;
         }
-        elseif ($type == 'warning' ||  $type == 'status') {
+        elseif ($type == 'warning' || $type == 'status') {
           backdrop_set_message(check_plain($text), $type);
         }
       }

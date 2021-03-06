@@ -40,11 +40,11 @@
 function hook_ldap_user_attrs_list_alter(&$available_user_attrs, &$params) {
 
   /** search for _ldap_user_attrs_list_alter for good examples
-  * the general trick to implementing this hook is:
-  *   make sure to specify config and synch module
-  *   if its configurable by ldap_user module, don't specify convert, user_tokens, direction. these will be set by UI and stored values
-  *   be sure to merge with existing values as ldap_user configured values will already exist in $available_user_attrs
-  */
+   * the general trick to implementing this hook is:
+   *   make sure to specify config and synch module
+   *   if its configurable by ldap_user module, don't specify convert, user_tokens, direction. these will be set by UI and stored values
+   *   be sure to merge with existing values as ldap_user configured values will already exist in $available_user_attrs
+   */
 
 }
 

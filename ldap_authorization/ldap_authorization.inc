@@ -139,7 +139,7 @@ function _ldap_authorizations_user_authorizations(&$user, $op, $consumer_type, $
       continue;
     }
 
-    if ($consumer->consumerConf->onlyApplyToLdapAuthenticated && !$ldap_authenticated  && $op != 'test_query' && $op != 'test_query_set') {
+    if ($consumer->consumerConf->onlyApplyToLdapAuthenticated && !$ldap_authenticated && $op != 'test_query' && $op != 'test_query_set') {
       if ($detailed_watchdog_log) {
         watchdog('ldap_authorization', '%username : not used because it is set to be applied only to ldap authenticated users.
             %username  is not ldap authenticated.', $watchdog_tokens, WATCHDOG_DEBUG);
@@ -319,7 +319,8 @@ function _ldap_authorizations_user_authorizations(&$user, $op, $consumer_type, $
     }
 
     $authorizations[$consumer_type] = $filtered_ldap_authorizations;
-  } //  end foreach $consumers
+    // End foreach $consumers.
+  }
 
   return [$authorizations, $notifications];
 
@@ -349,8 +350,7 @@ function _ldap_authorizations_user_authorizations_set(&$user, $consumer, $filter
    * A. Determine what authorizations have been granted in the past by ldap authorization
    */
 
-  if (isset($user->data['ldap_authorizations'][$consumer->consumerType])
-      && is_array($user->data['ldap_authorizations'][$consumer->consumerType])) {
+  if (isset($user->data['ldap_authorizations'][$consumer->consumerType]) && is_array($user->data['ldap_authorizations'][$consumer->consumerType])) {
     $user_auth_data = $user->data['ldap_authorizations'][$consumer->consumerType];
     $initial_existing_ldap_authorizations = array_keys($user_auth_data);
   }

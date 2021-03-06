@@ -115,7 +115,12 @@ class LdapUserUnitTests extends LdapTestCase {
       $this->assertTrue(count($array_diff) == 0, t('ldap_servers_get_user_ldap_data retrieved correct attributes and values'), $this->testId('ldap_servers_get_user_ldap_data'));
     }
     if (count($array_diff) != 0) {
-      debug('ldap_servers_get_user_ldap_data failed. resulting ldap data array:'); debug($ldap_user); debug('desired result:'); debug($desired_result); debug('array_diff:'); debug($array_diff);
+      debug('ldap_servers_get_user_ldap_data failed. resulting ldap data array:');
+      debug($ldap_user);
+      debug('desired result:');
+      debug($desired_result);
+      debug('array_diff:');
+      debug($array_diff);
     }
     $ldap_tobackdrop_prov_server = ldap_servers_get_servers($ldap_user_conf->backdropAcctProvisionServer, 'all', TRUE);
     $ldap_user_conf->entryToUserEdit($ldap_user, $user_edit, $ldap_tobackdrop_prov_server);
@@ -187,7 +192,12 @@ class LdapUserUnitTests extends LdapTestCase {
     // @todo need better diff, this will give false positives in most cases
     $this->assertTrue(count($array_diff) == 0, t('ldapUserConf::entryToUserEdit retrieved correct property, field, and data values.'), $this->testId('ldapUserConf::entryToUserEdit'));
     if (count($array_diff) != 0) {
-      debug('ldapUserConf::entryToUserEdit failed. resulting user edit array:'); debug($user_edit); debug('desired result:'); debug($desired_result); debug('array_diff:'); debug($array_diff);
+      debug('ldapUserConf::entryToUserEdit failed. resulting user edit array:');
+      debug($user_edit);
+      debug('desired result:');
+      debug($desired_result);
+      debug('array_diff:');
+      debug($array_diff);
     }
 
     $is_synched_tests = [
@@ -218,7 +228,8 @@ class LdapUserUnitTests extends LdapTestCase {
 
     $this->assertFalse($fail, t('ldapUserConf::isSynched works'), $this->testId('ldapUserConf::isSynched'));
     if ($fail) {
-      debug('ldapUserConf::isSynched failures:'); debug($debug);
+      debug('ldapUserConf::isSynched failures:');
+      debug($debug);
     }
 
     $this->assertTrue($ldap_user_conf->isBackdropAcctProvisionServer('activedirectory1'), t('isBackdropAcctProvisionServer works'), $this->testId('isBackdropAcctProvisionServer'));
@@ -235,7 +246,7 @@ class LdapUserUnitTests extends LdapTestCase {
 
     $provision_enabled_false =
     ($ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY, LDAP_USER_BACKDROP_USER_PROV_ON_USER_UPDATE_CREATE) ||
-    $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY, LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE)  ||
+    $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_LDAP_ENTRY, LDAP_USER_BACKDROP_USER_PROV_ON_AUTHENTICATE) ||
     $ldap_user_conf->provisionEnabled(LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER, LDAP_USER_LDAP_ENTRY_PROV_ON_USER_UPDATE_CREATE));
     $this->assertFalse($provision_enabled_false, t('provisionEnabled works'), $this->testId('provisionEnabled.2'));
 
@@ -323,7 +334,8 @@ class LdapUserUnitTests extends LdapTestCase {
     if (!$success) {
       debug("hpotter mail after synchToBackdropAccount :" . $hpotter->mail);
       $ldap_server = ldap_servers_get_servers($sid, NULL, TRUE, TRUE);
-      debug('ldap_server'); debug($ldap_server);
+      debug('ldap_server');
+      debug($ldap_server);
     }
 
     /**
@@ -342,7 +354,10 @@ class LdapUserUnitTests extends LdapTestCase {
     $pass = (is_object($hpottergranger) && is_object($hpotter) && $hpotter->uid == $hpottergranger->uid);
     $this->assertTrue($pass, t('provisionBackdropAccount recognized PUID conflict and synched instead of creating a conflicted backdrop account.'), $this->testId('provisionBackdropAccount function test with existing user with same puid'));
     if (!$pass) {
-      debug('hpotter'); debug($hpotter); debug('hpottergranger'); debug($hpottergranger);
+      debug('hpotter');
+      debug($hpotter);
+      debug('hpottergranger');
+      debug($hpottergranger);
     }
     $authmaps = ldap_user_user_get_authmaps('hpotter-granger');
     $pass = $authmaps['ldap_user'] == 'hpotter-granger';
@@ -614,7 +629,9 @@ class LdapUserUnitTests extends LdapTestCase {
             $property_success = ($user_object->{$property_name} == $test['property_results'][0]);
             $this->assertTrue($property_success, t("provisionBackdropAccount worked for property $property_name"), $this->testId(":provisionBackdropAccount.i=$j.prov_event=$prov_event"));
             if (!$property_success) {
-              debug('field fail,' . $property_name); debug($user_entity->{$property_name}); debug($test['property_results'][0]);
+              debug('field fail,' . $property_name);
+              debug($user_entity->{$property_name});
+              debug($test['property_results'][0]);
             }
           }
         }
@@ -627,7 +644,9 @@ class LdapUserUnitTests extends LdapTestCase {
             $this->assertTrue($field_success, t("provisionBackdropAccount worked for field $field_name"), $this->testId(":provisionBackdropAccount.i=$j.prov_event=$prov_event"));
             if (!$field_success) {
               // debug($user_entity);
-              debug('field fail,' . $field_name); debug($user_entity->{$field_name}); debug($test['field_results'][0]);
+              debug('field fail,' . $field_name);
+              debug($user_entity->{$field_name});
+              debug($test['field_results'][0]);
             }
           }
           else {
@@ -638,8 +657,8 @@ class LdapUserUnitTests extends LdapTestCase {
       }
 
       /**
-        * manually create backdrop user with option of not ldap associated checked
-        */
+       * Manually create backdrop user with option of not ldap associated checked.
+       */
 
       if ($hpotter = user_load_by_name('hpotter')) {
         user_delete($hpotter->uid);
@@ -755,10 +774,12 @@ class LdapUserIntegrationTests extends LdapTestCase {
       );
       $this->assertTrue($ldap_entry_success, t("provision of ldap entry on user create succeeded for " . $username), $this->testId("test for provision to ldap on backdrop acct create"));
       if (!$ldap_entry_success) {
-        debug('backdrop_account'); debug($backdrop_account);
+        debug('backdrop_account');
+        debug($backdrop_account);
         debug("desired_dn=$desired_dn, ldap_entry_post=");
         debug($ldap_entry_post);
-        debug('ldap_user_conf'); debug($ldap_user_conf);
+        debug('ldap_user_conf');
+        debug($ldap_user_conf);
       }
 
       // Need to reset for simpletests.
@@ -789,11 +810,16 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $this->assertTrue($ldap_entry_success, t("synch to ldap entry on user save succeeded for " . $username), $this->testId());
       if (!$ldap_entry_success) {
         debug("dn=$desired_dn");
-        debug('backdrop_account pre'); debug($user_acct_pre);
-        debug('backdrop_account post'); debug($user_acct_post);
-        debug('ldap_entry_pre'); debug($ldap_entry_pre);
-        debug('ldap_entry_post'); debug($ldap_entry_post);
-        debug('ldap_user_conf'); debug($ldap_user_conf);
+        debug('backdrop_account pre');
+        debug($user_acct_pre);
+        debug('backdrop_account post');
+        debug($user_acct_post);
+        debug('ldap_entry_pre');
+        debug($ldap_entry_pre);
+        debug('ldap_entry_post');
+        debug($ldap_entry_post);
+        debug('ldap_user_conf');
+        debug($ldap_user_conf);
       }
 
       // Change username and first name (in backdrop) and save user to test ldapSynch event handler
@@ -821,11 +847,16 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $this->assertTrue($ldap_entry_success, t("synch to ldap entry on user save succeeded for " . $username), $this->testId());
       if (!$ldap_entry_success) {
         debug("dn=$desired_dn");
-        debug('backdrop_account pre'); debug($user_acct_pre);
-        debug('backdrop_account post'); debug($user_acct_post);
-        debug('ldap_entry_pre'); debug($ldap_entry_pre);
-        debug('ldap_entry_post'); debug($ldap_entry_post);
-        debug('ldap_user_conf'); debug($ldap_user_conf);
+        debug('backdrop_account pre');
+        debug($user_acct_pre);
+        debug('backdrop_account post');
+        debug($user_acct_post);
+        debug('ldap_entry_pre');
+        debug($ldap_entry_pre);
+        debug('ldap_entry_post');
+        debug($ldap_entry_post);
+        debug('ldap_user_conf');
+        debug($ldap_user_conf);
       }
     }
 
@@ -958,9 +989,12 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $this->assertTrue($ldap_entry_success, t("correct ldap entry created for " . $username), $this->testId($test_id));
       if (!$ldap_entry_success) {
         debug("password_success=$password_success,password_token,password_result: $password_token, $password_result");
-        debug('ldap_user_conf'); debug($ldap_user_conf);
-        debug('ldap_entry_post'); debug($ldap_entry_post);
-        debug('user'); debug($sstephens);
+        debug('ldap_user_conf');
+        debug($ldap_user_conf);
+        debug('ldap_entry_post');
+        debug($ldap_entry_post);
+        debug('user');
+        debug($sstephens);
       }
       /**
        * @todo functional tests
@@ -1020,7 +1054,8 @@ class LdapUserIntegrationTests extends LdapTestCase {
       $this->assertTrue($success, t("ldap entry removed for $username on backdrop user delete with deletion enabled."), $this->testId($test_id));
 
       if (!$success) {
-        debug(" desired_dn=$desired_dn test_sid=$test_sid, ldap entry post:"); debug($ldap_entry_post_delete);
+        debug(" desired_dn=$desired_dn test_sid=$test_sid, ldap entry post:");
+        debug($ldap_entry_post_delete);
       }
 
     }
@@ -1357,7 +1392,8 @@ class LdapUserUITests extends LdapTestCase {
 
     $this->assertTrue($field_lname_set_correctly, t('Synch mapping for field.field_lname  field set correctly'), $this->testId('user interface tests'));
     if (!$field_lname_set_correctly) {
-      debug('ldap_user_conf->synchMapping[direction][field.field_lname]'); debug($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER]['field.field_lname']);
+      debug('ldap_user_conf->synchMapping[direction][field.field_lname]');
+      debug($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER]['field.field_lname']);
     }
 
     $field_token = '[field.field_fname]';
@@ -1367,7 +1403,8 @@ class LdapUserUITests extends LdapTestCase {
 
     $this->assertTrue($field_fname_set_correctly, t('Synch mapping for field.field_lname  field set correctly'), $this->testId('user interface tests'));
     if (!$field_fname_set_correctly) {
-      debug('ldap_user_conf->synchMapping[direction][field.field_lname]'); debug($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER]['field.field_lname']);
+      debug('ldap_user_conf->synchMapping[direction][field.field_lname]');
+      debug($ldap_user_conf->ldapUserSynchMappings[LDAP_USER_PROV_DIRECTION_TO_BACKDROP_USER]['field.field_lname']);
     }
 
   }

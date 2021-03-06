@@ -92,18 +92,17 @@ function ldap_views_views_data() {
   return $data;
 }
 
-/*
-Alternative to 'attribute' field: add fields here, but we need the qid. Alternative: bundles + entity fields
-function ldap_views_views_data_alter(&$data) {
-$data['ldap']['example_field'] = array(
-'title' => t('Example field'),
-'help' => t('Some example content that references a user'),
-'field' => array(
-'handler' => 'ldap_views_handler_field',
-),
-);
-
-}
+/**
+ * Alternative to 'attribute' field: add fields here, but we need the qid. Alternative: bundles + entity fields
+ * function ldap_views_views_data_alter(&$data) {
+ *   $data['ldap']['example_field'] = array(
+ *     'title' => t('Example field'),
+ *     'help' => t('Some example content that references a user'),
+ *     'field' => array(
+ *       'handler' => 'ldap_views_handler_field',
+ *     ),
+ *   );
+ * }
  */
 
 /**

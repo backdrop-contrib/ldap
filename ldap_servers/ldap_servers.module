@@ -379,7 +379,7 @@ function ldap_servers_ldap_user_attrs_list_alter(&$available_user_attrs, &$param
     /** these 4 user fields indentify where in ldap and which ldap server they are associated with.
      * they are required for a Backdrop account to be "ldap associated" regardless of if any other
      * fields/properties are provisioned or synched
-    */
+     */
 
     if ($ldap_server->unique_persistent_attr) {
       foreach ([
@@ -723,9 +723,7 @@ function ldap_servers_get_user_ldap_data($backdrop_user, $sid = NULL, $ldap_cont
   }
   // If no explicit $sid, find most appropriate one.
   if (module_exists('ldap_user') && (!$sid || $sid == LDAP_USER_AUTH_SERVER_SID)) {
-    if (property_exists($backdrop_user, 'ldap_user_puid_sid') &&
-        !empty($backdrop_user->ldap_user_puid_sid[LANGUAGE_NONE][0]['value'])
-      ) {
+    if (property_exists($backdrop_user, 'ldap_user_puid_sid') && !empty($backdrop_user->ldap_user_puid_sid[LANGUAGE_NONE][0]['value'])) {
       $sid = $backdrop_user->ldap_user_puid_sid[LANGUAGE_NONE][0]['value'];
     }
     else {
@@ -745,7 +743,7 @@ function ldap_servers_get_user_ldap_data($backdrop_user, $sid = NULL, $ldap_cont
   $ldap_server = ($sid) ? ldap_servers_get_servers($sid, 'enabled', TRUE) : FALSE;
 
   if ($ldap_server === FALSE) {
-    watchdog('ldap_servers', 'Failed to load server object %sid in _ldap_servers_get_user_ldap_data', ['%sid' => $sid], WATCHDOG_ERROR);
+    watchdog('ldap_servers', 'Failed to load server object %sid in ldap_servers_get_user_ldap_data(). Username: %user', ['%sid' => $sid, '%user' => $backdrop_username], WATCHDOG_ERROR);
     return FALSE;
   }
 
@@ -1142,7 +1140,7 @@ function ldap_servers_get_globals($global_type, $key, $only_mock_values = FALSE)
   if ($simpletest && (isset($simpletest_globals[$global_type][$key]) || $only_mock_values)) {
     return ($simpletest_globals[$global_type][$key]) ? $simpletest_globals[$global_type][$key] : NULL;
   }
-  else  {
+  else {
     return (isset($GLOBALS[$global_type][$key]) && !$only_mock_values) ? $GLOBALS[$global_type][$key] : NULL;
   }
 

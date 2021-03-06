@@ -117,7 +117,8 @@ class LdapServerTest extends LdapServer {
         debug("Simpletest failure for $userdn. No password submitted");
       }
       if (!isset($this->entries[$userdn]['password'][0])) {
-        debug("Simpletest failure for $userdn. No password in entry to test for bind"); debug($this->entries[$userdn]);
+        debug("Simpletest failure for $userdn. No password in entry to test for bind");
+        debug($this->entries[$userdn]);
       }
       $ldap_errno = LDAP_INVALID_CREDENTIALS;
       if (function_exists('ldap_err2str')) {
@@ -203,9 +204,9 @@ class LdapServerTest extends LdapServer {
 
     if (strpos($filter, '&') === 0) {
       /**
-     * case 2.A.: filter of form (&(<attribute>=<value>)(<attribute>=<value>)(<attribute>=<value>))
-     *  such as (&(samaccountname=hpotter)(samaccountname=hpotter)(samaccountname=hpotter))
-     */
+       * case 2.A.: filter of form (&(<attribute>=<value>)(<attribute>=<value>)(<attribute>=<value>))
+       *  such as (&(samaccountname=hpotter)(samaccountname=hpotter)(samaccountname=hpotter))
+       */
       $operand = '&';
       $filter = substr($filter, 1);
       $filter = trim($filter, "()");
@@ -216,9 +217,9 @@ class LdapServerTest extends LdapServer {
     }
     elseif (strpos($filter, '|') === 0) {
       /**
-     * case 2.B: filter of form (|(<attribute>=<value>)(<attribute>=<value>)(<attribute>=<value>))
-     *  such as (|(samaccountname=hpotter)(samaccountname=hpotter)(samaccountname=hpotter))
-     */
+       * case 2.B: filter of form (|(<attribute>=<value>)(<attribute>=<value>)(<attribute>=<value>))
+       *  such as (|(samaccountname=hpotter)(samaccountname=hpotter)(samaccountname=hpotter))
+       */
       $operand = '|';
       $filter = substr($filter, 1);
       $filter = trim($filter, "()");
@@ -230,9 +231,9 @@ class LdapServerTest extends LdapServer {
     }
     elseif (count(explode('=', $filter)) == 2) {
       /**
-     * case 2.C.: filter of form (<attribute>=<value>)
-     *  such as (samaccountname=hpotter)
-     */
+       * case 2.C.: filter of form (<attribute>=<value>)
+       *  such as (samaccountname=hpotter)
+       */
       $operand = '|';
       $subqueries[] = explode('=', $filter);
     }
@@ -352,9 +353,9 @@ class LdapServerTest extends LdapServer {
   public function dnExists($find_dn, $return = 'boolean', $attributes = ['objectclass']) {
     $this->refreshFakeData();
     $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $this->sid);
-      if ($test_data === NULL) {
-        $test_data = [];
-      }
+    if ($test_data === NULL) {
+      $test_data = [];
+    }
     foreach ($this->entries as $entry_dn => $entry) {
       $match = (strcasecmp($entry_dn, $find_dn) == 0);
 
@@ -412,9 +413,9 @@ class LdapServerTest extends LdapServer {
   public function createLdapEntry($ldap_entry, $dn = NULL) {
     $result = FALSE;
     $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $this->sid);
-      if ($test_data === NULL) {
-        $test_data = [];
-      }
+    if ($test_data === NULL) {
+      $test_data = [];
+    }
 
     if (isset($ldap_entry['dn'])) {
       $dn = $ldap_entry['dn'];
@@ -439,9 +440,9 @@ class LdapServerTest extends LdapServer {
       $attributes = [];
     }
     $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $this->sid);
-      if ($test_data === NULL) {
-        $test_data = [];
-      }
+    if ($test_data === NULL) {
+      $test_data = [];
+    }
     if (!isset($test_data['entries'][$dn])) {
       return FALSE;
     }
@@ -492,9 +493,9 @@ class LdapServerTest extends LdapServer {
   public function delete($dn) {
 
     $test_data = config_get('ldap_test.settings', 'ldap_test_server__' . $this->sid);
-      if ($test_data === NULL) {
-        $test_data = [];
-      }
+    if ($test_data === NULL) {
+      $test_data = [];
+    }
     $deleted = FALSE;
     foreach (['entries', 'users', 'groups', 'ldap'] as $test_data_sub_array) {
       if (isset($test_data[$test_data_sub_array][$dn])) {

@@ -331,7 +331,7 @@ class LdapAuthenticationConf {
   /**
    * Destructor Method.
    */
-  public function __destruct() {}
+  public function __destruct() { }
 
   /**
    * Decide if a username is excluded or not.

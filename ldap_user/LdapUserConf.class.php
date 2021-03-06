@@ -279,7 +279,7 @@ class LdapUserConf {
   /**
    * Destructor Method.
    */
-  public function __destruct() {}
+  public function __destruct() { }
 
   /**
    * Util to fetch mappings for a given direction.
@@ -816,7 +816,7 @@ class LdapUserConf {
     ];
 
     if (
-        (!$ldap_user  && !isset($backdrop_user->name)) ||
+        (!$ldap_user && !isset($backdrop_user->name)) ||
         (!$backdrop_user && $save) ||
         ($ldap_user && !isset($ldap_user['sid']))
     ) {
@@ -842,7 +842,7 @@ class LdapUserConf {
       if (!empty($account->data)) {
         $user_edit['data'] = !empty($user_edit['data']) ? array_merge($account->data, $user_edit['data']) : $account->data;
       }
-      foreach($user_edit as $key => $value) {
+      foreach ($user_edit as $key => $value) {
         $account->{$key} = $value;
       }
       $account->save();
@@ -1116,7 +1116,7 @@ class LdapUserConf {
         if (!empty($existing_account_from_puid->data)) {
           $user_edit['data'] = !empty($user_edit['data']) ? array_merge($existing_account_from_puid->data, $user_edit['data']) : $existing_account_from_puid->data;
         }
-        foreach($user_edit as $key => $value) {
+        foreach ($user_edit as $key => $value) {
           $existing_account_from_puid->{$key} = $value;
         }
         $account = $existing_account_from_puid;
@@ -1226,7 +1226,7 @@ class LdapUserConf {
         if (!empty($account->data)) {
           $user_edit['data'] = !empty($user_edit['data']) ? array_merge($account->data, $user_edit['data']) : $account->data;
         }
-        foreach($user_edit as $key => $value) {
+        foreach ($user_edit as $key => $value) {
           $account->{$key} = $value;
         }
         $account->save();

@@ -58,7 +58,7 @@ function ldap_authorization_uninstall() {
   }
   module_load_include('inc', 'ldap_servers', 'ldap_servers.user_data_remove');
   batch_set(ldap_severs_user_data_setup_batch());
-  $batch =& batch_get();
+  $batch = &batch_get();
 
 }
 
@@ -88,7 +88,7 @@ function ldap_authorization_update_1000() {
       ->fields('ldap_authorization')
       ->execute()
       ->fetchAll();
-    foreach($select as $values) {
+    foreach ($select as $values) {
       $values->mappings = str_replace('\\"', '"', $values->mappings);
       // Replace 'drupal' with 'backdrop'.
       if ($values->consumer_type == 'drupal_role') {
@@ -153,7 +153,7 @@ function ldap_authorization_update_1003() {
     ->fields('users', array('uid', 'data'))
     ->execute()
     ->fetchAll();
-  foreach($select as $row) {
+  foreach ($select as $row) {
     $data = unserialize($row->data);
     if (isset($data['ldap_authorizations']['drupal_role'])) {
       $data['ldap_authorizations']['backdrop_role'] = $data['ldap_authorizations']['drupal_role'];

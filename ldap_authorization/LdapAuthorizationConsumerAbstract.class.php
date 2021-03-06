@@ -294,7 +294,7 @@ class LdapAuthorizationConsumerAbstract {
    *
    *   alters $consumers by reference
    */
-  public function sortConsumerIds($op, &$consumers) {}
+  public function sortConsumerIds($op, &$consumers) { }
 
   /**
    * Attempt to flush related caches. This will be something like og_invalidate_cache($gids)
@@ -302,7 +302,7 @@ class LdapAuthorizationConsumerAbstract {
    * @param $consumers
    *   associative array in form of LdapAuthorizationConsumerAbstract::populateConsumersFromConsumerIds
    */
-  public function flushRelatedCaches($consumers = NULL) {}
+  public function flushRelatedCaches($consumers = NULL) { }
 
   /**
    * @param string $op

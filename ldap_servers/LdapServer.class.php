@@ -1279,10 +1279,7 @@ class LdapServer {
    */
   public function userPuidFromLdapEntry($ldap_entry) {
 
-    if ($this->unique_persistent_attr
-        && isset($ldap_entry[$this->unique_persistent_attr][0])
-        && is_scalar($ldap_entry[$this->unique_persistent_attr][0])
-        ) {
+    if ($this->unique_persistent_attr && isset($ldap_entry[$this->unique_persistent_attr][0]) && is_scalar($ldap_entry[$this->unique_persistent_attr][0])) {
       if (is_array($ldap_entry[$this->unique_persistent_attr])) {
         $puid = $ldap_entry[$this->unique_persistent_attr][0];
       }
@@ -1668,7 +1665,7 @@ class LdapServer {
     }
     if (isset($current_member_entries['count'])) {
       unset($current_member_entries['count']);
-    };
+    }
 
     foreach ($current_member_entries as $i => $member_entry) {
       // 1. Add entry itself if of the correct type to $all_member_dns.
@@ -1693,7 +1690,7 @@ class LdapServer {
           $member_ids = $member_entry[$this->groupMembershipsAttr];
           if (isset($member_ids['count'])) {
             unset($member_ids['count']);
-          };
+          }
           $ors = [];
           foreach ($member_ids as $i => $member_id) {
             // @todo this would be replaced by query template
@@ -1851,7 +1848,7 @@ class LdapServer {
         foreach ($this->basedn as $base_dn) {
           // No attributes, just dns needed.
           $group_entries = $this->search($base_dn, $query_for_parent_groups);
-          if ($group_entries !== FALSE  && $level < LDAP_SERVER_LDAP_QUERY_RECURSION_LIMIT) {
+          if ($group_entries !== FALSE && $level < LDAP_SERVER_LDAP_QUERY_RECURSION_LIMIT) {
             $this->groupMembershipsFromEntryRecursive($group_entries, $all_group_dns, $tested_group_ids, $level + 1, LDAP_SERVER_LDAP_QUERY_RECURSION_LIMIT);
           }
         }
@@ -1957,7 +1954,7 @@ class LdapServer {
     }
     if (isset($current_group_entries['count'])) {
       unset($current_group_entries['count']);
-    };
+    }
 
     $ors = [];
     foreach ($current_group_entries as $i => $group_entry) {

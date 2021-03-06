@@ -33,11 +33,7 @@ class LdapQueryAdmin extends LdapQuery {
     }
     foreach ($select as $result) {
       $query = ($class == 'LdapQuery') ? new LdapQuery($result->qid) : new LdapQueryAdmin($result->qid);
-      if (
-          ($sid == 'all' || $query->sid == $sid)
-          &&
-          (!$type || $type == 'all' || ($query->status = 1 && $type == 'enabled'))
-        ) {
+      if (($sid == 'all' || $query->sid == $sid) && (!$type || $type == 'all' || ($query->status = 1 && $type == 'enabled'))) {
         $queries[$result->qid] = $query;
       }
     }

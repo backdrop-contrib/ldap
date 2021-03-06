@@ -234,7 +234,8 @@ function ldap_authorization_test_form_submit($form, &$form_state) {
       }
       else {
         if (function_exists('dpm')) {
-          dpm("user: $username"); dpm($user);
+          dpm("user: $username");
+          dpm($user);
         }
       }
 

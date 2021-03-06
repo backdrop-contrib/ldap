@@ -530,7 +530,7 @@ function ldap_user_update_1000() {
 function _ldap_user_replace_drupal_with_backdrop($variables)
 {
   $return = array();
-  foreach($variables as $key => $value) {
+  foreach ($variables as $key => $value) {
     if (is_array($value) && !empty($value)) {
       $value = _ldap_user_replace_drupal_with_backdrop($value);
     }

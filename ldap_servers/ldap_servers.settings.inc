@@ -21,8 +21,8 @@ function ldap_servers_settings() {
   $options = ldap_servers_encrypt_types();
 
   /**  when this is changed, need to decrypt and possibly encrypt pwd in newly selected format
-    *   ... thus default needs to be "No Encryption" to avoid confusion.
-    */
+   *   ... thus default needs to be "No Encryption" to avoid confusion.
+   */
   $config = config('ldap_servers.settings');
   $form['previous_encryption'] = ['#type' => 'hidden', '#default_value' => $config->get('ldap_servers_encryption')];
   $form['encryption'] = ['#type' => 'fieldset', '#title' => t('Encryption')];
