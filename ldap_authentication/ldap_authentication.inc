@@ -654,9 +654,10 @@ function ldap_authentication_test_credentials($auth_conf, $sso_login, $authname,
       }
       if ($ldap_server->ldapErrorNumber()) {
         $authentication_result = LDAP_AUTHENTICATION_RESULT_FAIL_SERVER;
-        break;
       }
-      $authentication_result = LDAP_AUTHENTICATION_RESULT_FAIL_FIND;
+      else {
+        $authentication_result = LDAP_AUTHENTICATION_RESULT_FAIL_FIND;
+      }
       // Next server, please.
       continue;
     }
