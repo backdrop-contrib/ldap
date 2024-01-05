@@ -4,6 +4,8 @@
  * @file
  */
 
+require_once 'ldap_test.module';
+
 /***
  * Activedirectory is default Active Directory server config .**/
 function ldap_test_ldap_servers_data() {
