@@ -8,3 +8,4 @@
 ;files[] = LdapAuthorizationConsumerOG.class.php
 ;files[] = ldap_authorization_og.module
 ;files[] = ldap_authorization_og.inc
+hidden = TRUE
