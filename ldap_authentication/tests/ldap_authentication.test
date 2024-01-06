@@ -15,6 +15,7 @@ class LdapAuthenticationTestCase extends LdapTestCase {
 
   public $module_name = 'ldap_authentication';
   protected $ldap_test_data;
+  public $privileged_user;
 
   /**
    * {@inheritdoc}

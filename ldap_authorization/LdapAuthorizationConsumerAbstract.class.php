@@ -104,6 +104,8 @@ class LdapAuthorizationConsumerAbstract {
     'createConsumers' => TRUE,
   ];
 
+  public $mappingDirections;
+
   /**
    * Constructor Method.
    *

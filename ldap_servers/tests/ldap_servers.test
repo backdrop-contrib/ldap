@@ -16,6 +16,8 @@ else {
  */
 class LdapServersTestCase extends LdapTestCase {
 
+  public $privileged_user;
+
   /**
    *
    */

@@ -581,7 +581,7 @@ function _ldap_servers_get_servers($sid, $type, $flatten, $reset) {
 /**
  * See ldap_servers_get_servers()
  */
-function _ldap_servers_get_simpletest_servers($sid, $type = NULL, $flatten, $reset = TRUE) {
+function _ldap_servers_get_simpletest_servers($sid, $type = NULL, $flatten = FALSE, $reset = TRUE) {
 
   if (!$type) {
     $type = 'all';

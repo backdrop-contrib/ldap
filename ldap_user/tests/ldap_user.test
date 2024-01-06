@@ -13,6 +13,8 @@ module_load_include('php', 'ldap_test', 'LdapTestCase.class');
  */
 class LdapUserUnitTests extends LdapTestCase {
 
+  public $privileged_user;
+
   /**
    *
    */
@@ -1252,6 +1254,8 @@ class LdapUserIntegrationTests extends LdapTestCase {
  *
  */
 class LdapUserUITests extends LdapTestCase {
+
+  public $privileged_user;
 
   /**
    *

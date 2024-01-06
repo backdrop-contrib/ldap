@@ -11,6 +11,12 @@ ldap_servers_module_load_include('php', 'ldap_authentication', 'LdapAuthenticati
  */
 class LdapAuthenticationConfAdmin extends LdapAuthenticationConf {
 
+  public $excludeIfNoAuthorizationsDescription;
+  public $passwordUpdateOptions;
+  public $ssoExcludedPathsDescription;
+  public $ssoExcludedHostsDescription;
+  public $ssoNotifyAuthenticationDescription;
+
   /**
    *
    */

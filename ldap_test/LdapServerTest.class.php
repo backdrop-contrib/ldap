@@ -32,6 +32,9 @@ class LdapServerTest extends LdapServer {
    */
   public $bindpw = FALSE;
 
+  public $ldap_to_backdrop_user;
+  public $search_pagination;
+
   /**
    * Constructor Method.
    *
@@ -156,7 +159,7 @@ class LdapServerTest extends LdapServer {
    *   An array of matching entries->attributes, or FALSE if the search is
    *   empty.
    */
-  public function search($base_dn = NULL, $filter, $attributes = [], $attrsonly = 0, $sizelimit = 0, $timelimit = 0, $deref = LDAP_DEREF_NEVER, $scope = LDAP_SCOPE_SUBTREE) {
+  public function search($base_dn = NULL, $filter = NULL, $attributes = [], $attrsonly = 0, $sizelimit = 0, $timelimit = 0, $deref = LDAP_DEREF_NEVER, $scope = LDAP_SCOPE_SUBTREE) {
 
     $lcase_attribute = [];
     foreach ($attributes as $i => $attribute_name) {

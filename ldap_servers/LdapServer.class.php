@@ -777,7 +777,7 @@ class LdapServer {
    *   or FALSE on error.
    */
   public function search($base_dn = NULL,
-  $filter,
+  $filter = NULL,
   $attributes = [],
     $attrsonly = 0,
   $sizelimit = 0,

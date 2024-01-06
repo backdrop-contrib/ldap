@@ -206,6 +206,12 @@ class LdapUserConf {
     'disableAdminPasswordField',
   ];
 
+  public $createLDAPAccounts;
+  public $createLDAPAccountsAdminApproval;
+  public $ldapEntryProvisionServerDescription;
+  public $orphanedBackdropAcctBehaviorDescription;
+  public $manualAccountConflictOptions;
+
   /**
    *
    */
@@ -1050,7 +1056,7 @@ class LdapUserConf {
    *
    *   $user_edit data returned by reference
    */
-  public function provisionBackdropAccount($account = FALSE, &$user_edit, $ldap_user = NULL, $save = TRUE) {
+  public function provisionBackdropAccount($account = FALSE, &$user_edit = NULL, $ldap_user = NULL, $save = TRUE) {
 
     $watchdog_tokens = [];
     /**

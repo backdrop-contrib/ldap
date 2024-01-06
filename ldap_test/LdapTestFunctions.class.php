@@ -151,7 +151,7 @@ class LdapTestFunctions {
   /**
    *
    */
-  public function backdropLdapUpdateUser($edit = [], $ldap_authenticated = FALSE, $user) {
+  public function backdropLdapUpdateUser($edit = [], $ldap_authenticated = FALSE, $user = NULL) {
     if (count($edit)) {
       if (!empty($user->data)) {
         $edit['data'] = !empty($edit['data']) ? array_merge($user->data, $edit['data']) : $user->data;
