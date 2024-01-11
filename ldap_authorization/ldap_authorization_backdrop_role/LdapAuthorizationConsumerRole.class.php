@@ -302,7 +302,7 @@ class LdapAuthorizationConsumerBackdropRole extends LdapAuthorizationConsumerAbs
   public function convertToFriendlyAuthorizationIds($authorizations) {
     $authorization_ids_friendly = [];
     foreach ($authorizations as $authorization_id => $authorization) {
-      $authorization_ids_friendly[] = $authorization['name'] . '  (' . $authorization_id . ')';
+      $authorization_ids_friendly[] = isset($authorization['name']) ? $authorization['name'] . '  (' . $authorization_id . ')' : $authorization_id;
     }
     return $authorization_ids_friendly;
   }

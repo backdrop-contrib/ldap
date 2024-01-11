@@ -280,7 +280,7 @@ class LdapServersTestCase extends LdapTestCase {
         'name'       => ["Server $sid", "My Server $sid"],
         'status'     => [1, 1],
         'ldap_type'  => ['openldap', 'ad'],
-        'address'    => ["${sid}.ldap.fake", "${sid}.ldap.fake"],
+        'address'    => [$sid . ".ldap.fake", $sid . ".ldap.fake"],
         'port'       => [389, 7000],
         'tls'        => [TRUE, FALSE],
         'bind_method' => [1, 3],

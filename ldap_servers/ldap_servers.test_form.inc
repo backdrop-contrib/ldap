@@ -120,9 +120,9 @@ function ldap_servers_test_form($form, &$form_state, $op = NULL, $sid = NULL) {
     if (isset($test_data['username']) && isset($test_data['ldap_user'])) {
       $form['#prefix'] = theme('ldap_server_ldap_entry_table',
         [
-          'entry' => $test_data['ldap_user']['attr'],
+          'entry' => isset($test_data['ldap_user']['attr']) ? $test_data['ldap_user']['attr'] : '',
           'username' => $test_data['username'],
-          'dn' => $test_data['ldap_user']['dn'],
+          'dn' => isset($test_data['ldap_user']['dn']) ? $test_data['ldap_user']['dn'] : '',
         ]);
     }
 
@@ -142,8 +142,8 @@ function ldap_servers_test_form($form, &$form_state, $op = NULL, $sid = NULL) {
       if ($user = user_load_by_name($user_name)) {
         dpm("Corresponding Backdrop user object for: $user_name");
         dpm($user);
-        if (function_exists('entity_load_single')) {
-          $user_entity = entity_load_single('user', $user->uid);
+        if (function_exists('entity_load')) {
+          $user_entity = entity_load('user', $user->uid);
           dpm("Backdrop user entity for: $user_name");
           dpm($user_entity);
         }
