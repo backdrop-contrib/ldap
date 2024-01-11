@@ -4,8 +4,8 @@ description = Test ldap authorization.
 group = LDAP Authorization
 file = BasicTests.test
 
-;[LdapAuthorizationOg2Tests]
-;name = OG 1.x-2.x Tests.
-;description = Test ldap authorization og 2.
-;group = LDAP Authorization
-;file = Og2Tests.test
+[LdapAuthorizationOg2Tests]
+name = LDAP Authorization - OG (Organic Groups) 1.x-2.x Tests.
+description = Test LDAP authorization OG (Organic Groups) 2.
+group = LDAP Authorization
+file = Og2Tests.test

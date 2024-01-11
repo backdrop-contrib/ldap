@@ -70,7 +70,7 @@ function ldap_authorization_og_og_version() {
  */
 function ldap_authorization_og2_get_group_from_name($entity_type, $group_name) {
 
-  require_once drupal_get_path('module', 'ldap_authorization_og') . '/LdapAuthorizationConsumerOG.class.php';
+  require_once backdrop_get_path('module', 'ldap_authorization_og') . '/LdapAuthorizationConsumerOG.class.php';
   $group_entity = FALSE;
   $group_entity_id = FALSE;
   $query = new EntityFieldQuery();
@@ -80,7 +80,7 @@ function ldap_authorization_og2_get_group_from_name($entity_type, $group_name) {
   if (isset($result[$entity_type])) {
     $group_ids = array_keys($result[$entity_type]);
     if (count($group_ids) == 1) {
-      $group_entity = entity_load_single($entity_type, $group_ids[0]);
+      $group_entity = entity_load($entity_type, $group_ids[0]);
       $group_entity_id = $group_ids[0];
     }
   }
@@ -102,7 +102,7 @@ function ldap_authorization_og2_has_consumer_id($consumer_id, $uid) {
   if (count($parts) == 3) {
     list($group_type, $gid, $rid) = $parts;
     // Need to make sure entity exists before calling og_get_user_roles which will throw fatal error.
-    if ($group = entity_load_single($group_type, $gid)) {
+    if ($group = entity_load($group_type, $gid)) {
       if (og_is_group($group_type, $group)) {
         $roles = og_get_user_roles($group_type, $gid, $uid, TRUE);
         $result = isset($roles[$rid]);
@@ -171,4 +171,13 @@ function ldap_authorization_og_form_ldap_authorization_admin_form_alter(&$form, 
     $form['filter_and_mappings']['use_filter']['#description'] = t('This is a required option for Organic Groups.  It is only displayed for consistency with other user interfaces.');
     $form['filter_and_mappings']['use_filter']['#disabled'] = TRUE;
   }
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function ldap_authorization_og_autoload_info() {
+  return array(
+    'LdapAuthorizationConsumerOG' => 'LdapAuthorizationConsumerOG.class.php',
+  );
 }

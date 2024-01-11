@@ -26,7 +26,7 @@ Content
   - [Derive Authorizations from User Attribute](#derive2)
   - [Derive Authorizations from LDAP Group Entry](#derive3)
   - [LDAP Authorization - Backdrop Roles module](#roles)
-  - [LDAP Authorization - OG (Organic Groups) module NOT AVAILABLE!](#og)
+  - [LDAP Authorization - OG (Organic Groups) module](#og)
 - [LDAP Query module](#query)
 - [LDAP Views module](#views)
 - [LDAP Feeds module](#feeds)
@@ -225,6 +225,8 @@ Implements two configuration pages:
     - Add an LDAP server configuration: server type, server address, port,
       bindig method, LDAP user to Backdrop user relationship, group
       configuration, pagination etc.
+      If the "ldap_search() function error. LDAP Error: Invalid DN syntax" error message occurs,
+      check the value of "User attribute held in "LDAP Group Entry Attribute Holding...".
     - Edit, delete or disable an LDAP server configuration
     - Test: bindig, group create, delete, add member, remove member
 
@@ -695,14 +697,14 @@ the authorizations a given test user would be granted.
 
 
 
-#### NOT AVAILABLE: LDAP Authorization - OG (Organic Groups) module <a name="og"></a>
+#### LDAP Authorization - OG (Organic Groups) module <a name="og"></a>
 
 Implements LDAP authorization for Organic Groups. It provides an
 "authorization consumer" for Organic Groups groups.
 
 Dependencies:
 - LDAP Authorization module
-- Organic Groups module: This module has not yet been converted to Backdrop from Drupal 7!
+- Organic Groups module: https://backdropcms.org/project/og
 
 Configuration page:
 It has a single configuration entry at admin/config/people/ldap/authorization
@@ -722,11 +724,14 @@ Requirements:
 - Configuration that maps LDAP user entries to Organic Group membership
   (Implemented by LDAP Authorization - OG (Organic Groups) module).
 - LDAP Authorization modules do not require LDAP Authentication to be used.
-  LDAP Authorization modules will work with other authentication modules including
-  Backdrop authentication. However, there must be a relationship established
-  between the Backdrop user and an LDAP entry; this relationship is usually the
-  username or email. This relationship is implemented in the LDAP Server module.
-  (Some authentication modules in D7: [CAS](https://www.drupal.org/project/cas), [Shibboleth Authentication](https://www.drupal.org/project/shib_auth), [OpenID Connect](https://www.drupal.org/project/openid_connect))
+  LDAP Authorization modules will work with [CAS](https://backdropcms.org/project/cas)
+  and other authentication modules including Backdrop authentication.
+  However, there must be a relationship established between the Backdrop
+  user and an LDAP entry; this relationship is usually the username or email.
+  This relationship is implemented in the LDAP Server module.
+  (Some authentication modules by Drupal:
+  [Shibboleth Authentication](https://www.drupal.org/project/shib_auth),
+  [OpenID Connect](https://www.drupal.org/project/openid_connect))
 - This takes a little patience to setup and test.
 
 ##### Setup
@@ -1310,7 +1315,7 @@ You can test four LDAP modules by Simpletest:
    - LDAP User User Interface
    - LDAP Authentication Tests
    - LDAP Authorization Basic Tests
-   - OG 1.x-2.x Tests. NOT AVAILABLE! (This requires the Organic Groups module.)
+   - OG 1.x-2.x Tests. (This requires the Organic Groups module.)
 4. Press "Run tests" button.
 
 

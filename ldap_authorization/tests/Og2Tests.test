@@ -33,6 +33,7 @@ class LdapAuthorizationOg2Tests extends LdapTestCase {
     'dungeon-master' => ['entity_type' => 'node', 'bundle_type' => 'group'],
     'time-keeper' => ['entity_type' => 'node', 'bundle_type' => 'group'],
   ];
+  public $groups;
 
   /**
    *

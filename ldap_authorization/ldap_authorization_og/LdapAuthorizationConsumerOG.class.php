@@ -124,7 +124,7 @@ class LdapAuthorizationConsumerOG extends LdapAuthorizationConsumerAbstract {
           $to_simplified = FALSE;
         }
         $simplified = (boolean) ($group_entity);
-        if (!$group_entity && ($group_entity = @entity_load_single($entity_type, $group_name_or_entity_id))) {
+        if (!$group_entity && ($group_entity = @entity_load($entity_type, $group_name_or_entity_id))) {
           $group_entity_id = $group_name_or_entity_id;
         }
       }
@@ -253,9 +253,16 @@ class LdapAuthorizationConsumerOG extends LdapAuthorizationConsumerAbstract {
   }
 
   /**
+   *
+   */
+  public function authorizationDiff($existing, $desired) {
+    return parent::authorizationDiff($existing, $desired);
+  }
+
+  /**
    * @param string $op
    *   'grant' or 'revoke' signifying what to do with the $consumer_ids.
-   * @param drupal user object $object
+   * @param user object $user
    * @param array $user_auth_data
    *   is array specific to this consumer_type.  Stored at $user->data['ldap_authorizations'][<consumer_type>].
    * @param $consumers
@@ -265,20 +272,13 @@ class LdapAuthorizationConsumerOG extends LdapAuthorizationConsumerAbstract {
    * @param bool $user_save
    *   indicates is user data array should be saved or not.  this is always overridden for og.
    */
-  public function authorizationDiff($existing, $desired) {
-    return parent::authorizationDiff($existing, $desired);
-  }
-
-  /**
-   *
-   */
   protected function grantsAndRevokes($op, &$user, &$user_auth_data, $consumers, &$ldap_entry = NULL, $user_save = TRUE) {
 
     if (!is_array($user_auth_data)) {
       $user_auth_data = [];
     }
 
-    $detailed_watchdog_log = variable_get('ldap_help_watchdog_detail', 0);
+    $detailed_watchdog_log = config_get('ldap_help.settings', 'ldap_help_watchdog_detail');
     $this->sortConsumerIds($op, $consumers);
 
     $results = [];
@@ -405,7 +405,10 @@ class LdapAuthorizationConsumerOG extends LdapAuthorizationConsumerAbstract {
     // Those changes will not yet be reflected in $user, potentially causing
     // data loss when user_save() is called with stale data.
     $user = user_load($user->uid, TRUE);
-    $user = user_save($user, $user_edit);
+    foreach ($user_edit as $key => $value) {
+      $user->{$key} = $value;
+    }
+    $user->save();
 
     // Reset this variable because user save hooks can impact it.
     $user_auth_data = $user->data['ldap_authorizations'][$this->consumerType];
