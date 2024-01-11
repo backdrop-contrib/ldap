@@ -1824,7 +1824,9 @@ class LdapServer {
     $ors = [];
     foreach ($member_group_dns as $i => $member_group_dn) {
       $all_group_dns[] = $member_group_dn;
-      if ($nested) {
+      // If $this->groupMembershipsAttr is empty, the $ors must also be empty,
+      // otherwise $this->search() generates an error: "LDAP Error: Bad search filter".
+      if ($nested && !empty($this->groupMembershipsAttr)) {
         if ($this->groupMembershipsAttrMatchingUserAttr == 'dn') {
           $member_value = $member_group_dn;
         }
