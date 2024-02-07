@@ -341,6 +341,8 @@ class LdapServer {
       return LDAP_NOT_SUPPORTED;
     }
 
+    ldap_set_option(NULL, LDAP_OPT_NETWORK_TIMEOUT, 10);
+    
     if (!$con = ldap_connect($this->address, $this->port)) {
       watchdog('ldap_servers', 'LDAP Connect failure to ' . $this->address . ':' . $this->port);
       return LDAP_CONNECT_ERROR;
