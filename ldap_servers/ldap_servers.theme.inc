@@ -95,6 +95,8 @@ function theme_ldap_servers_server($variables) {
       'type' => 'ul',
       'title' => 'Server Properties',
       'attributes' => [],
+      'wrapper_attributes' => [],
+      'empty' => '',
     ]
     );
 

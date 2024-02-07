@@ -98,6 +98,8 @@ function theme_ldap_query($variables) {
       'type' => 'ul',
       'title' => 'Query Properties',
       'attributes' => [],
+      'wrapper_attributes' => [],
+      'empty' => '',
     ]
     );
 

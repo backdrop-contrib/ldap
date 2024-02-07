@@ -300,7 +300,7 @@ function ldap_servers_test_form_submit($form, &$form_state) {
           $mapping[] = "$key = " . $value[0];
         }
       }
-      $results_tables['basic'][] = [theme_item_list(['items' => $mapping, 'title' => t('Attributes available to anonymous search', ['%bind_dn' => $ldap_server->binddn]), 'type' => 'ul', 'attributes' => []])];
+      $results_tables['basic'][] = [theme_item_list(['items' => $mapping, 'title' => t('Attributes available to anonymous search', ['%bind_dn' => $ldap_server->binddn]), 'type' => 'ul', 'attributes' => [], 'wrapper_attributes' => [], 'empty' => ''])];
     }
     $results_tables['basic'][] = [
       t('Testing method: Binding with DN (%bind_dn). Using supplied password ',
