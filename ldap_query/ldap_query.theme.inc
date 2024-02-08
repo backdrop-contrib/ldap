@@ -92,7 +92,7 @@ function theme_ldap_query($variables) {
     $properties = join(' | ', $admin->getActions());
   }
 
-  $output = theme_item_list(
+  $output = theme('item_list',
     [
       'items' => $properties,
       'type' => 'ul',

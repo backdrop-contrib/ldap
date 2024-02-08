@@ -89,7 +89,7 @@ function theme_ldap_servers_server($variables) {
     $properties = join(' | ', $admin->getLdapServerActions());
   }
 
-  $output = theme_item_list(
+  $output = theme('item_list',
     [
       'items' => $properties,
       'type' => 'ul',
