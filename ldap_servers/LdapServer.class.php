@@ -342,9 +342,11 @@ class LdapServer {
     }
 
     ldap_set_option(NULL, LDAP_OPT_NETWORK_TIMEOUT, 10);
-    
-    if (!$con = ldap_connect($this->address, $this->port)) {
-      watchdog('ldap_servers', 'LDAP Connect failure to ' . $this->address . ':' . $this->port);
+
+    $ldapuri = $this->address . ':' . $this->port;
+    $ldapuri = strpos($this->address, 'ldaps://') === 0 ? $ldapuri : 'ldap://' . $ldapuri;
+    if (!$con = ldap_connect($ldapuri)) {
+      watchdog('ldap_servers', 'LDAP Connect failure to ' . $ldapuri);
       return LDAP_CONNECT_ERROR;
     }
 

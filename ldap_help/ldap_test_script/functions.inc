@@ -102,21 +102,23 @@ require_once 'config.inc';
  */
 function ldap_help_connect($address, $port, $tls, $test = FALSE) {
 
+  $ldapuri = $address . ':' . $port;
+  $ldapuri = strpos($address, 'ldaps://') === 0 ? $ldapuri : 'ldap://' . $ldapuri;
   if ($test) {
     // Test for ldap extensions that don't actually connect until bind.
-    $false_con = ldap_connect("fakehostname.sdfserewerdfsdf.com", 389);
+    $false_con = ldap_connect("ldap://fakehostname.sdfserewerdfsdf.com:389");
     if (ldap_errno($false_con) == LDAP_SUCCESS) {
-      $con = ldap_connect($address, $port);
+      $con = ldap_connect($ldapuri);
       return [LDAP_OTHER, "ldap_connect does not actually connect until bind with installed extension, so connect is not a valid test.", $con];
     }
   }
 
-  $con = ldap_connect($address, $port);
+  $con = ldap_connect($ldapuri);
   ldap_set_option($con, LDAP_OPT_PROTOCOL_VERSION, 3);
 
   if (!$con || ldap_errno($con) != LDAP_SUCCESS) {
     $err = ldap_errno($con) . ":" . ldap_error($con) . ":" . ldap_err2str(ldap_errno($con)) . "!";
-    return [LDAP_CONNECT_ERROR, "LDAP Connect failure to  $address : $port. $err"];
+    return [LDAP_CONNECT_ERROR, "LDAP Connect failure to $ldapuri. $err"];
   }
 
   // Use TLS if we are configured and able to.
